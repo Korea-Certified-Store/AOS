@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    id(libs.plugins.hilt.plugin.get().pluginId)
 }
 
 android {
@@ -70,4 +72,8 @@ dependencies {
     // debug
     debugImplementation(libs.compose.tooling)
     debugImplementation(libs.compose.test.manifest)
+
+    // hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 }
