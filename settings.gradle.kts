@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "testCompose2"
 include(":app")
- 
+include(":data")
