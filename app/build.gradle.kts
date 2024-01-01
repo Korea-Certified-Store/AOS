@@ -52,6 +52,10 @@ android {
 }
 
 dependencies {
+    implementation(project(":data"))
+    implementation(project(":domain"))
+    implementation(project(":presentation"))
+
     implementation(libs.androidx.ktx)
     implementation(libs.androidx.runtime.ktx)
     implementation(libs.androidx.activity)
