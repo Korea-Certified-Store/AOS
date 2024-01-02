@@ -1,4 +1,4 @@
-package com.example.testcompose2
+package com.example.android_kcs
 
 import org.junit.Test
 

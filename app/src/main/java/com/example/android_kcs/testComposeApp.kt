@@ -1,4 +1,4 @@
-package com.example.testcompose2
+package com.example.android_kcs
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "testCompose2"
+rootProject.name = "Android-KCS"
 include(":app")
 include(":data")
 include(":domain")

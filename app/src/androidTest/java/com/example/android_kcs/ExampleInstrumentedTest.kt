@@ -1,4 +1,4 @@
-package com.example.testcompose2
+package com.example.android_kcs
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
