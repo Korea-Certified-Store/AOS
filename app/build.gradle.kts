@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.testcompose2"
+    namespace = "com.example.android_kcs"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.testcompose2"
+        applicationId = "com.example.android_kcs"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

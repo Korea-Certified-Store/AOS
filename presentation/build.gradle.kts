@@ -1,8 +1,14 @@
+import java.util.Properties
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
 }
+
+val properties = Properties()
+properties.load(project.rootProject.file("local.properties").inputStream())
+val naverMapClientId: String = properties.getProperty("naverMapClientId")
 
 android {
     namespace = "com.example.presentation"
@@ -16,6 +22,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        manifestPlaceholders["naverMapClientId"] = naverMapClientId
     }
 
     buildTypes {
@@ -67,4 +75,10 @@ dependencies {
     androidTestImplementation(libs.compose.test.junit)
     debugImplementation(libs.compose.tooling)
     debugImplementation(libs.compose.test.manifest)
+
+    // naver map
+    api(libs.naver.map.compose)
+    api(libs.naver.map.sdk)
+    api(libs.naver.map.location)
+    api(libs.play.services.location)
 }
