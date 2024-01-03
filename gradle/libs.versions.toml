@@ -22,6 +22,9 @@ hilt = "2.47"
 timber = "5.0.1"
 compose-bom = "2023.08.00"
 
+naver-map-compose = "1.4"
+naver-map-location = "16.0.0"
+
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
 androidx-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "runtime-ktx" }
@@ -53,6 +56,11 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+
+# Naver Maps
+#naver-map-compose = { group = "io.github.fornewid", name = "naver-map-compose", version.ref = "naver-map-compose"}
+#naver-map-compose = { group = "io.github.fornewid", name = "naver-map-location", version.ref = "naver-map-location"}
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin"}
