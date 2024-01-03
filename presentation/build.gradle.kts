@@ -76,10 +76,9 @@ dependencies {
     debugImplementation(libs.compose.tooling)
     debugImplementation(libs.compose.test.manifest)
 
-    // naver map to compose
-    implementation("io.github.fornewid:naver-map-compose:1.3.3")
-    // naver map SDK
-    implementation("com.naver.maps:map-sdk:3.16.1")
-    implementation("com.google.android.gms:play-services-location:21.0.1")
-    implementation("io.github.fornewid:naver-map-location:16.0.0")
+    // naver map
+    api(libs.naver.map.compose)
+    api(libs.naver.map.sdk)
+    api(libs.naver.map.location)
+    api(libs.play.services.location)
 }
