@@ -78,4 +78,7 @@ dependencies {
 
     // Timber
     implementation(libs.timber)
+
+    // multiple permission
+    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
 }

@@ -82,4 +82,7 @@ dependencies {
 
     // naver map
     api(libs.bundles.naver.map)
+
+    // multiple permission
+    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
 }
