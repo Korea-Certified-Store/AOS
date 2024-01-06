@@ -24,6 +24,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +38,9 @@ import androidx.compose.ui.unit.sp
 import com.example.presentation.R
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreInfo
+import com.example.presentation.model.StoreType
+import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_OFF
+import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_ON
 import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.MediumBlue
@@ -52,17 +57,21 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalNaverMapApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val isMarkerClicked = mutableStateOf(false)
         setContent {
-            MainScreen()
-            StoreSummaryBottomSheet()
+            MainScreen(isMarkerClicked)
+            if (isMarkerClicked.value) {
+                StoreSummaryBottomSheet(BOTTOM_SHEET_ON)
+            } else {
+                StoreSummaryBottomSheet(BOTTOM_SHEET_OFF)
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
-fun StoreSummaryBottomSheet() {
+fun StoreSummaryBottomSheet(heightType: Int) {
     BottomSheetScaffold(
         sheetContent = {
             Column {
@@ -71,13 +80,13 @@ fun StoreSummaryBottomSheet() {
                     type = "일식",
                     address = "주소",
                     operatingTime = "영업시간",
-                    coordinate = Coordinate(0f,0f),
+                    coordinate = Coordinate(0.0,0.0),
                     contact = "연락처",
                     picture = "사진"
                 ))
             }
         },
-        sheetPeekHeight = 200.dp,
+        sheetPeekHeight = heightType.dp,
         sheetContainerColor = Color.White,
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
         sheetShadowElevation = 5.dp
@@ -153,17 +162,37 @@ fun StoreImage() {
     }
 }
 
-
 @ExperimentalNaverMapApi
 @Composable
-fun MainScreen() {
+fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
     NaverMap (
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        onMapClick = { _, _ ->
+            isMarkerClicked.value = false
+        }
     ) {
-        Marker(
-            state = MarkerState(position = LatLng(37.563, 126.98)),
-            icon = OverlayImage.fromResource(R.drawable.great_store_pin)
-        )
+        StoreMarker(isMarkerClicked, Coordinate(37.5657, 126.9775), StoreType.GREAT)
     }
 }
 
+@ExperimentalNaverMapApi
+@Composable
+fun StoreMarker(isMarkerClicked: MutableState<Boolean>, coordinate: Coordinate, storeType: StoreType) {
+    Marker(
+        state = MarkerState(position = LatLng(coordinate.latitude, coordinate.longitude)),
+        icon = when(storeType) {
+            StoreType.KIND -> OverlayImage.fromResource(R.drawable.kind_store_pin)
+            StoreType.GREAT -> OverlayImage.fromResource(R.drawable.great_store_pin)
+            StoreType.SAFE -> OverlayImage.fromResource(R.drawable.safe_store_pin)
+        },
+        onClick = {
+            isMarkerClicked.value = true
+            true
+        }
+    )
+}
+
+object MainUtils{
+    const val BOTTOM_SHEET_ON = 200
+    const val BOTTOM_SHEET_OFF = 0
+}
