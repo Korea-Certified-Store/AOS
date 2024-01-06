@@ -34,6 +34,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.model.Coordinate
+import com.example.presentation.model.StoreInfo
 import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.MediumBlue
@@ -60,7 +62,15 @@ fun StoreSummaryBottomSheet() {
     BottomSheetScaffold(
         sheetContent = {
             Column {
-                StoreSummaryInfo()
+                StoreSummaryInfo(StoreInfo(
+                    storeName = "미진일식",
+                    type = "일식",
+                    address = "주소",
+                    operatingTime = "영업시간",
+                    coordinate = Coordinate(0f,0f),
+                    contact = "연락처",
+                    picture = "사진"
+                ))
             }
         },
         sheetPeekHeight = 200.dp,
@@ -73,9 +83,11 @@ fun StoreSummaryBottomSheet() {
 }
 
 
-@Preview
+
 @Composable
-fun StoreSummaryInfo() {
+fun StoreSummaryInfo(
+    storeInfo: StoreInfo
+) {
     Row(modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth(1f),
@@ -84,9 +96,9 @@ fun StoreSummaryInfo() {
         Column(
             horizontalAlignment = Alignment.Start
         ){
-            Text(text = "미진일식", color = MediumBlue, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
+            Text(text = storeInfo.storeName, color = MediumBlue, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(modifier = Modifier.padding(bottom = 2.dp))
-            Text(text = "일식", color = MediumGray, fontSize = 10.sp, fontWeight = FontWeight.Normal)
+            Text(text = storeInfo.type, color = MediumGray, fontSize = 10.sp, fontWeight = FontWeight.Normal)
             Spacer(modifier = Modifier.padding(bottom = 6.dp))
             Text(text = "영업 중", color = Red, fontSize = 11.sp, fontWeight = FontWeight.Normal)
             Spacer(modifier = Modifier.height(17.dp))
