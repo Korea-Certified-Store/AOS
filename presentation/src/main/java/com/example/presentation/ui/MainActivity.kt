@@ -41,8 +41,12 @@ import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.MediumBlue
 import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Red
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.Marker
+import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
+import com.naver.maps.map.overlay.OverlayImage
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalNaverMapApi::class)
@@ -155,6 +159,11 @@ fun StoreImage() {
 fun MainScreen() {
     NaverMap (
         modifier = Modifier.fillMaxSize()
-    )
+    ) {
+        Marker(
+            state = MarkerState(position = LatLng(37.563, 126.98)),
+            icon = OverlayImage.fromResource(R.drawable.great_store_pin)
+        )
+    }
 }
 
