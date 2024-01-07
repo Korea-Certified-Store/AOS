@@ -58,27 +58,31 @@ android {
 dependencies {
     implementation(project(":domain"))
 
-    implementation(libs.androidx.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.runtime.ktx)
-    implementation(libs.androidx.activity)
+
+    // androidx
+    implementation(libs.bundles.androidx)
+
+    //compose
+    implementation(libs.bundles.compose)
     implementation(platform(libs.compose.bom))
-    implementation(libs.compose.ui)
-    implementation(libs.ui.graphics)
-    implementation(libs.compose.preview)
-    implementation(libs.compose.material3)
+
+    // androidx-compose
+    implementation(libs.bundles.androidx.compose)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso)
+
+    // android test
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.test.junit)
-    debugImplementation(libs.compose.tooling)
-    debugImplementation(libs.compose.test.manifest)
+    androidTestImplementation(libs.bundles.android.test)
+
+    // debug
+    debugImplementation(libs.bundles.compose.debug)
 
     // naver map
-    api(libs.naver.map.compose)
-    api(libs.naver.map.sdk)
-    api(libs.naver.map.location)
-    api(libs.play.services.location)
+    api(libs.bundles.naver.map)
+
+    // multiple permission
+    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
 }

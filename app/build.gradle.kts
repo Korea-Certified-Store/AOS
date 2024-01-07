@@ -56,26 +56,21 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":presentation"))
 
-    implementation(libs.androidx.ktx)
-    implementation(libs.androidx.runtime.ktx)
-    implementation(libs.androidx.activity)
+    // androidx
+    implementation(libs.bundles.androidx)
 
     // compose
-    implementation(libs.compose.ui)
-    implementation(libs.compose.preview)
-    implementation(libs.compose.material3)
+    implementation(libs.bundles.compose)
 
     // test
     testImplementation(libs.junit)
 
     // android test
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso)
+    androidTestImplementation(libs.bundles.android.test)
     androidTestImplementation(libs.compose.test.junit)
 
     // debug
-    debugImplementation(libs.compose.tooling)
-    debugImplementation(libs.compose.test.manifest)
+    debugImplementation(libs.bundles.compose.debug)
 
     // hilt
     implementation(libs.hilt.android)
@@ -83,4 +78,7 @@ dependencies {
 
     // Timber
     implementation(libs.timber)
+
+    // multiple permission
+    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
 }
