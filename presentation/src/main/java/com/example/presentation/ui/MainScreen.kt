@@ -35,8 +35,8 @@ import com.example.presentation.R
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
-import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_OFF
-import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_ON
+import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
+import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.MediumBlue
@@ -44,27 +44,43 @@ import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Red
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.LocationTrackingMode
+import com.naver.maps.map.compose.MapProperties
+import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
+import com.naver.maps.map.compose.rememberCameraPositionState
+import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.overlay.OverlayImage
 
 @ExperimentalNaverMapApi
 @Composable
 fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
     InitMap(isMarkerClicked)
-    StoreSummaryBottomSheet(if (isMarkerClicked.value) BOTTOM_SHEET_ON else BOTTOM_SHEET_OFF)
+    StoreSummaryBottomSheet(if (isMarkerClicked.value) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF)
 }
+
 
 @ExperimentalNaverMapApi
 @Composable
 fun InitMap(isMarkerClicked: MutableState<Boolean>) {
+    val cameraPositionState = rememberCameraPositionState()
     NaverMap(
+        cameraPositionState = cameraPositionState,
         modifier = Modifier.fillMaxSize(),
+        locationSource = rememberFusedLocationSource(),
+        properties = MapProperties(
+            locationTrackingMode = LocationTrackingMode.Follow
+        ),
+        uiSettings = MapUiSettings(
+            isLocationButtonEnabled = true,
+        ),
         onMapClick = { _, _ ->
             isMarkerClicked.value = false
-        }
-    ) {
+        },
+    )
+    {
         StoreMarker(isMarkerClicked, Coordinate(37.5657, 126.9775), StoreType.GREAT)
     }
 }
@@ -194,6 +210,6 @@ fun StoreImage() {
 }
 
 object MainUtils {
-    const val BOTTOM_SHEET_ON = 200
-    const val BOTTOM_SHEET_OFF = 0
+    const val BOTTOM_SHEET_HEIGHT_ON = 200
+    const val BOTTOM_SHEET_HEIGHT_OFF = 0
 }
