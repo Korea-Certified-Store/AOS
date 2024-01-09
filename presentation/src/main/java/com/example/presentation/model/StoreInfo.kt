@@ -1,11 +1,13 @@
 package com.example.presentation.model
 
 data class StoreInfo(
-    val storeName: String,
-    val type: String,
-    val address: String,
-    val operatingTime: String,
-    val coordinate: Coordinate,
-    val contact: String,
-    val picture: String
+    val storeId: Int,
+    val displayName: String,
+    val formattedAddress: String,
+    val googlePlaceId: String,
+    val internationalPhoneNumber: String,
+    val primaryType: String,
+    val location: Coordinate,
+    val regularOpeningHours: String,
+    val storeCertificationId: StoreType
 )
