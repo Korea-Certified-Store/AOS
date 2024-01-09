@@ -25,8 +25,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,7 +39,6 @@ import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
-import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.MediumBlue
 import com.example.presentation.ui.theme.MediumGray
@@ -169,8 +170,7 @@ fun StoreCallButton() {
         )
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.call),
-            tint = LightBlue,
+            imageVector = ImageVector.vectorResource(id = R.drawable.call),
             contentDescription = "Call",
             modifier = Modifier.size(21.dp)
         )
