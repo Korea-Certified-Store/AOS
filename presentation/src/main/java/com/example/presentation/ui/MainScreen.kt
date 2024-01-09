@@ -35,8 +35,8 @@ import com.example.presentation.R
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
-import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_OFF
-import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_ON
+import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
+import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.MediumBlue
@@ -53,7 +53,7 @@ import com.naver.maps.map.overlay.OverlayImage
 @Composable
 fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
     InitMap(isMarkerClicked)
-    StoreSummaryBottomSheet(if (isMarkerClicked.value) BOTTOM_SHEET_ON else BOTTOM_SHEET_OFF)
+    StoreSummaryBottomSheet(if (isMarkerClicked.value) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF)
 }
 
 @ExperimentalNaverMapApi
@@ -194,6 +194,6 @@ fun StoreImage() {
 }
 
 object MainUtils {
-    const val BOTTOM_SHEET_ON = 200
-    const val BOTTOM_SHEET_OFF = 0
+    const val BOTTOM_SHEET_HEIGHT_ON = 200
+    const val BOTTOM_SHEET_HEIGHT_OFF = 0
 }
