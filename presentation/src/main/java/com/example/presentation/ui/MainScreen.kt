@@ -25,6 +25,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,20 +57,82 @@ import com.naver.maps.map.overlay.OverlayImage
 @ExperimentalNaverMapApi
 @Composable
 fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
-    InitMap(isMarkerClicked)
-    StoreSummaryBottomSheet(if (isMarkerClicked.value) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF)
+
+    val testData = listOf(
+        StoreInfo(
+            storeId = 1,
+            displayName = "미진일식 1호점",
+            googlePlaceId = "",
+            primaryType = "일식",
+            formattedAddress = "주소",
+            regularOpeningHours = "11:00 ~ 23:00",
+            location = Coordinate(37.5657, 126.9775),
+            internationalPhoneNumber = "연락처",
+            storeCertificationId = StoreType.GREAT
+        ),
+        StoreInfo(
+            storeId = 2,
+            displayName = "미진일식 2호점",
+            googlePlaceId = "",
+            primaryType = "일식",
+            formattedAddress = "주소",
+            regularOpeningHours = "11:00 ~ 23:00",
+            location = Coordinate(37.5667, 126.9785),
+            internationalPhoneNumber = "연락처",
+            storeCertificationId = StoreType.KIND
+        ),
+        StoreInfo(
+            storeId = 3,
+            displayName = "미진일식 3호점",
+            googlePlaceId = "",
+            primaryType = "일식",
+            formattedAddress = "주소",
+            regularOpeningHours = "11:00 ~ 23:00",
+            location = Coordinate(37.5647, 126.9770),
+            internationalPhoneNumber = "연락처",
+            storeCertificationId = StoreType.SAFE
+        )
+    )
+
+    val clickedStoreInfo = remember {
+        mutableStateOf(
+            StoreInfo(
+                storeId = 0,
+                displayName = "",
+                googlePlaceId = "",
+                primaryType = "",
+                formattedAddress = "",
+                regularOpeningHours = "",
+                location = Coordinate(0.0, 0.0),
+                internationalPhoneNumber = "",
+                storeCertificationId = StoreType.GREAT
+            )
+        )
+    }
+
+    InitMap(isMarkerClicked, testData, clickedStoreInfo)
+    StoreSummaryBottomSheet(
+        if (isMarkerClicked.value) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
+        clickedStoreInfo
+    )
 }
 
 @ExperimentalNaverMapApi
 @Composable
-fun InitMap(isMarkerClicked: MutableState<Boolean>) {
+fun InitMap(
+    isMarkerClicked: MutableState<Boolean>,
+    testData: List<StoreInfo>,
+    clickedStoreInfo: MutableState<StoreInfo>
+) {
     NaverMap(
         modifier = Modifier.fillMaxSize(),
         onMapClick = { _, _ ->
             isMarkerClicked.value = false
         }
     ) {
-        StoreMarker(isMarkerClicked, Coordinate(37.5657, 126.9775), StoreType.GREAT)
+        testData.forEach { storeInfo ->
+            StoreMarker(isMarkerClicked, storeInfo, clickedStoreInfo)
+        }
     }
 }
 
@@ -76,18 +140,26 @@ fun InitMap(isMarkerClicked: MutableState<Boolean>) {
 @Composable
 fun StoreMarker(
     isMarkerClicked: MutableState<Boolean>,
-    coordinate: Coordinate,
-    storeType: StoreType
+    storeInfo: StoreInfo,
+    clickedStoreInfo: MutableState<StoreInfo>
 ) {
     Marker(
-        state = MarkerState(position = LatLng(coordinate.latitude, coordinate.longitude)),
-        icon = when (storeType) {
+        state = MarkerState(
+            position = LatLng(
+                storeInfo.location.latitude,
+                storeInfo.location.longitude
+            )
+        ),
+        icon = when (storeInfo.storeCertificationId) {
             StoreType.KIND -> OverlayImage.fromResource(R.drawable.kind_store_pin)
             StoreType.GREAT -> OverlayImage.fromResource(R.drawable.great_store_pin)
             StoreType.SAFE -> OverlayImage.fromResource(R.drawable.safe_store_pin)
         },
         onClick = {
             isMarkerClicked.value = true
+            clickedStoreInfo.value = storeInfo
+
+
             true
         }
     )
@@ -95,21 +167,11 @@ fun StoreMarker(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoreSummaryBottomSheet(heightType: Int) {
+fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: MutableState<StoreInfo>) {
     BottomSheetScaffold(
         sheetContent = {
             Column {
-                StoreSummaryInfo(
-                    StoreInfo(
-                        storeName = "미진일식",
-                        type = "일식",
-                        address = "주소",
-                        operatingTime = "11:00 ~ 23:00",
-                        coordinate = Coordinate(0.0, 0.0),
-                        contact = "연락처",
-                        picture = "사진"
-                    )
-                )
+                StoreSummaryInfo(clickedStoreInfo.value)
             }
         },
         sheetPeekHeight = heightType.dp,
@@ -147,14 +209,14 @@ fun StoreSummaryInfo(
         ) {
             Spacer(modifier = Modifier.height(13.dp))
             Text(
-                text = storeInfo.storeName,
+                text = storeInfo.displayName,
                 color = MediumBlue,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.ExtraBold
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = storeInfo.type,
+                text = storeInfo.primaryType,
                 color = MediumGray,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Normal
@@ -169,7 +231,7 @@ fun StoreSummaryInfo(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = storeInfo.operatingTime,
+                    text = storeInfo.regularOpeningHours,
                     color = MediumGray,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Normal
