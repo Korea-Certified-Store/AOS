@@ -49,6 +49,7 @@ import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Red
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
@@ -128,7 +129,8 @@ fun InitMap(
         modifier = Modifier.fillMaxSize(),
         onMapClick = { _, _ ->
             isMarkerClicked.value = false
-        }
+        },
+        uiSettings = MapUiSettings(isZoomControlEnabled = false)
     ) {
         testData.forEach { storeInfo ->
             StoreMarker(isMarkerClicked, storeInfo, clickedStoreInfo)
