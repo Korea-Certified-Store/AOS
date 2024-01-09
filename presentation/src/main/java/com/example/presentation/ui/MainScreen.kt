@@ -1,5 +1,6 @@
 package com.example.presentation.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -39,7 +41,6 @@ import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
-import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.MediumBlue
 import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Red
@@ -102,7 +103,7 @@ fun StoreSummaryBottomSheet(heightType: Int) {
                         storeName = "미진일식",
                         type = "일식",
                         address = "주소",
-                        operatingTime = "영업시간",
+                        operatingTime = "11:00 ~ 23:00",
                         coordinate = Coordinate(0.0, 0.0),
                         contact = "연락처",
                         picture = "사진"
@@ -138,15 +139,29 @@ fun StoreSummaryInfo(
                 fontSize = 18.sp,
                 fontWeight = FontWeight.ExtraBold
             )
-            Spacer(modifier = Modifier.padding(bottom = 2.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = storeInfo.type,
                 color = MediumGray,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Normal
             )
-            Spacer(modifier = Modifier.padding(bottom = 6.dp))
-            Text(text = "영업 중", color = Red, fontSize = 11.sp, fontWeight = FontWeight.Normal)
+            Spacer(modifier = Modifier.height(6.dp))
+            Row {
+                Text(
+                    text = "영업 중",
+                    color = Red,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = storeInfo.operatingTime,
+                    color = MediumGray,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            }
             Spacer(modifier = Modifier.height(17.dp))
             StoreCallButton()
             Spacer(modifier = Modifier.height(16.dp))
@@ -164,15 +179,19 @@ fun StoreCallButton() {
         onClick = {},
         modifier = Modifier
             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-        contentPadding = PaddingValues(horizontal = 25.dp, vertical = 10.dp),
+        contentPadding = PaddingValues(horizontal = 27.dp, vertical = 6.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = LightGray
-        )
+            containerColor = Color.White
+        ),
+        shape = RoundedCornerShape(3.dp),
+        border = BorderStroke(1.dp, Color.LightGray)
+
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.call),
+            tint = Color.DarkGray,
             contentDescription = "Call",
-            modifier = Modifier.size(21.dp)
+            modifier = Modifier.size(20.dp)
         )
     }
 }
