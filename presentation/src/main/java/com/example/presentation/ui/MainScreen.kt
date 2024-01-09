@@ -2,6 +2,7 @@ package com.example.presentation.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -114,7 +115,18 @@ fun StoreSummaryBottomSheet(heightType: Int) {
         sheetPeekHeight = heightType.dp,
         sheetContainerColor = Color.White,
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
-        sheetShadowElevation = 5.dp
+        sheetShadowElevation = 5.dp,
+        sheetDragHandle = {
+            Column {
+                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(
+                    modifier = Modifier
+                        .width(32.dp)
+                        .height(3.dp)
+                        .background(Color.LightGray)
+                )
+            }
+        }
     ) {
 
     }
@@ -133,6 +145,7 @@ fun StoreSummaryInfo(
         Column(
             horizontalAlignment = Alignment.Start
         ) {
+            Spacer(modifier = Modifier.height(13.dp))
             Text(
                 text = storeInfo.storeName,
                 color = MediumBlue,
@@ -162,11 +175,12 @@ fun StoreSummaryInfo(
                     fontWeight = FontWeight.Normal
                 )
             }
-            Spacer(modifier = Modifier.height(17.dp))
+            Spacer(modifier = Modifier.height(13.dp))
             StoreCallButton()
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
         }
         Column {
+            Spacer(modifier = Modifier.height(13.dp))
             StoreImage()
         }
     }
@@ -185,7 +199,6 @@ fun StoreCallButton() {
         ),
         shape = RoundedCornerShape(3.dp),
         border = BorderStroke(1.dp, Color.LightGray)
-
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.call),
@@ -213,6 +226,6 @@ fun StoreImage() {
 }
 
 object MainUtils {
-    const val BOTTOM_SHEET_HEIGHT_ON = 200
+    const val BOTTOM_SHEET_HEIGHT_ON = 170
     const val BOTTOM_SHEET_HEIGHT_OFF = 0
 }
