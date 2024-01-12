@@ -24,9 +24,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,9 +58,8 @@ import com.naver.maps.map.overlay.OverlayImage
 
 @ExperimentalNaverMapApi
 @Composable
-fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
-
-    val testData = listOf(
+fun MainScreen() {
+    val testMarkerData = listOf(
         StoreInfo(
             storeId = 1,
             displayName = "미진일식 1호점",
@@ -95,7 +95,7 @@ fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
         )
     )
 
-    val clickedStoreInfo = remember {
+    var clickedStoreInfo by remember {
         mutableStateOf(
             StoreInfo(
                 storeId = 0,
@@ -110,10 +110,18 @@ fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
             )
         )
     }
+    val onStoreInfoChanged = { value : StoreInfo ->
+        clickedStoreInfo = value
+    }
 
-    InitMap(isMarkerClicked, testData, clickedStoreInfo)
+    var isMarkerClicked by remember { mutableStateOf(false) }
+    val onBottomSheetChanged = { value : Boolean ->
+        isMarkerClicked = value
+    }
+
+    InitMap(onBottomSheetChanged, testMarkerData, onStoreInfoChanged)
     StoreSummaryBottomSheet(
-        if (isMarkerClicked.value) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
+        if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
         clickedStoreInfo
     )
 }
@@ -121,19 +129,19 @@ fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
 @ExperimentalNaverMapApi
 @Composable
 fun InitMap(
-    isMarkerClicked: MutableState<Boolean>,
-    testData: List<StoreInfo>,
-    clickedStoreInfo: MutableState<StoreInfo>
+    onBottomSheetChanged: (Boolean) -> Unit,
+    testMarkerData: List<StoreInfo>,
+    onStoreInfoChanged: (StoreInfo) -> Unit
 ) {
     NaverMap(
         modifier = Modifier.fillMaxSize(),
         onMapClick = { _, _ ->
-            isMarkerClicked.value = false
+            onBottomSheetChanged(false)
         },
         uiSettings = MapUiSettings(isZoomControlEnabled = false)
     ) {
-        testData.forEach { storeInfo ->
-            StoreMarker(isMarkerClicked, storeInfo, clickedStoreInfo)
+        testMarkerData.forEach { storeInfo ->
+            StoreMarker(onBottomSheetChanged, storeInfo, onStoreInfoChanged)
         }
     }
 }
@@ -141,9 +149,9 @@ fun InitMap(
 @ExperimentalNaverMapApi
 @Composable
 fun StoreMarker(
-    isMarkerClicked: MutableState<Boolean>,
+    onBottomSheetChanged: (Boolean) -> Unit,
     storeInfo: StoreInfo,
-    clickedStoreInfo: MutableState<StoreInfo>
+    onStoreInfoChanged: (StoreInfo) -> Unit
 ) {
     Marker(
         state = MarkerState(
@@ -158,9 +166,8 @@ fun StoreMarker(
             StoreType.SAFE -> OverlayImage.fromResource(R.drawable.safe_store_pin)
         },
         onClick = {
-            isMarkerClicked.value = true
-            clickedStoreInfo.value = storeInfo
-
+            onBottomSheetChanged(true)
+            onStoreInfoChanged(storeInfo)
 
             true
         }
@@ -169,11 +176,11 @@ fun StoreMarker(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: MutableState<StoreInfo>) {
+fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: StoreInfo) {
     BottomSheetScaffold(
         sheetContent = {
             Column {
-                StoreSummaryInfo(clickedStoreInfo.value)
+                StoreSummaryInfo(clickedStoreInfo)
             }
         },
         sheetPeekHeight = heightType.dp,

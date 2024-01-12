@@ -10,9 +10,9 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalNaverMapApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val isMarkerClicked = mutableStateOf(false)
+
         setContent {
-            MainScreen(isMarkerClicked)
+            MainScreen()
         }
     }
 }
