@@ -1,5 +1,7 @@
 package com.example.presentation.ui
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,11 +9,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -22,10 +26,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,13 +54,14 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
-import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.overlay.OverlayImage
+import java.util.LinkedList
+import java.util.Queue
 
 @ExperimentalNaverMapApi
 @Composable
@@ -61,28 +70,78 @@ fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
     StoreSummaryBottomSheet(if (isMarkerClicked.value) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF)
 }
 
-
 @ExperimentalNaverMapApi
 @Composable
 fun InitMap(isMarkerClicked: MutableState<Boolean>) {
     val cameraPositionState = rememberCameraPositionState()
+
+    val optionQueue: Queue<Pair<Int, LocationTrackingMode>> = LinkedList()
+    optionQueue.add(Pair(R.drawable.icon_none, LocationTrackingMode.None))
+    optionQueue.add(Pair(R.drawable.icon_follow, LocationTrackingMode.Follow))
+    optionQueue.add(Pair(R.drawable.icon_face, LocationTrackingMode.Face))
+
+    var selectedOption =
+        remember { mutableStateOf(optionQueue.element()) }
+
     NaverMap(
         cameraPositionState = cameraPositionState,
         modifier = Modifier.fillMaxSize(),
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
-            locationTrackingMode = LocationTrackingMode.Follow
-        ),
-        uiSettings = MapUiSettings(
-            isLocationButtonEnabled = true,
+            locationTrackingMode = selectedOption.value.second
         ),
         onMapClick = { _, _ ->
             isMarkerClicked.value = false
+        },
+        onOptionChange = {
+            cameraPositionState.locationTrackingMode?.let {
+                selectedOption.value.second
+            }
         },
     )
     {
         StoreMarker(isMarkerClicked, Coordinate(37.5657, 126.9775), StoreType.GREAT)
     }
+    InitLocationButton(selectedOption, optionQueue)
+}
+
+@Composable
+fun InitLocationButton(
+    selectedOption: MutableState<Pair<Int, LocationTrackingMode>>,
+    optionQueue: Queue<Pair<Int, LocationTrackingMode>>
+) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(start = 12.dp),
+        verticalArrangement = Arrangement.Bottom,
+    ) {
+        Button(
+            modifier = Modifier
+                .defaultMinSize(1.dp)
+                .shadow(1.dp, CircleShape),
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent
+            ),
+            onClick = {
+                selectedOption.value = rotateAndPeek(optionQueue)
+            },
+        ) {
+            Image(
+                painter = painterResource(id = selectedOption.value.first),
+                contentDescription = "location button",
+            )
+        }
+        Spacer(modifier = Modifier.height(43.dp))
+    }
+}
+
+fun rotateAndPeek(optionQueue: Queue<Pair<Int, LocationTrackingMode>>): Pair<Int, LocationTrackingMode> {
+    optionQueue.add(optionQueue.remove())
+    return optionQueue.element()
 }
 
 @ExperimentalNaverMapApi
