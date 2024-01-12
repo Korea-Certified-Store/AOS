@@ -246,19 +246,23 @@ fun StoreSummaryInfo(
             horizontalAlignment = Alignment.Start
         ) {
             Spacer(modifier = Modifier.height(13.dp))
-            Text(
-                text = storeInfo.displayName,
-                color = MediumBlue,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = storeInfo.primaryType,
-                color = MediumGray,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Normal
-            )
+            Row {
+                Text(
+                    text = storeInfo.displayName,
+                    Modifier.alignByBaseline(),
+                    color = MediumBlue,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = storeInfo.primaryType,
+                    Modifier.alignByBaseline(),
+                    color = MediumGray,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            }
             Spacer(modifier = Modifier.height(6.dp))
             Row {
                 Text(
