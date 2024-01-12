@@ -9,5 +9,5 @@ data class StoreInfo(
     val primaryType: String,
     val location: Coordinate,
     val regularOpeningHours: String,
-    val storeCertificationId: StoreType
+    val storeCertificationId: List<StoreType>
 )

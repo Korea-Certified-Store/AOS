@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -22,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,7 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -45,9 +47,14 @@ import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
+import com.example.presentation.ui.theme.DarkGray
+import com.example.presentation.ui.theme.LightBlue
+import com.example.presentation.ui.theme.LightYellow
 import com.example.presentation.ui.theme.MediumBlue
 import com.example.presentation.ui.theme.MediumGray
+import com.example.presentation.ui.theme.Pink
 import com.example.presentation.ui.theme.Red
+import com.example.presentation.ui.theme.White
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.MapUiSettings
@@ -69,7 +76,7 @@ fun MainScreen() {
             regularOpeningHours = "11:00 ~ 23:00",
             location = Coordinate(37.5657, 126.9775),
             internationalPhoneNumber = "연락처",
-            storeCertificationId = StoreType.GREAT
+            storeCertificationId = listOf(StoreType.KIND)
         ),
         StoreInfo(
             storeId = 2,
@@ -80,7 +87,7 @@ fun MainScreen() {
             regularOpeningHours = "11:00 ~ 23:00",
             location = Coordinate(37.5667, 126.9785),
             internationalPhoneNumber = "연락처",
-            storeCertificationId = StoreType.KIND
+            storeCertificationId = listOf(StoreType.GREAT, StoreType.KIND)
         ),
         StoreInfo(
             storeId = 3,
@@ -91,7 +98,7 @@ fun MainScreen() {
             regularOpeningHours = "11:00 ~ 23:00",
             location = Coordinate(37.5647, 126.9770),
             internationalPhoneNumber = "연락처",
-            storeCertificationId = StoreType.SAFE
+            storeCertificationId = listOf(StoreType.SAFE, StoreType.GREAT, StoreType.KIND)
         )
     )
 
@@ -106,7 +113,7 @@ fun MainScreen() {
                 regularOpeningHours = "",
                 location = Coordinate(0.0, 0.0),
                 internationalPhoneNumber = "",
-                storeCertificationId = StoreType.GREAT
+                storeCertificationId = listOf()
             )
         )
     }
@@ -166,7 +173,7 @@ fun StoreMarker(
                 storeInfo.location.longitude
             )
         ),
-        icon = when (storeInfo.storeCertificationId) {
+        icon = when (storeInfo.storeCertificationId.first()) {
             StoreType.KIND -> OverlayImage.fromResource(R.drawable.kind_store_pin)
             StoreType.GREAT -> OverlayImage.fromResource(R.drawable.great_store_pin)
             StoreType.SAFE -> OverlayImage.fromResource(R.drawable.safe_store_pin)
@@ -192,7 +199,7 @@ fun ClickedStoreMarker(
                 storeInfo.location.longitude
             )
         ),
-        icon = when (storeInfo.storeCertificationId) {
+        icon = when (storeInfo.storeCertificationId.first()) {
             StoreType.KIND -> OverlayImage.fromResource(R.drawable.clicked_kind_store_pin)
             StoreType.GREAT -> OverlayImage.fromResource(R.drawable.clicked_great_store_pin)
             StoreType.SAFE -> OverlayImage.fromResource(R.drawable.clicked_safe_store_pin)
@@ -213,7 +220,7 @@ fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: StoreInfo) {
             }
         },
         sheetPeekHeight = heightType.dp,
-        sheetContainerColor = Color.White,
+        sheetContainerColor = White,
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
         sheetShadowElevation = 5.dp,
         sheetDragHandle = {
@@ -223,7 +230,7 @@ fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: StoreInfo) {
                     modifier = Modifier
                         .width(32.dp)
                         .height(3.dp)
-                        .background(Color.LightGray)
+                        .background(LightGray)
                 )
             }
         }
@@ -263,7 +270,9 @@ fun StoreSummaryInfo(
                     fontWeight = FontWeight.Normal
                 )
             }
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Chips(storeInfo.storeCertificationId)
+            Spacer(modifier = Modifier.height(8.dp))
             Row {
                 Text(
                     text = "영업 중",
@@ -299,14 +308,14 @@ fun StoreCallButton() {
             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
         contentPadding = PaddingValues(horizontal = 27.dp, vertical = 6.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White
+            containerColor = White
         ),
         shape = RoundedCornerShape(3.dp),
-        border = BorderStroke(1.dp, Color.LightGray)
+        border = BorderStroke(1.dp, LightGray)
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.call),
-            tint = Color.DarkGray,
+            tint = DarkGray,
             contentDescription = "Call",
             modifier = Modifier.size(20.dp)
         )
@@ -326,6 +335,39 @@ fun StoreImage() {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(1f)
         )
+    }
+}
+
+@Composable
+private fun Chip(
+    storeType: StoreType
+) {
+    Surface(
+        color = when (storeType) {
+            StoreType.KIND -> Pink
+            StoreType.GREAT -> LightYellow
+            StoreType.SAFE -> LightBlue
+        },
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Text(
+            text = storeType.storeTypeName,
+            color = MediumGray,
+            fontSize = 9.sp,
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)
+        )
+    }
+}
+
+@Composable
+fun Chips(
+    elements: List<StoreType>
+) {
+    LazyRow(modifier = Modifier) {
+        items(elements.size) { idx ->
+            Chip(storeType = elements[idx])
+            Spacer(modifier = Modifier.padding(4.dp))
+        }
     }
 }
 
