@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -29,8 +29,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -128,16 +126,22 @@ fun MainScreen() {
             )
         )
     }
-    val onStoreInfoChanged = { value : StoreInfo ->
+    val onStoreInfoChanged = { value: StoreInfo ->
         clickedStoreInfo = value
     }
 
     var isMarkerClicked by remember { mutableStateOf(false) }
-    val onBottomSheetChanged = { value : Boolean ->
+    val onBottomSheetChanged = { value: Boolean ->
         isMarkerClicked = value
     }
 
-    InitMap(isMarkerClicked, onBottomSheetChanged, testMarkerData, clickedStoreInfo, onStoreInfoChanged)
+    InitMap(
+        isMarkerClicked,
+        onBottomSheetChanged,
+        testMarkerData,
+        clickedStoreInfo,
+        onStoreInfoChanged
+    )
     StoreSummaryBottomSheet(
         if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
         clickedStoreInfo
@@ -177,7 +181,6 @@ fun InitMap(
         ),
         onMapClick = { _, _ ->
             onBottomSheetChanged(false)
-            isMarkerClicked.value = false
             selectedOption.value = Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow)
         },
         onOptionChange = {
