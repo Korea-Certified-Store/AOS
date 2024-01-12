@@ -1,7 +1,5 @@
 package com.example.presentation.ui
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,8 +57,6 @@ import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.overlay.OverlayImage
-import java.util.LinkedList
-import java.util.Queue
 
 @ExperimentalNaverMapApi
 @Composable
@@ -74,14 +69,17 @@ fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
 @Composable
 fun InitMap(isMarkerClicked: MutableState<Boolean>) {
     val cameraPositionState = rememberCameraPositionState()
+    val cameraIsMoving = remember { mutableStateOf(cameraPositionState.isMoving) }
 
-    val optionQueue: Queue<Pair<Int, LocationTrackingMode>> = LinkedList()
-    optionQueue.add(Pair(R.drawable.icon_none, LocationTrackingMode.None))
-    optionQueue.add(Pair(R.drawable.icon_follow, LocationTrackingMode.Follow))
-    optionQueue.add(Pair(R.drawable.icon_face, LocationTrackingMode.Face))
-
-    var selectedOption =
-        remember { mutableStateOf(optionQueue.element()) }
+    val selectedOption =
+        remember {
+            mutableStateOf(
+                Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
+            )
+        }
+    if (cameraIsMoving.value) {
+        selectedOption.value = Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow)
+    }
 
     NaverMap(
         cameraPositionState = cameraPositionState,
@@ -92,6 +90,7 @@ fun InitMap(isMarkerClicked: MutableState<Boolean>) {
         ),
         onMapClick = { _, _ ->
             isMarkerClicked.value = false
+            selectedOption.value = Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow)
         },
         onOptionChange = {
             cameraPositionState.locationTrackingMode?.let {
@@ -102,15 +101,14 @@ fun InitMap(isMarkerClicked: MutableState<Boolean>) {
     {
         StoreMarker(isMarkerClicked, Coordinate(37.5657, 126.9775), StoreType.GREAT)
     }
-    InitLocationButton(selectedOption, optionQueue)
+    InitLocationButton(selectedOption)
 }
 
 @Composable
 fun InitLocationButton(
     selectedOption: MutableState<Pair<Int, LocationTrackingMode>>,
-    optionQueue: Queue<Pair<Int, LocationTrackingMode>>
 ) {
-    val context = LocalContext.current
+    val isFollow = remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -127,7 +125,7 @@ fun InitLocationButton(
                 containerColor = Color.Transparent
             ),
             onClick = {
-                selectedOption.value = rotateAndPeek(optionQueue)
+                selectedOption.value = getTrackingModePair(isFollow)
             },
         ) {
             Image(
@@ -139,9 +137,12 @@ fun InitLocationButton(
     }
 }
 
-fun rotateAndPeek(optionQueue: Queue<Pair<Int, LocationTrackingMode>>): Pair<Int, LocationTrackingMode> {
-    optionQueue.add(optionQueue.remove())
-    return optionQueue.element()
+fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrackingMode> {
+    isFollow.value = !isFollow.value
+    return when (isFollow.value) {
+        true -> Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
+        false -> Pair(R.drawable.icon_face, LocationTrackingMode.Face)
+    }
 }
 
 @ExperimentalNaverMapApi
