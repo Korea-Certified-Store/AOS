@@ -119,7 +119,7 @@ fun MainScreen() {
         isMarkerClicked = value
     }
 
-    InitMap(onBottomSheetChanged, testMarkerData, onStoreInfoChanged)
+    InitMap(isMarkerClicked, onBottomSheetChanged, testMarkerData, clickedStoreInfo, onStoreInfoChanged)
     StoreSummaryBottomSheet(
         if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
         clickedStoreInfo
@@ -129,8 +129,10 @@ fun MainScreen() {
 @ExperimentalNaverMapApi
 @Composable
 fun InitMap(
+    isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
     testMarkerData: List<StoreInfo>,
+    clickedStoreInfo: StoreInfo,
     onStoreInfoChanged: (StoreInfo) -> Unit
 ) {
     NaverMap(
@@ -142,6 +144,10 @@ fun InitMap(
     ) {
         testMarkerData.forEach { storeInfo ->
             StoreMarker(onBottomSheetChanged, storeInfo, onStoreInfoChanged)
+        }
+
+        if (isMarkerClicked) {
+            ClickedStoreMarker(clickedStoreInfo)
         }
     }
 }
@@ -169,6 +175,29 @@ fun StoreMarker(
             onBottomSheetChanged(true)
             onStoreInfoChanged(storeInfo)
 
+            true
+        }
+    )
+}
+
+@OptIn(ExperimentalNaverMapApi::class)
+@Composable
+fun ClickedStoreMarker(
+    storeInfo: StoreInfo
+) {
+    Marker(
+        state = MarkerState(
+            position = LatLng(
+                storeInfo.location.latitude,
+                storeInfo.location.longitude
+            )
+        ),
+        icon = when (storeInfo.storeCertificationId) {
+            StoreType.KIND -> OverlayImage.fromResource(R.drawable.clicked_kind_store_pin)
+            StoreType.GREAT -> OverlayImage.fromResource(R.drawable.clicked_great_store_pin)
+            StoreType.SAFE -> OverlayImage.fromResource(R.drawable.clicked_safe_store_pin)
+        },
+        onClick = {
             true
         }
     )
