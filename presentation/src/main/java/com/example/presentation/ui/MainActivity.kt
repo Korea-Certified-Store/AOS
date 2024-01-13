@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
         val clip = ClipData.newPlainText(getString(R.string.store_number), text)
         clipboard.setPrimaryClip(clip)
 
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
             Toast.makeText(
                 this,
                 getString(R.string.copy_to_clipboard_description), Toast.LENGTH_SHORT
