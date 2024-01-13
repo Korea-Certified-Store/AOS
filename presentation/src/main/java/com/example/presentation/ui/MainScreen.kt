@@ -135,6 +135,8 @@ fun MainScreen() {
         isMarkerClicked = value
     }
 
+    val (isCallClicked, onCallDialogChanged) = remember { mutableStateOf(false) }
+
     InitMap(
         isMarkerClicked,
         onBottomSheetChanged,
@@ -144,8 +146,13 @@ fun MainScreen() {
     )
     StoreSummaryBottomSheet(
         if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
-        clickedStoreInfo
+        clickedStoreInfo,
+        onCallDialogChanged
     )
+
+    if (isCallClicked) {
+        StoreCallDialog()
+    }
 }
 
 @ExperimentalNaverMapApi
@@ -294,11 +301,15 @@ fun ClickedStoreMarker(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: StoreInfo) {
+fun StoreSummaryBottomSheet(
+    heightType: Int,
+    clickedStoreInfo: StoreInfo,
+    onCallDialogChanged: (Boolean) -> Unit
+) {
     BottomSheetScaffold(
         sheetContent = {
             Column {
-                StoreSummaryInfo(clickedStoreInfo)
+                StoreSummaryInfo(clickedStoreInfo, onCallDialogChanged)
             }
         },
         sheetPeekHeight = heightType.dp,
@@ -323,7 +334,8 @@ fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: StoreInfo) {
 
 @Composable
 fun StoreSummaryInfo(
-    storeInfo: StoreInfo
+    storeInfo: StoreInfo,
+    onCallDialogChanged: (Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -371,7 +383,7 @@ fun StoreSummaryInfo(
                 )
             }
             Spacer(modifier = Modifier.height(13.dp))
-            StoreCallButton()
+            StoreCallButton(onCallDialogChanged)
             Spacer(modifier = Modifier.height(14.dp))
         }
         Column {
@@ -381,11 +393,12 @@ fun StoreSummaryInfo(
     }
 }
 
-@Preview
 @Composable
-fun StoreCallButton() {
+fun StoreCallButton(onCallDialogChanged: (Boolean) -> Unit) {
     Button(
-        onClick = {},
+        onClick = {
+            onCallDialogChanged(true)
+        },
         modifier = Modifier
             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
         contentPadding = PaddingValues(horizontal = 27.dp, vertical = 6.dp),
