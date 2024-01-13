@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
@@ -73,7 +74,11 @@ import com.naver.maps.map.overlay.OverlayImage
 
 @ExperimentalNaverMapApi
 @Composable
-fun MainScreen(onClipboardChanged: (String) -> Unit, onCallStoreChanged: (String) -> Unit) {
+fun MainScreen(
+    onCallStoreChanged: (String) -> Unit,
+    onSaveStoreNumberChanged: (Contact) -> Unit,
+    onClipboardChanged: (String) -> Unit,
+) {
     val testMarkerData = listOf(
         StoreInfo(
             storeId = 1,
@@ -146,10 +151,15 @@ fun MainScreen(onClipboardChanged: (String) -> Unit, onCallStoreChanged: (String
 
     if (isCallClicked && isCallDialogCancelClicked.not()) {
         StoreCallDialog(
-            clickedStoreInfo.internationalPhoneNumber,
+            Contact(
+                clickedStoreInfo.displayName,
+                clickedStoreInfo.internationalPhoneNumber,
+                clickedStoreInfo.formattedAddress
+            ),
             onCallDialogCanceled,
-            onClipboardChanged,
-            onCallStoreChanged
+            onCallStoreChanged,
+            onSaveStoreNumberChanged,
+            onClipboardChanged
         )
     }
 

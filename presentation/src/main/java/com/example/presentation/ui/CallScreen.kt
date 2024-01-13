@@ -23,16 +23,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.presentation.R
+import com.example.presentation.model.Contact
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 
 @Composable
 fun StoreCallDialog(
-    storeNumber: String,
+    contactInfo: Contact,
     onCallDialogCanceled: (Boolean) -> Unit,
+    onCallStoreChanged: (String) -> Unit,
+    onSaveStoreNumberChanged: (Contact) -> Unit,
     onClipboardChanged: (String) -> Unit,
-    onCallStoreChanged: (String) -> Unit
 ) {
     Dialog(onDismissRequest = { onCallDialogCanceled(true) }) {
         Surface(
@@ -47,7 +49,7 @@ fun StoreCallDialog(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = storeNumber,
+                    text = contactInfo.phone,
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
@@ -57,13 +59,17 @@ fun StoreCallDialog(
                 )
                 CallOptionTextButton(
                     description = R.string.call_number,
-                    storeNumber = storeNumber,
+                    contactInfo = contactInfo,
                     onCallStoreChanged = onCallStoreChanged
                 )
-                CallOptionTextButton(description = R.string.save_number, storeNumber = storeNumber)
+                CallOptionTextButton(
+                    description = R.string.save_number,
+                    contactInfo = contactInfo,
+                    onSaveStoreNumberChanged = onSaveStoreNumberChanged
+                )
                 CallOptionTextButton(
                     description = R.string.copy_to_clipboard,
-                    storeNumber = storeNumber,
+                    contactInfo = contactInfo,
                     onClipboardChanged = onClipboardChanged
                 )
                 CallCancelTextButton(onCallDialogCanceled = onCallDialogCanceled)
@@ -75,15 +81,17 @@ fun StoreCallDialog(
 @Composable
 fun CallOptionTextButton(
     @StringRes description: Int,
-    storeNumber: String,
-    onClipboardChanged: (String) -> Unit = {},
-    onCallStoreChanged: (String) -> Unit = {}
+    contactInfo: Contact,
+    onCallStoreChanged: (String) -> Unit = {},
+    onSaveStoreNumberChanged: (Contact) -> Unit = {},
+    onClipboardChanged: (String) -> Unit = {}
 ) {
     TextButton(
         onClick = {
             when (description) {
-                R.string.call_number -> onCallStoreChanged(storeNumber)
-                R.string.copy_to_clipboard -> onClipboardChanged(storeNumber)
+                R.string.call_number -> onCallStoreChanged(contactInfo.phone)
+                R.string.save_number -> onSaveStoreNumberChanged(contactInfo)
+                R.string.copy_to_clipboard -> onClipboardChanged(contactInfo.phone)
             }
         },
         colors = ButtonDefaults.textButtonColors(contentColor = Black),
