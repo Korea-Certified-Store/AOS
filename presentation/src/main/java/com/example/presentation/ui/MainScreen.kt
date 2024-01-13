@@ -75,7 +75,7 @@ import com.naver.maps.map.overlay.OverlayImage
 
 @ExperimentalNaverMapApi
 @Composable
-fun MainScreen() {
+fun MainScreen(onClipboardCopied: (String) -> Unit) {
     val testMarkerData = listOf(
         StoreInfo(
             storeId = 1,
@@ -153,7 +153,7 @@ fun MainScreen() {
     )
 
     if (isCallClicked && isCallDialogCancelClicked.not()) {
-        StoreCallDialog(onCallDialogCanceled)
+        StoreCallDialog(onCallDialogCanceled, onClipboardCopied)
     }
 
     if (isCallDialogCancelClicked) {

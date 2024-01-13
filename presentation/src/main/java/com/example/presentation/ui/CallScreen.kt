@@ -1,5 +1,6 @@
 package com.example.presentation.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +28,7 @@ import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 
 @Composable
-fun StoreCallDialog(onCallDialogCanceled: (Boolean) -> Unit) {
+fun StoreCallDialog(onCallDialogCanceled: (Boolean) -> Unit, onClipboardCopied: (String) -> Unit) {
     Dialog(onDismissRequest = { onCallDialogCanceled(true) }) {
         Surface(
             modifier = Modifier
@@ -36,7 +37,10 @@ fun StoreCallDialog(onCallDialogCanceled: (Boolean) -> Unit) {
             shape = RoundedCornerShape(3.dp),
             color = White
         ) {
-            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp), horizontalAlignment = Alignment.End) {
+            Column(
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
+                horizontalAlignment = Alignment.End
+            ) {
                 Text(
                     text = "0507-1369-4848",
                     modifier = Modifier
@@ -46,9 +50,13 @@ fun StoreCallDialog(onCallDialogCanceled: (Boolean) -> Unit) {
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 19.sp
                 )
-                CallOptionTextButton(stringResource(R.string.call_number))
-                CallOptionTextButton(stringResource(R.string.save_number))
-                CallOptionTextButton(stringResource(R.string.copy_to_clipboard))
+                CallOptionTextButton(R.string.call_number, "0507-1369-4848")
+                CallOptionTextButton(R.string.save_number, "0507-1369-4848")
+                CallOptionTextButton(
+                    R.string.copy_to_clipboard,
+                    "0507-1369-4848",
+                    onClipboardCopied
+                )
                 CallCancelTextButton(onCallDialogCanceled = onCallDialogCanceled)
             }
         }
@@ -56,16 +64,24 @@ fun StoreCallDialog(onCallDialogCanceled: (Boolean) -> Unit) {
 }
 
 @Composable
-fun CallOptionTextButton(description: String) {
+fun CallOptionTextButton(
+    @StringRes description: Int,
+    storeNumber: String,
+    onClipboardCopied: (String) -> Unit = {}
+) {
     TextButton(
-        onClick = {},
+        onClick = {
+            when (description) {
+                R.string.copy_to_clipboard -> onClipboardCopied(storeNumber)
+            }
+        },
         colors = ButtonDefaults.textButtonColors(contentColor = Black),
         shape = RectangleShape,
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(vertical = 15.dp, horizontal = 24.dp)
     ) {
         Text(
-            text = description,
+            text = stringResource(description),
             fontWeight = FontWeight.Medium,
             fontSize = 15.sp,
             textAlign = TextAlign.Start,

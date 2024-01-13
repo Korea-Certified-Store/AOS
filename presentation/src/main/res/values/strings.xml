@@ -7,4 +7,6 @@
     <string name="kind_price_store">착한 가격 업소</string>
     <string name="great_store">모범 음식점</string>
     <string name="safe_store">안심 식당</string>
+    <string name="store_number">store_number</string>
+    <string name="copy_to_clipboard_description">클립보드에 복사되었습니다.</string>
 </resources>
