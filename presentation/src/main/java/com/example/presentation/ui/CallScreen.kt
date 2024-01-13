@@ -31,7 +31,8 @@ import com.example.presentation.ui.theme.White
 fun StoreCallDialog(
     storeNumber: String,
     onCallDialogCanceled: (Boolean) -> Unit,
-    onClipboardCopied: (String) -> Unit
+    onClipboardChanged: (String) -> Unit,
+    onCallStoreChanged: (String) -> Unit
 ) {
     Dialog(onDismissRequest = { onCallDialogCanceled(true) }) {
         Surface(
@@ -46,7 +47,7 @@ fun StoreCallDialog(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = "0507-1369-4848",
+                    text = storeNumber,
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
@@ -54,12 +55,16 @@ fun StoreCallDialog(
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 19.sp
                 )
-                CallOptionTextButton(R.string.call_number, storeNumber)
-                CallOptionTextButton(R.string.save_number, storeNumber)
                 CallOptionTextButton(
-                    R.string.copy_to_clipboard,
-                    storeNumber,
-                    onClipboardCopied
+                    description = R.string.call_number,
+                    storeNumber = storeNumber,
+                    onCallStoreChanged = onCallStoreChanged
+                )
+                CallOptionTextButton(description = R.string.save_number, storeNumber = storeNumber)
+                CallOptionTextButton(
+                    description = R.string.copy_to_clipboard,
+                    storeNumber = storeNumber,
+                    onClipboardChanged = onClipboardChanged
                 )
                 CallCancelTextButton(onCallDialogCanceled = onCallDialogCanceled)
             }
@@ -71,12 +76,14 @@ fun StoreCallDialog(
 fun CallOptionTextButton(
     @StringRes description: Int,
     storeNumber: String,
-    onClipboardCopied: (String) -> Unit = {}
+    onClipboardChanged: (String) -> Unit = {},
+    onCallStoreChanged: (String) -> Unit = {}
 ) {
     TextButton(
         onClick = {
             when (description) {
-                R.string.copy_to_clipboard -> onClipboardCopied(storeNumber)
+                R.string.call_number -> onCallStoreChanged(storeNumber)
+                R.string.copy_to_clipboard -> onClipboardChanged(storeNumber)
             }
         },
         colors = ButtonDefaults.textButtonColors(contentColor = Black),

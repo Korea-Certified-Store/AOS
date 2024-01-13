@@ -73,7 +73,7 @@ import com.naver.maps.map.overlay.OverlayImage
 
 @ExperimentalNaverMapApi
 @Composable
-fun MainScreen(onClipboardCopied: (String) -> Unit) {
+fun MainScreen(onClipboardChanged: (String) -> Unit, onCallStoreChanged: (String) -> Unit) {
     val testMarkerData = listOf(
         StoreInfo(
             storeId = 1,
@@ -83,7 +83,7 @@ fun MainScreen(onClipboardCopied: (String) -> Unit) {
             formattedAddress = "주소",
             regularOpeningHours = "11:00 ~ 23:00",
             location = Coordinate(37.5657, 126.9775),
-            internationalPhoneNumber = "연락처",
+            internationalPhoneNumber = "1234",
             storeCertificationId = listOf(StoreType.KIND)
         ),
         StoreInfo(
@@ -94,7 +94,7 @@ fun MainScreen(onClipboardCopied: (String) -> Unit) {
             formattedAddress = "주소",
             regularOpeningHours = "11:00 ~ 23:00",
             location = Coordinate(37.5667, 126.9785),
-            internationalPhoneNumber = "연락처",
+            internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.GREAT, StoreType.KIND)
         ),
         StoreInfo(
@@ -105,7 +105,7 @@ fun MainScreen(onClipboardCopied: (String) -> Unit) {
             formattedAddress = "주소",
             regularOpeningHours = "11:00 ~ 23:00",
             location = Coordinate(37.5647, 126.9770),
-            internationalPhoneNumber = "연락처",
+            internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.SAFE, StoreType.GREAT, StoreType.KIND)
         )
     )
@@ -148,7 +148,8 @@ fun MainScreen(onClipboardCopied: (String) -> Unit) {
         StoreCallDialog(
             clickedStoreInfo.internationalPhoneNumber,
             onCallDialogCanceled,
-            onClipboardCopied
+            onClipboardChanged,
+            onCallStoreChanged
         )
     }
 
