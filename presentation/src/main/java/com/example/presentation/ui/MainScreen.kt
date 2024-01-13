@@ -1,6 +1,8 @@
 package com.example.presentation.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -19,14 +23,20 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,15 +45,19 @@ import com.example.presentation.R
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
-import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_OFF
-import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_ON
+import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
+import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
+import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightBlue
-import com.example.presentation.ui.theme.LightGray
+import com.example.presentation.ui.theme.LightYellow
 import com.example.presentation.ui.theme.MediumBlue
 import com.example.presentation.ui.theme.MediumGray
+import com.example.presentation.ui.theme.Pink
 import com.example.presentation.ui.theme.Red
+import com.example.presentation.ui.theme.White
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
@@ -51,40 +65,146 @@ import com.naver.maps.map.overlay.OverlayImage
 
 @ExperimentalNaverMapApi
 @Composable
-fun MainScreen(isMarkerClicked: MutableState<Boolean>) {
-    InitMap(isMarkerClicked)
-    StoreSummaryBottomSheet(if (isMarkerClicked.value) BOTTOM_SHEET_ON else BOTTOM_SHEET_OFF)
+fun MainScreen() {
+    val testMarkerData = listOf(
+        StoreInfo(
+            storeId = 1,
+            displayName = "미진일식 1호점",
+            googlePlaceId = "",
+            primaryType = "일식",
+            formattedAddress = "주소",
+            regularOpeningHours = "11:00 ~ 23:00",
+            location = Coordinate(37.5657, 126.9775),
+            internationalPhoneNumber = "연락처",
+            storeCertificationId = listOf(StoreType.KIND)
+        ),
+        StoreInfo(
+            storeId = 2,
+            displayName = "미진일식 2호점",
+            googlePlaceId = "",
+            primaryType = "일식",
+            formattedAddress = "주소",
+            regularOpeningHours = "11:00 ~ 23:00",
+            location = Coordinate(37.5667, 126.9785),
+            internationalPhoneNumber = "연락처",
+            storeCertificationId = listOf(StoreType.GREAT, StoreType.KIND)
+        ),
+        StoreInfo(
+            storeId = 3,
+            displayName = "미진일식 3호점",
+            googlePlaceId = "",
+            primaryType = "일식",
+            formattedAddress = "주소",
+            regularOpeningHours = "11:00 ~ 23:00",
+            location = Coordinate(37.5647, 126.9770),
+            internationalPhoneNumber = "연락처",
+            storeCertificationId = listOf(StoreType.SAFE, StoreType.GREAT, StoreType.KIND)
+        )
+    )
+
+    var clickedStoreInfo by remember {
+        mutableStateOf(
+            StoreInfo(
+                storeId = 0,
+                displayName = "",
+                googlePlaceId = "",
+                primaryType = "",
+                formattedAddress = "",
+                regularOpeningHours = "",
+                location = Coordinate(0.0, 0.0),
+                internationalPhoneNumber = "",
+                storeCertificationId = listOf()
+            )
+        )
+    }
+    val onStoreInfoChanged = { value : StoreInfo ->
+        clickedStoreInfo = value
+    }
+
+    var isMarkerClicked by remember { mutableStateOf(false) }
+    val onBottomSheetChanged = { value : Boolean ->
+        isMarkerClicked = value
+    }
+
+    InitMap(isMarkerClicked, onBottomSheetChanged, testMarkerData, clickedStoreInfo, onStoreInfoChanged)
+    StoreSummaryBottomSheet(
+        if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
+        clickedStoreInfo
+    )
 }
 
 @ExperimentalNaverMapApi
 @Composable
-fun InitMap(isMarkerClicked: MutableState<Boolean>) {
+fun InitMap(
+    isMarkerClicked: Boolean,
+    onBottomSheetChanged: (Boolean) -> Unit,
+    testMarkerData: List<StoreInfo>,
+    clickedStoreInfo: StoreInfo,
+    onStoreInfoChanged: (StoreInfo) -> Unit
+) {
     NaverMap(
         modifier = Modifier.fillMaxSize(),
         onMapClick = { _, _ ->
-            isMarkerClicked.value = false
-        }
+            onBottomSheetChanged(false)
+        },
+        uiSettings = MapUiSettings(isZoomControlEnabled = false)
     ) {
-        StoreMarker(isMarkerClicked, Coordinate(37.5657, 126.9775), StoreType.GREAT)
+        testMarkerData.forEach { storeInfo ->
+            StoreMarker(onBottomSheetChanged, storeInfo, onStoreInfoChanged)
+        }
+
+        if (isMarkerClicked) {
+            ClickedStoreMarker(clickedStoreInfo)
+        }
     }
 }
 
 @ExperimentalNaverMapApi
 @Composable
 fun StoreMarker(
-    isMarkerClicked: MutableState<Boolean>,
-    coordinate: Coordinate,
-    storeType: StoreType
+    onBottomSheetChanged: (Boolean) -> Unit,
+    storeInfo: StoreInfo,
+    onStoreInfoChanged: (StoreInfo) -> Unit
 ) {
     Marker(
-        state = MarkerState(position = LatLng(coordinate.latitude, coordinate.longitude)),
-        icon = when (storeType) {
+        state = MarkerState(
+            position = LatLng(
+                storeInfo.location.latitude,
+                storeInfo.location.longitude
+            )
+        ),
+        icon = when (storeInfo.storeCertificationId.first()) {
             StoreType.KIND -> OverlayImage.fromResource(R.drawable.kind_store_pin)
             StoreType.GREAT -> OverlayImage.fromResource(R.drawable.great_store_pin)
             StoreType.SAFE -> OverlayImage.fromResource(R.drawable.safe_store_pin)
         },
         onClick = {
-            isMarkerClicked.value = true
+            onBottomSheetChanged(true)
+            onStoreInfoChanged(storeInfo)
+
+            true
+        }
+    )
+}
+
+@OptIn(ExperimentalNaverMapApi::class)
+@Composable
+fun ClickedStoreMarker(
+    storeInfo: StoreInfo
+) {
+    Marker(
+        state = MarkerState(
+            position = LatLng(
+                storeInfo.location.latitude,
+                storeInfo.location.longitude
+            )
+        ),
+        icon = when (storeInfo.storeCertificationId.first()) {
+            StoreType.KIND -> OverlayImage.fromResource(R.drawable.clicked_kind_store_pin)
+            StoreType.GREAT -> OverlayImage.fromResource(R.drawable.clicked_great_store_pin)
+            StoreType.SAFE -> OverlayImage.fromResource(R.drawable.clicked_safe_store_pin)
+        },
+        onClick = {
             true
         }
     )
@@ -92,27 +212,28 @@ fun StoreMarker(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoreSummaryBottomSheet(heightType: Int) {
+fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: StoreInfo) {
     BottomSheetScaffold(
         sheetContent = {
             Column {
-                StoreSummaryInfo(
-                    StoreInfo(
-                        storeName = "미진일식",
-                        type = "일식",
-                        address = "주소",
-                        operatingTime = "영업시간",
-                        coordinate = Coordinate(0.0, 0.0),
-                        contact = "연락처",
-                        picture = "사진"
-                    )
-                )
+                StoreSummaryInfo(clickedStoreInfo)
             }
         },
         sheetPeekHeight = heightType.dp,
-        sheetContainerColor = Color.White,
+        sheetContainerColor = White,
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
-        sheetShadowElevation = 5.dp
+        sheetShadowElevation = 5.dp,
+        sheetDragHandle = {
+            Column {
+                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(
+                    modifier = Modifier
+                        .width(32.dp)
+                        .height(3.dp)
+                        .background(LightGray)
+                )
+            }
+        }
     ) {
 
     }
@@ -131,26 +252,48 @@ fun StoreSummaryInfo(
         Column(
             horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = storeInfo.storeName,
-                color = MediumBlue,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.ExtraBold
-            )
-            Spacer(modifier = Modifier.padding(bottom = 2.dp))
-            Text(
-                text = storeInfo.type,
-                color = MediumGray,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Normal
-            )
-            Spacer(modifier = Modifier.padding(bottom = 6.dp))
-            Text(text = "영업 중", color = Red, fontSize = 11.sp, fontWeight = FontWeight.Normal)
-            Spacer(modifier = Modifier.height(17.dp))
+            Spacer(modifier = Modifier.height(13.dp))
+            Row {
+                Text(
+                    text = storeInfo.displayName,
+                    Modifier.alignByBaseline(),
+                    color = MediumBlue,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = storeInfo.primaryType,
+                    Modifier.alignByBaseline(),
+                    color = MediumGray,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Chips(storeInfo.storeCertificationId)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Text(
+                    text = "영업 중",
+                    color = Red,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = storeInfo.regularOpeningHours,
+                    color = MediumGray,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Normal
+                )
+            }
+            Spacer(modifier = Modifier.height(13.dp))
             StoreCallButton()
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
         }
         Column {
+            Spacer(modifier = Modifier.height(13.dp))
             StoreImage()
         }
     }
@@ -163,16 +306,18 @@ fun StoreCallButton() {
         onClick = {},
         modifier = Modifier
             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-        contentPadding = PaddingValues(horizontal = 25.dp, vertical = 10.dp),
+        contentPadding = PaddingValues(horizontal = 27.dp, vertical = 6.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = LightGray
-        )
+            containerColor = White
+        ),
+        shape = RoundedCornerShape(3.dp),
+        border = BorderStroke(1.dp, LightGray)
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.call),
-            tint = LightBlue,
+            imageVector = ImageVector.vectorResource(id = R.drawable.call),
+            tint = DarkGray,
             contentDescription = "Call",
-            modifier = Modifier.size(21.dp)
+            modifier = Modifier.size(20.dp)
         )
     }
 }
@@ -193,7 +338,40 @@ fun StoreImage() {
     }
 }
 
+@Composable
+private fun Chip(
+    storeType: StoreType
+) {
+    Surface(
+        color = when (storeType) {
+            StoreType.KIND -> Pink
+            StoreType.GREAT -> LightYellow
+            StoreType.SAFE -> LightBlue
+        },
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Text(
+            text = storeType.storeTypeName,
+            color = MediumGray,
+            fontSize = 9.sp,
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)
+        )
+    }
+}
+
+@Composable
+fun Chips(
+    elements: List<StoreType>
+) {
+    LazyRow(modifier = Modifier) {
+        items(elements.size) { idx ->
+            Chip(storeType = elements[idx])
+            Spacer(modifier = Modifier.padding(4.dp))
+        }
+    }
+}
+
 object MainUtils {
-    const val BOTTOM_SHEET_ON = 200
-    const val BOTTOM_SHEET_OFF = 0
+    const val BOTTOM_SHEET_HEIGHT_ON = 170
+    const val BOTTOM_SHEET_HEIGHT_OFF = 0
 }
