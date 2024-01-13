@@ -136,6 +136,7 @@ fun MainScreen() {
     }
 
     val (isCallClicked, onCallDialogChanged) = remember { mutableStateOf(false) }
+    val (isCallDialogCancelClicked, onCallDialogCanceled) = remember { mutableStateOf(false) }
 
     InitMap(
         isMarkerClicked,
@@ -150,9 +151,15 @@ fun MainScreen() {
         onCallDialogChanged
     )
 
-    if (isCallClicked) {
-        StoreCallDialog()
+    if (isCallClicked && isCallDialogCancelClicked.not()) {
+        StoreCallDialog(onCallDialogCanceled)
     }
+
+    if (isCallDialogCancelClicked) {
+        onCallDialogCanceled(false)
+        onCallDialogChanged(false)
+    }
+
 }
 
 @ExperimentalNaverMapApi
