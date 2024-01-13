@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -453,7 +454,7 @@ private fun Chip(
         shape = RoundedCornerShape(20.dp)
     ) {
         Text(
-            text = storeType.storeTypeName,
+            text = stringResource(storeType.storeTypeName),
             color = MediumGray,
             fontSize = 9.sp,
             modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)

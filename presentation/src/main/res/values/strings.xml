@@ -4,4 +4,7 @@
     <string name="call_number">전화 걸기</string>
     <string name="save_number">전화번호에 저장하기</string>
     <string name="copy_to_clipboard">클립보드에 복사하기</string>
+    <string name="kind_price_store">착한 가격 업소</string>
+    <string name="great_store">모범 음식점</string>
+    <string name="safe_store">안심 식당</string>
 </resources>
