@@ -29,10 +29,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -112,7 +110,7 @@ fun MainScreen(onClipboardCopied: (String) -> Unit) {
         )
     )
 
-    var clickedStoreInfo by remember {
+    val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
             StoreInfo(
                 storeId = 0,
@@ -127,14 +125,8 @@ fun MainScreen(onClipboardCopied: (String) -> Unit) {
             )
         )
     }
-    val onStoreInfoChanged = { value: StoreInfo ->
-        clickedStoreInfo = value
-    }
 
-    var isMarkerClicked by remember { mutableStateOf(false) }
-    val onBottomSheetChanged = { value: Boolean ->
-        isMarkerClicked = value
-    }
+    val (isMarkerClicked, onBottomSheetChanged) = remember { mutableStateOf(false) }
 
     val (isCallClicked, onCallDialogChanged) = remember { mutableStateOf(false) }
     val (isCallDialogCancelClicked, onCallDialogCanceled) = remember { mutableStateOf(false) }
