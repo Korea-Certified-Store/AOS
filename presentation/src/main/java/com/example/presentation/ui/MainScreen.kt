@@ -145,7 +145,11 @@ fun MainScreen(onClipboardCopied: (String) -> Unit) {
     )
 
     if (isCallClicked && isCallDialogCancelClicked.not()) {
-        StoreCallDialog(onCallDialogCanceled, onClipboardCopied)
+        StoreCallDialog(
+            clickedStoreInfo.internationalPhoneNumber,
+            onCallDialogCanceled,
+            onClipboardCopied
+        )
     }
 
     if (isCallDialogCancelClicked) {

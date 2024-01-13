@@ -28,7 +28,11 @@ import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 
 @Composable
-fun StoreCallDialog(onCallDialogCanceled: (Boolean) -> Unit, onClipboardCopied: (String) -> Unit) {
+fun StoreCallDialog(
+    storeNumber: String,
+    onCallDialogCanceled: (Boolean) -> Unit,
+    onClipboardCopied: (String) -> Unit
+) {
     Dialog(onDismissRequest = { onCallDialogCanceled(true) }) {
         Surface(
             modifier = Modifier
@@ -50,11 +54,11 @@ fun StoreCallDialog(onCallDialogCanceled: (Boolean) -> Unit, onClipboardCopied: 
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 19.sp
                 )
-                CallOptionTextButton(R.string.call_number, "0507-1369-4848")
-                CallOptionTextButton(R.string.save_number, "0507-1369-4848")
+                CallOptionTextButton(R.string.call_number, storeNumber)
+                CallOptionTextButton(R.string.save_number, storeNumber)
                 CallOptionTextButton(
                     R.string.copy_to_clipboard,
-                    "0507-1369-4848",
+                    storeNumber,
                     onClipboardCopied
                 )
                 CallCancelTextButton(onCallDialogCanceled = onCallDialogCanceled)
