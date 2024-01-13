@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -26,12 +28,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -57,10 +62,14 @@ import com.example.presentation.ui.theme.Red
 import com.example.presentation.ui.theme.White
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.LocationTrackingMode
+import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
+import com.naver.maps.map.compose.rememberCameraPositionState
+import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.overlay.OverlayImage
 
 @ExperimentalNaverMapApi
@@ -117,16 +126,22 @@ fun MainScreen() {
             )
         )
     }
-    val onStoreInfoChanged = { value : StoreInfo ->
+    val onStoreInfoChanged = { value: StoreInfo ->
         clickedStoreInfo = value
     }
 
     var isMarkerClicked by remember { mutableStateOf(false) }
-    val onBottomSheetChanged = { value : Boolean ->
+    val onBottomSheetChanged = { value: Boolean ->
         isMarkerClicked = value
     }
 
-    InitMap(isMarkerClicked, onBottomSheetChanged, testMarkerData, clickedStoreInfo, onStoreInfoChanged)
+    InitMap(
+        isMarkerClicked,
+        onBottomSheetChanged,
+        testMarkerData,
+        clickedStoreInfo,
+        onStoreInfoChanged
+    )
     StoreSummaryBottomSheet(
         if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
         clickedStoreInfo
@@ -142,12 +157,37 @@ fun InitMap(
     clickedStoreInfo: StoreInfo,
     onStoreInfoChanged: (StoreInfo) -> Unit
 ) {
+    val cameraPositionState = rememberCameraPositionState()
+    val cameraIsMoving = remember { mutableStateOf(cameraPositionState.isMoving) }
+
+    val selectedOption =
+        remember {
+            mutableStateOf(
+                Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
+            )
+        }
+    if (cameraIsMoving.value) {
+        selectedOption.value = Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow)
+    }
+
     NaverMap(
         modifier = Modifier.fillMaxSize(),
+        uiSettings = MapUiSettings(isZoomControlEnabled = false),
+
+        cameraPositionState = cameraPositionState,
+        locationSource = rememberFusedLocationSource(),
+        properties = MapProperties(
+            locationTrackingMode = selectedOption.value.second
+        ),
         onMapClick = { _, _ ->
             onBottomSheetChanged(false)
+            selectedOption.value = Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow)
         },
-        uiSettings = MapUiSettings(isZoomControlEnabled = false)
+        onOptionChange = {
+            cameraPositionState.locationTrackingMode?.let {
+                selectedOption.value.second
+            }
+        },
     ) {
         testMarkerData.forEach { storeInfo ->
             StoreMarker(onBottomSheetChanged, storeInfo, onStoreInfoChanged)
@@ -156,6 +196,48 @@ fun InitMap(
         if (isMarkerClicked) {
             ClickedStoreMarker(clickedStoreInfo)
         }
+    }
+    InitLocationButton(selectedOption)
+}
+
+@Composable
+fun InitLocationButton(
+    selectedOption: MutableState<Pair<Int, LocationTrackingMode>>,
+) {
+    val isFollow = remember { mutableStateOf(true) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(start = 12.dp),
+        verticalArrangement = Arrangement.Bottom,
+    ) {
+        Button(
+            modifier = Modifier
+                .defaultMinSize(1.dp)
+                .shadow(1.dp, CircleShape),
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent
+            ),
+            onClick = {
+                selectedOption.value = getTrackingModePair(isFollow)
+            },
+        ) {
+            Image(
+                painter = painterResource(id = selectedOption.value.first),
+                contentDescription = "location button",
+            )
+        }
+        Spacer(modifier = Modifier.height(43.dp))
+    }
+}
+
+fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrackingMode> {
+    isFollow.value = !isFollow.value
+    return when (isFollow.value) {
+        true -> Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
+        false -> Pair(R.drawable.icon_face, LocationTrackingMode.Face)
     }
 }
 
