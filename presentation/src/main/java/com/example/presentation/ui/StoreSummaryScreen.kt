@@ -199,9 +199,7 @@ fun StoreCallButton(onCallDialogChanged: (Boolean) -> Unit) {
             onClick = {
                 onCallDialogChanged(true)
             },
-            modifier = Modifier
-                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-                .padding(vertical = 0.dp),
+            modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 1.dp),
             colors = ButtonDefaults.buttonColors(containerColor = White),
             shape = RoundedCornerShape(3.dp),

@@ -10,4 +10,5 @@
     <string name="store_number">store_number</string>
     <string name="copy_to_clipboard_description">클립보드에 복사되었어요.</string>
     <string name="tel">tel:%s</string>
+    <string name="search_on_current_map">현 지도에서 검색</string>
 </resources>
