@@ -48,15 +48,7 @@ fun StoreCallDialog(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                Text(
-                    text = contactInfo.phone,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(vertical = 15.dp, horizontal = 24.dp),
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 19.sp
-                )
+                StoreNumberText(contactInfo.phone)
                 CallOptionTextButton(
                     description = R.string.call_number,
                     contactInfo = contactInfo,
@@ -76,6 +68,19 @@ fun StoreCallDialog(
             }
         }
     }
+}
+
+@Composable
+fun StoreNumberText(number: String) {
+    Text(
+        text = number,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(vertical = 15.dp, horizontal = 24.dp),
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 19.sp
+    )
 }
 
 @Composable
