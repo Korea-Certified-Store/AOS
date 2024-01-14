@@ -1,0 +1,236 @@
+package com.example.presentation.ui
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.presentation.R
+import com.example.presentation.model.StoreInfo
+import com.example.presentation.model.StoreType
+import com.example.presentation.ui.theme.DarkGray
+import com.example.presentation.ui.theme.LightBlue
+import com.example.presentation.ui.theme.LightYellow
+import com.example.presentation.ui.theme.MediumBlue
+import com.example.presentation.ui.theme.MediumGray
+import com.example.presentation.ui.theme.Pink
+import com.example.presentation.ui.theme.Red
+import com.example.presentation.ui.theme.White
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StoreSummaryBottomSheet(
+    heightType: Int,
+    clickedStoreInfo: StoreInfo,
+    onCallDialogChanged: (Boolean) -> Unit
+) {
+    BottomSheetScaffold(
+        sheetContent = {
+            Column {
+                StoreSummaryInfo(clickedStoreInfo, onCallDialogChanged)
+            }
+        },
+        sheetPeekHeight = heightType.dp,
+        sheetContainerColor = White,
+        sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
+        sheetShadowElevation = 5.dp,
+        sheetDragHandle = {
+            Column {
+                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(
+                    modifier = Modifier
+                        .width(32.dp)
+                        .height(3.dp)
+                        .background(Color.LightGray)
+                )
+            }
+        }
+    ) {
+
+    }
+}
+
+@Composable
+fun StoreSummaryInfo(
+    storeInfo: StoreInfo,
+    onCallDialogChanged: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(1f),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(
+            horizontalAlignment = Alignment.Start
+        ) {
+            Spacer(modifier = Modifier.height(13.dp))
+            StoreTitle(storeInfo.displayName, storeInfo.primaryType)
+            Spacer(modifier = Modifier.height(8.dp))
+            Chips(storeInfo.storeCertificationId)
+            Spacer(modifier = Modifier.height(8.dp))
+            StoreOpeningTime(storeInfo.regularOpeningHours)
+            Spacer(modifier = Modifier.height(13.dp))
+            StoreCallButton(onCallDialogChanged)
+            Spacer(modifier = Modifier.height(14.dp))
+        }
+        Column {
+            Spacer(modifier = Modifier.height(13.dp))
+            StoreImage()
+        }
+    }
+}
+
+@Composable
+fun StoreTitle(storeName: String, storeType: String) {
+    Row {
+        Text(
+            text = storeName,
+            Modifier.alignByBaseline(),
+            color = MediumBlue,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.ExtraBold
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = storeType,
+            Modifier.alignByBaseline(),
+            color = MediumGray,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Normal
+        )
+    }
+}
+
+@Composable
+fun StoreOpeningTime(openingHours: String) {
+    Row {
+        Text(
+            text = "영업 중",
+            Modifier.alignByBaseline(),
+            color = Red,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.ExtraBold
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = openingHours,
+            Modifier.alignByBaseline(),
+            color = MediumGray,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Normal
+        )
+    }
+}
+
+@Composable
+fun StoreCallButton(onCallDialogChanged: (Boolean) -> Unit) {
+    Button(
+        onClick = {
+            onCallDialogChanged(true)
+        },
+        modifier = Modifier
+            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+        contentPadding = PaddingValues(horizontal = 27.dp, vertical = 6.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = White
+        ),
+        shape = RoundedCornerShape(3.dp),
+        border = BorderStroke(1.dp, Color.LightGray)
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.call),
+            tint = DarkGray,
+            contentDescription = "Call",
+            modifier = Modifier.size(20.dp)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun StoreImage() {
+    Card(
+        modifier = Modifier.size(116.dp),
+        shape = RoundedCornerShape(6.dp)
+    ) {
+        Image(
+            painter = painterResource(R.drawable.store_example),
+            contentDescription = "Store Image",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(1f)
+        )
+    }
+}
+
+@Composable
+private fun Chip(
+    storeType: StoreType
+) {
+    Surface(
+        color = when (storeType) {
+            StoreType.KIND -> Pink
+            StoreType.GREAT -> LightYellow
+            StoreType.SAFE -> LightBlue
+        },
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Text(
+            text = stringResource(storeType.storeTypeName),
+            color = MediumGray,
+            fontSize = 9.sp,
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)
+        )
+    }
+}
+
+@Composable
+fun Chips(
+    elements: List<StoreType>
+) {
+    LazyRow(modifier = Modifier) {
+        items(elements.size) { idx ->
+            Chip(storeType = elements[idx])
+            Spacer(modifier = Modifier.padding(4.dp))
+        }
+    }
+}
+
+object MainUtils {
+    const val BOTTOM_SHEET_HEIGHT_ON = 170
+    const val BOTTOM_SHEET_HEIGHT_OFF = 0
+}
