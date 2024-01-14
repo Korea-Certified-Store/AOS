@@ -64,7 +64,7 @@ fun Android_KCSTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = KCSTypography,
         content = content
     )
 }
