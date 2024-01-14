@@ -277,11 +277,7 @@ fun StoreMarker(
                 storeInfo.location.longitude
             )
         ),
-        icon = when (storeInfo.storeCertificationId.first()) {
-            StoreType.KIND -> OverlayImage.fromResource(R.drawable.kind_store_pin)
-            StoreType.GREAT -> OverlayImage.fromResource(R.drawable.great_store_pin)
-            StoreType.SAFE -> OverlayImage.fromResource(R.drawable.safe_store_pin)
-        },
+        icon = OverlayImage.fromResource(storeInfo.storeCertificationId.first().initPinImg),
         onClick = {
             onBottomSheetChanged(true)
             onStoreInfoChanged(storeInfo)
@@ -303,11 +299,7 @@ fun ClickedStoreMarker(
                 storeInfo.location.longitude
             )
         ),
-        icon = when (storeInfo.storeCertificationId.first()) {
-            StoreType.KIND -> OverlayImage.fromResource(R.drawable.clicked_kind_store_pin)
-            StoreType.GREAT -> OverlayImage.fromResource(R.drawable.clicked_great_store_pin)
-            StoreType.SAFE -> OverlayImage.fromResource(R.drawable.clicked_safe_store_pin)
-        },
+        icon = OverlayImage.fromResource(storeInfo.storeCertificationId.first().clickedPinImg),
         onClick = {
             true
         }
