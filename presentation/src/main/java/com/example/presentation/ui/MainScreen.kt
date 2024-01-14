@@ -29,10 +29,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -41,12 +39,14 @@ import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
@@ -74,7 +74,11 @@ import com.naver.maps.map.overlay.OverlayImage
 
 @ExperimentalNaverMapApi
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    onCallStoreChanged: (String) -> Unit,
+    onSaveStoreNumberChanged: (Contact) -> Unit,
+    onClipboardChanged: (String) -> Unit,
+) {
     val testMarkerData = listOf(
         StoreInfo(
             storeId = 1,
@@ -84,7 +88,7 @@ fun MainScreen() {
             formattedAddress = "주소",
             regularOpeningHours = "11:00 ~ 23:00",
             location = Coordinate(37.5657, 126.9775),
-            internationalPhoneNumber = "연락처",
+            internationalPhoneNumber = "1234",
             storeCertificationId = listOf(StoreType.KIND)
         ),
         StoreInfo(
@@ -95,7 +99,7 @@ fun MainScreen() {
             formattedAddress = "주소",
             regularOpeningHours = "11:00 ~ 23:00",
             location = Coordinate(37.5667, 126.9785),
-            internationalPhoneNumber = "연락처",
+            internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.GREAT, StoreType.KIND)
         ),
         StoreInfo(
@@ -106,12 +110,12 @@ fun MainScreen() {
             formattedAddress = "주소",
             regularOpeningHours = "11:00 ~ 23:00",
             location = Coordinate(37.5647, 126.9770),
-            internationalPhoneNumber = "연락처",
+            internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.SAFE, StoreType.GREAT, StoreType.KIND)
         )
     )
 
-    var clickedStoreInfo by remember {
+    val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
             StoreInfo(
                 storeId = 0,
@@ -126,14 +130,11 @@ fun MainScreen() {
             )
         )
     }
-    val onStoreInfoChanged = { value: StoreInfo ->
-        clickedStoreInfo = value
-    }
 
-    var isMarkerClicked by remember { mutableStateOf(false) }
-    val onBottomSheetChanged = { value: Boolean ->
-        isMarkerClicked = value
-    }
+    val (isMarkerClicked, onBottomSheetChanged) = remember { mutableStateOf(false) }
+
+    val (isCallClicked, onCallDialogChanged) = remember { mutableStateOf(false) }
+    val (isCallDialogCancelClicked, onCallDialogCanceled) = remember { mutableStateOf(false) }
 
     InitMap(
         isMarkerClicked,
@@ -144,8 +145,29 @@ fun MainScreen() {
     )
     StoreSummaryBottomSheet(
         if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
-        clickedStoreInfo
+        clickedStoreInfo,
+        onCallDialogChanged
     )
+
+    if (isCallClicked && isCallDialogCancelClicked.not()) {
+        StoreCallDialog(
+            Contact(
+                clickedStoreInfo.displayName,
+                clickedStoreInfo.internationalPhoneNumber,
+                clickedStoreInfo.formattedAddress
+            ),
+            onCallDialogCanceled,
+            onCallStoreChanged,
+            onSaveStoreNumberChanged,
+            onClipboardChanged
+        )
+    }
+
+    if (isCallDialogCancelClicked) {
+        onCallDialogCanceled(false)
+        onCallDialogChanged(false)
+    }
+
 }
 
 @ExperimentalNaverMapApi
@@ -294,11 +316,15 @@ fun ClickedStoreMarker(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: StoreInfo) {
+fun StoreSummaryBottomSheet(
+    heightType: Int,
+    clickedStoreInfo: StoreInfo,
+    onCallDialogChanged: (Boolean) -> Unit
+) {
     BottomSheetScaffold(
         sheetContent = {
             Column {
-                StoreSummaryInfo(clickedStoreInfo)
+                StoreSummaryInfo(clickedStoreInfo, onCallDialogChanged)
             }
         },
         sheetPeekHeight = heightType.dp,
@@ -323,7 +349,8 @@ fun StoreSummaryBottomSheet(heightType: Int, clickedStoreInfo: StoreInfo) {
 
 @Composable
 fun StoreSummaryInfo(
-    storeInfo: StoreInfo
+    storeInfo: StoreInfo,
+    onCallDialogChanged: (Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -371,7 +398,7 @@ fun StoreSummaryInfo(
                 )
             }
             Spacer(modifier = Modifier.height(13.dp))
-            StoreCallButton()
+            StoreCallButton(onCallDialogChanged)
             Spacer(modifier = Modifier.height(14.dp))
         }
         Column {
@@ -381,11 +408,12 @@ fun StoreSummaryInfo(
     }
 }
 
-@Preview
 @Composable
-fun StoreCallButton() {
+fun StoreCallButton(onCallDialogChanged: (Boolean) -> Unit) {
     Button(
-        onClick = {},
+        onClick = {
+            onCallDialogChanged(true)
+        },
         modifier = Modifier
             .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
         contentPadding = PaddingValues(horizontal = 27.dp, vertical = 6.dp),
@@ -433,7 +461,7 @@ private fun Chip(
         shape = RoundedCornerShape(20.dp)
     ) {
         Text(
-            text = storeType.storeTypeName,
+            text = stringResource(storeType.storeTypeName),
             color = MediumGray,
             fontSize = 9.sp,
             modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)

@@ -1,7 +1,10 @@
 package com.example.presentation.model
 
-enum class StoreType(val storeTypeName: String) {
-    KIND("착한 가격 업소"),
-    GREAT("모범 음식점"),
-    SAFE("안심 식당")
+import androidx.annotation.StringRes
+import com.example.presentation.R
+
+enum class StoreType(@StringRes val storeTypeName: Int) {
+    KIND(R.string.kind_price_store),
+    GREAT(R.string.great_store),
+    SAFE(R.string.safe_store)
 }
