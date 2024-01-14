@@ -23,9 +23,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -98,18 +100,18 @@ fun StoreSummaryInfo(
         Column(
             horizontalAlignment = Alignment.Start
         ) {
-            Spacer(modifier = Modifier.height(13.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             StoreTitle(storeInfo.displayName, storeInfo.primaryType)
             Spacer(modifier = Modifier.height(8.dp))
             Chips(storeInfo.storeCertificationId)
             Spacer(modifier = Modifier.height(8.dp))
             StoreOpeningTime(storeInfo.regularOpeningHours)
-            Spacer(modifier = Modifier.height(13.dp))
+            Spacer(modifier = Modifier.height(11.dp))
             StoreCallButton(onCallDialogChanged)
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(12.dp))
         }
         Column {
-            Spacer(modifier = Modifier.height(13.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             StoreImage()
         }
     }
@@ -117,22 +119,54 @@ fun StoreSummaryInfo(
 
 @Composable
 fun StoreTitle(storeName: String, storeType: String) {
-    Row {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = storeName,
-            Modifier.alignByBaseline(),
             color = MediumBlue,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.ExtraBold
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = storeType,
-            Modifier.alignByBaseline(),
             color = MediumGray,
-            fontSize = 10.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Normal
         )
+    }
+}
+
+@Composable
+private fun Chip(
+    storeType: StoreType
+) {
+    Surface(
+        color = when (storeType) {
+            StoreType.KIND -> Pink
+            StoreType.GREAT -> LightYellow
+            StoreType.SAFE -> LightBlue
+        },
+        shape = RoundedCornerShape(30.dp)
+    ) {
+        Text(
+            text = stringResource(storeType.storeTypeName),
+            color = MediumGray,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Thin,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+        )
+    }
+}
+
+@Composable
+fun Chips(
+    elements: List<StoreType>
+) {
+    LazyRow(modifier = Modifier) {
+        items(elements.size) { idx ->
+            Chip(storeType = elements[idx])
+            Spacer(modifier = Modifier.padding(4.dp))
+        }
     }
 }
 
@@ -143,41 +177,43 @@ fun StoreOpeningTime(openingHours: String) {
             text = "영업 중",
             Modifier.alignByBaseline(),
             color = Red,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.ExtraBold
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Normal
         )
-        Spacer(modifier = Modifier.width(6.dp))
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
             text = openingHours,
             Modifier.alignByBaseline(),
             color = MediumGray,
-            fontSize = 11.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Normal
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreCallButton(onCallDialogChanged: (Boolean) -> Unit) {
-    Button(
-        onClick = {
-            onCallDialogChanged(true)
-        },
-        modifier = Modifier
-            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-        contentPadding = PaddingValues(horizontal = 27.dp, vertical = 6.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = White
-        ),
-        shape = RoundedCornerShape(3.dp),
-        border = BorderStroke(1.dp, Color.LightGray)
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.call),
-            tint = DarkGray,
-            contentDescription = "Call",
-            modifier = Modifier.size(20.dp)
-        )
+    CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+        Button(
+            onClick = {
+                onCallDialogChanged(true)
+            },
+            modifier = Modifier
+                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
+                .padding(vertical = 0.dp),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 1.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = White),
+            shape = RoundedCornerShape(3.dp),
+            border = BorderStroke(1.dp, Color.LightGray)
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.call),
+                tint = DarkGray,
+                contentDescription = "Call",
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
 }
 
@@ -194,39 +230,6 @@ fun StoreImage() {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(1f)
         )
-    }
-}
-
-@Composable
-private fun Chip(
-    storeType: StoreType
-) {
-    Surface(
-        color = when (storeType) {
-            StoreType.KIND -> Pink
-            StoreType.GREAT -> LightYellow
-            StoreType.SAFE -> LightBlue
-        },
-        shape = RoundedCornerShape(20.dp)
-    ) {
-        Text(
-            text = stringResource(storeType.storeTypeName),
-            color = MediumGray,
-            fontSize = 9.sp,
-            modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)
-        )
-    }
-}
-
-@Composable
-fun Chips(
-    elements: List<StoreType>
-) {
-    LazyRow(modifier = Modifier) {
-        items(elements.size) { idx ->
-            Chip(storeType = elements[idx])
-            Spacer(modifier = Modifier.padding(4.dp))
-        }
     }
 }
 

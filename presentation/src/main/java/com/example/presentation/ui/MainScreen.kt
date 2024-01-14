@@ -55,7 +55,7 @@ fun MainScreen(
             googlePlaceId = "",
             primaryType = "일식",
             formattedAddress = "주소",
-            regularOpeningHours = "11:00 ~ 23:00",
+            regularOpeningHours = "11:00 - 23:00",
             location = Coordinate(37.5657, 126.9775),
             internationalPhoneNumber = "1234",
             storeCertificationId = listOf(StoreType.KIND)
@@ -66,7 +66,7 @@ fun MainScreen(
             googlePlaceId = "",
             primaryType = "일식",
             formattedAddress = "주소",
-            regularOpeningHours = "11:00 ~ 23:00",
+            regularOpeningHours = "11:00 - 23:00",
             location = Coordinate(37.5667, 126.9785),
             internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.GREAT, StoreType.KIND)
@@ -77,7 +77,7 @@ fun MainScreen(
             googlePlaceId = "",
             primaryType = "일식",
             formattedAddress = "주소",
-            regularOpeningHours = "11:00 ~ 23:00",
+            regularOpeningHours = "11:00 - 23:00",
             location = Coordinate(37.5647, 126.9770),
             internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.SAFE, StoreType.GREAT, StoreType.KIND)
