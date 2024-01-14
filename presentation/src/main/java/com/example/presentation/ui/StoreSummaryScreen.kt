@@ -45,6 +45,7 @@ import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightBlue
+import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.LightYellow
 import com.example.presentation.ui.theme.MediumBlue
 import com.example.presentation.ui.theme.MediumGray
@@ -220,7 +221,8 @@ fun StoreCallButton(onCallDialogChanged: (Boolean) -> Unit) {
 fun StoreImage() {
     Card(
         modifier = Modifier.size(116.dp),
-        shape = RoundedCornerShape(6.dp)
+        shape = RoundedCornerShape(6.dp),
+        border = BorderStroke(0.3.dp, LightGray)
     ) {
         Image(
             painter = painterResource(R.drawable.store_example),
