@@ -14,6 +14,6 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun provideStoreDetailService(@AndroidKCSRetrofit retrofit: Retrofit): StoreDetailApiService =
+    fun provideStoreDetailService(retrofit: Retrofit): StoreDetailApiService =
         retrofit.create(StoreDetailApiService::class.java)
 }
