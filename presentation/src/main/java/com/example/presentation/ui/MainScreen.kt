@@ -4,27 +4,31 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.model.Contact
-import com.example.presentation.model.Coordinate
+import com.example.presentation.model.CoordinateModel
 import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
@@ -46,6 +50,7 @@ import com.naver.maps.map.overlay.OverlayImage
 @ExperimentalNaverMapApi
 @Composable
 fun MainScreen(
+    mainViewModel: MainViewModel,
     onCallStoreChanged: (String) -> Unit,
     onSaveStoreNumberChanged: (Contact) -> Unit,
     onClipboardChanged: (String) -> Unit,
@@ -58,7 +63,7 @@ fun MainScreen(
             primaryType = "일식",
             formattedAddress = "주소",
             regularOpeningHours = "11:00 - 23:00",
-            location = Coordinate(37.5657, 126.9775),
+            location = CoordinateModel(37.5657, 126.9775),
             internationalPhoneNumber = "1234",
             storeCertificationId = listOf(StoreType.KIND)
         ),
@@ -69,7 +74,7 @@ fun MainScreen(
             primaryType = "일식",
             formattedAddress = "주소",
             regularOpeningHours = "11:00 - 23:00",
-            location = Coordinate(37.5667, 126.9785),
+            location = CoordinateModel(37.5667, 126.9785),
             internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.GREAT, StoreType.KIND)
         ),
@@ -80,7 +85,7 @@ fun MainScreen(
             primaryType = "일식",
             formattedAddress = "주소",
             regularOpeningHours = "11:00 - 23:00",
-            location = Coordinate(37.5647, 126.9770),
+            location = CoordinateModel(37.5647, 126.9770),
             internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.SAFE, StoreType.GREAT, StoreType.KIND)
         )
@@ -95,7 +100,7 @@ fun MainScreen(
                 primaryType = "",
                 formattedAddress = "",
                 regularOpeningHours = "",
-                location = Coordinate(0.0, 0.0),
+                location = CoordinateModel(0.0, 0.0),
                 internationalPhoneNumber = "",
                 storeCertificationId = listOf()
             )
@@ -109,13 +114,20 @@ fun MainScreen(
 
     val (originCoordinate, onOriginCoordinateChanged) = remember {
         mutableStateOf(
-            Coordinate(
+            CoordinateModel(
                 0.0,
                 0.0
             )
         )
     }
-    val (newCoordinate, onNewCoordinateChanged) = remember { mutableStateOf(Coordinate(0.0, 0.0)) }
+    val (newCoordinate, onNewCoordinateChanged) = remember {
+        mutableStateOf(
+            CoordinateModel(
+                0.0,
+                0.0
+            )
+        )
+    }
 
     val (isMapGestured, onCurrentMapChanged) = remember { mutableStateOf(false) }
 
@@ -173,6 +185,26 @@ fun MainScreen(
         onOriginCoordinateChanged(newCoordinate)
     }
 
+    ApiTestButton(mainViewModel)
+}
+
+@Composable
+fun ApiTestButton(mainViewModel: MainViewModel) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(lifecycleOwner)
+    val context = LocalContext.current
+
+    Column {
+        Button(
+            onClick = {
+                mainViewModel.getStoreDetail(126.8, 37.8, 127.2, 37.6)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            content = {
+                Text(text = "서버통신 테스트용 버튼")
+            }
+        )
+    }
 }
 
 @ExperimentalNaverMapApi
@@ -183,12 +215,12 @@ fun InitMap(
     testMarkerData: List<StoreInfo>,
     clickedStoreInfo: StoreInfo,
     onStoreInfoChanged: (StoreInfo) -> Unit,
-    onOriginCoordinateChanged: (Coordinate) -> Unit,
-    onNewCoordinateChanged: (Coordinate) -> Unit
+    onOriginCoordinateChanged: (CoordinateModel) -> Unit,
+    onNewCoordinateChanged: (CoordinateModel) -> Unit
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
-            Coordinate(
+            CoordinateModel(
                 position.target.latitude,
                 position.target.longitude
             )
@@ -212,7 +244,7 @@ fun InitMap(
         cameraPositionState = cameraPositionState.apply {
             if (cameraUpdateReason == CameraUpdateReason.GESTURE) {
                 onNewCoordinateChanged(
-                    Coordinate(
+                    CoordinateModel(
                         position.target.latitude,
                         position.target.longitude
                     )
