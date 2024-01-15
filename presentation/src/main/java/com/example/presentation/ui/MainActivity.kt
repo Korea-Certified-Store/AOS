@@ -10,13 +10,16 @@ import android.provider.ContactsContract
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.example.presentation.R
 import com.example.presentation.model.Contact
 import com.example.presentation.ui.theme.Android_KCSTheme
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalNaverMapApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,9 +31,15 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(INIT_CONTACT_INFO)
             }
             val (clipboardStoreNumber, onClipboardChanged) = remember { mutableStateOf("") }
+            val mainViewModel by viewModels<MainViewModel>()
 
             Android_KCSTheme {
-                MainScreen(onCallStoreChanged, onSaveStoreNumberChanged, onClipboardChanged)
+                MainScreen(
+                    mainViewModel,
+                    onCallStoreChanged,
+                    onSaveStoreNumberChanged,
+                    onClipboardChanged
+                )
             }
 
             if (callStoreNumber.isNotEmpty()) {

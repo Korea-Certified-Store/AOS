@@ -1,5 +1,6 @@
 package com.example.presentation.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,12 +24,14 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -38,6 +41,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -45,9 +50,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.model.Contact
-import com.example.presentation.model.Coordinate
+import com.example.presentation.model.CoordinateModel
 import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
@@ -75,6 +81,7 @@ import com.naver.maps.map.overlay.OverlayImage
 @ExperimentalNaverMapApi
 @Composable
 fun MainScreen(
+    mainViewModel: MainViewModel,
     onCallStoreChanged: (String) -> Unit,
     onSaveStoreNumberChanged: (Contact) -> Unit,
     onClipboardChanged: (String) -> Unit,
@@ -87,7 +94,7 @@ fun MainScreen(
             primaryType = "일식",
             formattedAddress = "주소",
             regularOpeningHours = "11:00 ~ 23:00",
-            location = Coordinate(37.5657, 126.9775),
+            location = CoordinateModel(37.5657, 126.9775),
             internationalPhoneNumber = "1234",
             storeCertificationId = listOf(StoreType.KIND)
         ),
@@ -98,7 +105,7 @@ fun MainScreen(
             primaryType = "일식",
             formattedAddress = "주소",
             regularOpeningHours = "11:00 ~ 23:00",
-            location = Coordinate(37.5667, 126.9785),
+            location = CoordinateModel(37.5667, 126.9785),
             internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.GREAT, StoreType.KIND)
         ),
@@ -109,7 +116,7 @@ fun MainScreen(
             primaryType = "일식",
             formattedAddress = "주소",
             regularOpeningHours = "11:00 ~ 23:00",
-            location = Coordinate(37.5647, 126.9770),
+            location = CoordinateModel(37.5647, 126.9770),
             internationalPhoneNumber = "+82 2-1234-5678",
             storeCertificationId = listOf(StoreType.SAFE, StoreType.GREAT, StoreType.KIND)
         )
@@ -124,7 +131,7 @@ fun MainScreen(
                 primaryType = "",
                 formattedAddress = "",
                 regularOpeningHours = "",
-                location = Coordinate(0.0, 0.0),
+                location = CoordinateModel(0.0, 0.0),
                 internationalPhoneNumber = "",
                 storeCertificationId = listOf()
             )
@@ -168,7 +175,96 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
+    ApiTestButton(mainViewModel)
 }
+
+@Composable
+fun ApiTestButton(mainViewModel: MainViewModel) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(lifecycleOwner)
+    val context = LocalContext.current
+
+    Column {
+        Button(
+            onClick = {
+                mainViewModel.getStoreDetail(126.8, 37.8, 127.2, 37.6)
+                Toast.makeText(
+                    context,
+                    mainViewModel.storeDetailData.value.toString(),
+                    Toast.LENGTH_SHORT
+                ).show()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            content = {
+                Text(text = "서버통신 테스트용 버튼")
+            }
+        )
+        when (val uiState = storeDetailData) {
+            is UiState.Success -> {
+                val storeDetailList = uiState.data
+                storeDetailList.forEach { storeDetail ->
+                    Text(text = storeDetail.primaryTypeDisplayName.toString())
+                }
+            }
+            is UiState.Failure -> {
+                // 에러 메시지를 표시
+                Text(text = "Error: ${uiState.msg}")
+            }
+            is UiState.Loading -> {
+                // 로딩 표시
+                CircularProgressIndicator()
+            }
+            else -> {
+                Text(text = "No data")
+            }
+        }
+    }
+}
+
+//@Composable
+//fun testApi(mainViewModel: MainViewModel) {
+//    val context = LocalContext.current
+//    Button(
+//        onClick = {
+//            mainViewModel.getStoreDetail(126.8, 37.8, 127.2, 37.6)
+//
+//
+//            Toast.makeText(
+//                context,
+//                mainViewModel.storeDetailData.value.toString(),
+//                Toast.LENGTH_SHORT
+//            ).show()
+//        },
+//        modifier = Modifier.fillMaxWidth(),
+//        content = {
+//            Text(text = "서버통신 테스트용 버튼")
+//        }
+//    )
+//}
+
+
+//private fun collectSearchData() {
+//    flowWithLifecycle(lifecycle).onEach {
+//        when (it) {
+//            is UiState.Success -> {
+//                val trendPostModel = it.data.trendPostModel
+//                postAdapter.submitList(trendPostModel)
+//
+//                if (trendPostModel.isNullOrEmpty()) {
+//                    binding.rvSearchList.visibility = View.INVISIBLE
+//                    toast("검색결과가 없습니다.")
+//                } else {
+//                    binding.rvSearchList.visibility = View.VISIBLE
+//                }
+//                binding.clSearch.visibility =
+//                    if (trendPostModel.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
+//            }
+//
+//            else -> {}
+//        }
+//    }.launchIn(lifecycleScope)
+//}
+
 
 @ExperimentalNaverMapApi
 @Composable
