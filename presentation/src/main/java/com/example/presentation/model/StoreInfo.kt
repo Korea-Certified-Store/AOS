@@ -7,7 +7,7 @@ data class StoreInfo(
     val googlePlaceId: String,
     val internationalPhoneNumber: String,
     val primaryType: String,
-    val location: Coordinate,
+    val location: CoordinateModel,
     val regularOpeningHours: String,
     val storeCertificationId: List<StoreType>
 )
