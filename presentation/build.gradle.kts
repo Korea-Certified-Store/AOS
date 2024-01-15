@@ -1,9 +1,12 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 import java.util.Properties
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    id(libs.plugins.hilt.plugin.get().pluginId)
 }
 
 val properties = Properties()
@@ -70,6 +73,7 @@ dependencies {
 
     // androidx-compose
     implementation(libs.bundles.androidx.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     testImplementation(libs.junit)
 
     // android test
@@ -85,4 +89,12 @@ dependencies {
 
     // multiple permission
     implementation("com.google.accompanist:accompanist-permissions:0.30.0")
+
+    //Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
+    implementation("com.google.android.material:material:1.4.0")
 }
