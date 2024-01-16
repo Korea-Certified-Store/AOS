@@ -233,8 +233,3 @@ fun StoreImage() {
         )
     }
 }
-
-object MainUtils {
-    const val BOTTOM_SHEET_HEIGHT_ON = 170
-    const val BOTTOM_SHEET_HEIGHT_OFF = 0
-}

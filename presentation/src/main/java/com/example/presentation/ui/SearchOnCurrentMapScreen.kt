@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.presentation.R
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
+import com.example.presentation.ui.MainUtils.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 
@@ -44,7 +45,7 @@ fun SearchOnCurrentMapButton(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .padding(bottom = if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + 32).dp else (BOTTOM_SHEET_HEIGHT_OFF + 32).dp),
+                .padding(bottom = if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
