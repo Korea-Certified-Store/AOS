@@ -81,7 +81,8 @@ fun StoreSummaryBottomSheet(
                         .background(Color.LightGray)
                 )
             }
-        }
+        },
+        sheetSwipeEnabled = false
     ) {
 
     }

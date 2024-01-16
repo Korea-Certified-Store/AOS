@@ -30,6 +30,7 @@ import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
@@ -105,12 +106,32 @@ fun MainScreen(
     val (isCallClicked, onCallDialogChanged) = remember { mutableStateOf(false) }
     val (isCallDialogCancelClicked, onCallDialogCanceled) = remember { mutableStateOf(false) }
 
+    val (originCoordinate, onOriginCoordinateChanged) = remember {
+        mutableStateOf(
+            Coordinate(
+                0.0,
+                0.0
+            )
+        )
+    }
+    val (newCoordinate, onNewCoordinateChanged) = remember { mutableStateOf(Coordinate(0.0, 0.0)) }
+
+    val (isMapGestured, onCurrentMapChanged) = remember { mutableStateOf(false) }
+
+    val (isSearchOnCurrentMapButtonClicked, onSearchOnCurrentMapButtonChanged) = remember {
+        mutableStateOf(
+            false
+        )
+    }
+
     InitMap(
         isMarkerClicked,
         onBottomSheetChanged,
         testMarkerData,
         clickedStoreInfo,
-        onStoreInfoChanged
+        onStoreInfoChanged,
+        onOriginCoordinateChanged,
+        onNewCoordinateChanged
     )
     StoreSummaryBottomSheet(
         if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
@@ -137,6 +158,20 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
+    if (originCoordinate != newCoordinate) {
+        onCurrentMapChanged(true)
+    }
+
+    if (isMapGestured) {
+        SearchOnCurrentMapButton(isMarkerClicked, onSearchOnCurrentMapButtonChanged)
+    }
+
+    if (isSearchOnCurrentMapButtonClicked) {
+        onCurrentMapChanged(false)
+        onSearchOnCurrentMapButtonChanged(false)
+        onOriginCoordinateChanged(newCoordinate)
+    }
+
 }
 
 @ExperimentalNaverMapApi
@@ -146,9 +181,18 @@ fun InitMap(
     onBottomSheetChanged: (Boolean) -> Unit,
     testMarkerData: List<StoreInfo>,
     clickedStoreInfo: StoreInfo,
-    onStoreInfoChanged: (StoreInfo) -> Unit
+    onStoreInfoChanged: (StoreInfo) -> Unit,
+    onOriginCoordinateChanged: (Coordinate) -> Unit,
+    onNewCoordinateChanged: (Coordinate) -> Unit
 ) {
-    val cameraPositionState = rememberCameraPositionState()
+    val cameraPositionState = rememberCameraPositionState {
+        onOriginCoordinateChanged(
+            Coordinate(
+                position.target.latitude,
+                position.target.longitude
+            )
+        )
+    }
     val cameraIsMoving = remember { mutableStateOf(cameraPositionState.isMoving) }
 
     val selectedOption =
@@ -164,8 +208,16 @@ fun InitMap(
     NaverMap(
         modifier = Modifier.fillMaxSize(),
         uiSettings = MapUiSettings(isZoomControlEnabled = false),
-
-        cameraPositionState = cameraPositionState,
+        cameraPositionState = cameraPositionState.apply {
+            if (cameraUpdateReason == CameraUpdateReason.GESTURE) {
+                onNewCoordinateChanged(
+                    Coordinate(
+                        position.target.latitude,
+                        position.target.longitude
+                    )
+                )
+            }
+        },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
             locationTrackingMode = selectedOption.value.second
