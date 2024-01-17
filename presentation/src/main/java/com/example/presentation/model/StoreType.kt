@@ -4,8 +4,8 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.example.presentation.R
-import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.Red
+import com.example.presentation.ui.theme.SkyBlue
 import com.example.presentation.ui.theme.Yellow
 
 enum class StoreType(
@@ -30,6 +30,6 @@ enum class StoreType(
         R.string.safe_store,
         R.drawable.safe_store_pin,
         R.drawable.clicked_safe_store_pin,
-        Blue
+        SkyBlue
     )
 }

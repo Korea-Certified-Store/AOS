@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.model.StoreType
@@ -33,9 +32,15 @@ import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 
-@Preview
 @Composable
-fun FilterButtons() {
+fun FilterButtons(
+    isKindFilterClicked: Boolean,
+    onKindFilterChanged: (Boolean) -> Unit,
+    isGreatFilterClicked: Boolean,
+    onGreatFilterChanged: (Boolean) -> Unit,
+    isSafeFilterClicked: Boolean,
+    onSafeFilterChanged: (Boolean) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxHeight()
@@ -43,27 +48,25 @@ fun FilterButtons() {
             .padding(top = 12.dp, start = 16.dp),
         verticalAlignment = Alignment.Top
     ) {
-        FilterChip(storeType = StoreType.KIND)
-        FilterChip(storeType = StoreType.GREAT)
-        FilterChip(storeType = StoreType.SAFE)
+        FilterChip(storeType = StoreType.KIND, isKindFilterClicked, onKindFilterChanged)
+        FilterChip(storeType = StoreType.GREAT, isGreatFilterClicked, onGreatFilterChanged)
+        FilterChip(storeType = StoreType.SAFE, isSafeFilterClicked, onSafeFilterChanged)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterChip(storeType: StoreType) {
+fun FilterChip(storeType: StoreType, isFilterClicked: Boolean, onFilterChanged: (Boolean) -> Unit) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Button(
-            onClick = { },
+            onClick = { onFilterChanged(isFilterClicked.not()) },
             modifier = Modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
                 .padding(end = 8.dp),
             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = White,
-                contentColor = Black,
-                disabledContainerColor = Blue,
-                disabledContentColor = White
+                containerColor = if (isFilterClicked) Blue else White,
+                contentColor = if (isFilterClicked) White else Black
             ),
             shape = RoundedCornerShape(30.dp),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)

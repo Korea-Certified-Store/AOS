@@ -107,22 +107,17 @@ fun MainScreen(
     val (isCallDialogCancelClicked, onCallDialogCanceled) = remember { mutableStateOf(false) }
 
     val (originCoordinate, onOriginCoordinateChanged) = remember {
-        mutableStateOf(
-            Coordinate(
-                0.0,
-                0.0
-            )
-        )
+        mutableStateOf(Coordinate(0.0, 0.0))
     }
     val (newCoordinate, onNewCoordinateChanged) = remember { mutableStateOf(Coordinate(0.0, 0.0)) }
-
     val (isMapGestured, onCurrentMapChanged) = remember { mutableStateOf(false) }
-
     val (isSearchOnCurrentMapButtonClicked, onSearchOnCurrentMapButtonChanged) = remember {
-        mutableStateOf(
-            false
-        )
+        mutableStateOf(false)
     }
+
+    val (isKindFilterClicked, onKindFilterChanged) = remember { mutableStateOf(false) }
+    val (isGreatFilterClicked, onGreatFilterChanged) = remember { mutableStateOf(false) }
+    val (isSafeFilterClicked, onSafeFilterChanged) = remember { mutableStateOf(false) }
 
     InitMap(
         isMarkerClicked,
@@ -138,7 +133,14 @@ fun MainScreen(
         clickedStoreInfo,
         onCallDialogChanged
     )
-    FilterButtons()
+    FilterButtons(
+        isKindFilterClicked,
+        onKindFilterChanged,
+        isGreatFilterClicked,
+        onGreatFilterChanged,
+        isSafeFilterClicked,
+        onSafeFilterChanged
+    )
 
     if (isCallClicked && isCallDialogCancelClicked.not()) {
         StoreCallDialog(
