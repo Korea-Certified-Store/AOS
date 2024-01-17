@@ -1,6 +1,5 @@
 package com.example.presentation.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,7 +23,6 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -41,7 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -144,6 +141,7 @@ fun MainScreen(
     val (isCallDialogCancelClicked, onCallDialogCanceled) = remember { mutableStateOf(false) }
 
     InitMap(
+        mainViewModel,
         isMarkerClicked,
         onBottomSheetChanged,
         testMarkerData,
@@ -175,100 +173,12 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
-    ApiTestButton(mainViewModel)
 }
-
-@Composable
-fun ApiTestButton(mainViewModel: MainViewModel) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(lifecycleOwner)
-    val context = LocalContext.current
-
-    Column {
-        Button(
-            onClick = {
-                mainViewModel.getStoreDetail(126.8, 37.8, 127.2, 37.6)
-                Toast.makeText(
-                    context,
-                    mainViewModel.storeDetailData.value.toString(),
-                    Toast.LENGTH_SHORT
-                ).show()
-            },
-            modifier = Modifier.fillMaxWidth(),
-            content = {
-                Text(text = "서버통신 테스트용 버튼")
-            }
-        )
-        when (val uiState = storeDetailData) {
-            is UiState.Success -> {
-                val storeDetailList = uiState.data
-                storeDetailList.forEach { storeDetail ->
-                    Text(text = storeDetail.primaryTypeDisplayName.toString())
-                }
-            }
-            is UiState.Failure -> {
-                // 에러 메시지를 표시
-                Text(text = "Error: ${uiState.msg}")
-            }
-            is UiState.Loading -> {
-                // 로딩 표시
-                CircularProgressIndicator()
-            }
-            else -> {
-                Text(text = "No data")
-            }
-        }
-    }
-}
-
-//@Composable
-//fun testApi(mainViewModel: MainViewModel) {
-//    val context = LocalContext.current
-//    Button(
-//        onClick = {
-//            mainViewModel.getStoreDetail(126.8, 37.8, 127.2, 37.6)
-//
-//
-//            Toast.makeText(
-//                context,
-//                mainViewModel.storeDetailData.value.toString(),
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        },
-//        modifier = Modifier.fillMaxWidth(),
-//        content = {
-//            Text(text = "서버통신 테스트용 버튼")
-//        }
-//    )
-//}
-
-
-//private fun collectSearchData() {
-//    flowWithLifecycle(lifecycle).onEach {
-//        when (it) {
-//            is UiState.Success -> {
-//                val trendPostModel = it.data.trendPostModel
-//                postAdapter.submitList(trendPostModel)
-//
-//                if (trendPostModel.isNullOrEmpty()) {
-//                    binding.rvSearchList.visibility = View.INVISIBLE
-//                    toast("검색결과가 없습니다.")
-//                } else {
-//                    binding.rvSearchList.visibility = View.VISIBLE
-//                }
-//                binding.clSearch.visibility =
-//                    if (trendPostModel.isNullOrEmpty()) View.VISIBLE else View.INVISIBLE
-//            }
-//
-//            else -> {}
-//        }
-//    }.launchIn(lifecycleScope)
-//}
-
 
 @ExperimentalNaverMapApi
 @Composable
 fun InitMap(
+    mainViewModel: MainViewModel,
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
     testMarkerData: List<StoreInfo>,
@@ -316,6 +226,20 @@ fun InitMap(
         }
     }
     InitLocationButton(selectedOption)
+    ApiTestText(mainViewModel)
+}
+
+@Composable
+fun ApiTestText(mainViewModel: MainViewModel) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(lifecycleOwner)
+    Column {
+        Button(onClick = {
+            mainViewModel.getStoreDetail(126.8, 37.8, 127.2, 37.6)
+        }) {
+            Text("서버 통신 시작")
+        }
+    }
 }
 
 @Composable
