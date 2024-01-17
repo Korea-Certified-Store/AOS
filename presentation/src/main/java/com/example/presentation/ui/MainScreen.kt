@@ -138,6 +138,7 @@ fun MainScreen(
         clickedStoreInfo,
         onCallDialogChanged
     )
+    FilterButtons()
 
     if (isCallClicked && isCallDialogCancelClicked.not()) {
         StoreCallDialog(
