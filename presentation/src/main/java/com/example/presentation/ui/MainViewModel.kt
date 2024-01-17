@@ -3,7 +3,7 @@ package com.example.presentation.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.usecase.StoreDetailUseCase
+import com.example.domain.usecase.GetStoreDetailUsecase
 import com.example.presentation.mapper.toStoreDetailModel
 import com.example.presentation.model.StoreDetailModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val storeDetailUseCase: StoreDetailUseCase) :
+class MainViewModel @Inject constructor(private val storeDetailUseCase: GetStoreDetailUsecase) :
     ViewModel() {
 
     private val _storeDetailData =
