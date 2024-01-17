@@ -4,11 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -31,6 +29,7 @@ import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.ui.MainUtils.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
@@ -213,14 +212,7 @@ fun InitMap(
         modifier = Modifier.fillMaxSize(),
         uiSettings = MapUiSettings(isZoomControlEnabled = false),
         cameraPositionState = cameraPositionState.apply {
-            if (cameraUpdateReason == CameraUpdateReason.GESTURE) {
-                onNewCoordinateChanged(
-                    Coordinate(
-                        position.target.latitude,
-                        position.target.longitude
-                    )
-                )
-            }
+            setNewCoordinateIfGestured(this, onNewCoordinateChanged)
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
@@ -245,6 +237,20 @@ fun InitMap(
         }
     }
     InitLocationButton(isMarkerClicked, selectedOption)
+}
+
+fun setNewCoordinateIfGestured(
+    cameraPositionState: CameraPositionState,
+    onNewCoordinateChanged: (Coordinate) -> Unit
+) {
+    if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
+        onNewCoordinateChanged(
+            Coordinate(
+                cameraPositionState.position.target.latitude,
+                cameraPositionState.position.target.longitude
+            )
+        )
+    }
 }
 
 @Composable
