@@ -29,6 +29,7 @@ import com.example.presentation.model.StoreInfo
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
+import com.example.presentation.ui.MainUtils.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -240,11 +241,12 @@ fun InitMap(
             ClickedStoreMarker(clickedStoreInfo)
         }
     }
-    InitLocationButton(selectedOption)
+    InitLocationButton(isMarkerClicked, selectedOption)
 }
 
 @Composable
 fun InitLocationButton(
+    isMarkerClicked: Boolean,
     selectedOption: MutableState<Pair<Int, LocationTrackingMode>>,
 ) {
     val isFollow = remember { mutableStateOf(true) }
@@ -252,7 +254,10 @@ fun InitLocationButton(
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(start = 12.dp),
+            .padding(
+                start = 12.dp,
+                bottom = getBottomPaddingByMarkerStatus(isMarkerClicked)
+            ),
         verticalArrangement = Arrangement.Bottom,
     ) {
         Button(
@@ -272,9 +277,12 @@ fun InitLocationButton(
                 contentDescription = "location button",
             )
         }
-        Spacer(modifier = Modifier.height(43.dp))
     }
 }
+
+@Composable
+private fun getBottomPaddingByMarkerStatus(isMarkerClicked: Boolean) =
+    if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING + 11).dp
 
 fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrackingMode> {
     isFollow.value = !isFollow.value
