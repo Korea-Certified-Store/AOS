@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -21,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -138,6 +136,7 @@ fun MainScreen(
     }
 
     InitMap(
+        mainViewModel,
         isMarkerClicked,
         onBottomSheetChanged,
         testMarkerData,
@@ -185,31 +184,12 @@ fun MainScreen(
         onOriginCoordinateChanged(newCoordinate)
     }
 
-    ApiTestButton(mainViewModel)
-}
-
-@Composable
-fun ApiTestButton(mainViewModel: MainViewModel) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(lifecycleOwner)
-    val context = LocalContext.current
-
-    Column {
-        Button(
-            onClick = {
-                mainViewModel.getStoreDetail(126.8, 37.8, 127.2, 37.6)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            content = {
-                Text(text = "서버통신 테스트용 버튼")
-            }
-        )
-    }
 }
 
 @ExperimentalNaverMapApi
 @Composable
 fun InitMap(
+    mainViewModel: MainViewModel,
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
     testMarkerData: List<StoreInfo>,
@@ -274,6 +254,20 @@ fun InitMap(
         }
     }
     InitLocationButton(isMarkerClicked, selectedOption)
+    ApiTestText(mainViewModel)
+}
+
+@Composable
+fun ApiTestText(mainViewModel: MainViewModel) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(lifecycleOwner)
+    Column {
+        Button(onClick = {
+            mainViewModel.getStoreDetail(126.8, 37.8, 127.2, 37.6)
+        }) {
+            Text("서버 통신 시작")
+        }
+    }
 }
 
 @Composable
