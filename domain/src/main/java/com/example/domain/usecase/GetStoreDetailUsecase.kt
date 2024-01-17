@@ -2,7 +2,6 @@ package com.example.domain.usecase
 
 import com.example.domain.model.StoreDetail
 import com.example.domain.repository.StoreDetailRepository
-import kotlinx.coroutines.flow.Flow
 
 class GetStoreDetailUsecase(
     private val repository: StoreDetailRepository
@@ -12,7 +11,7 @@ class GetStoreDetailUsecase(
         nwLat: Double,
         seLong: Double,
         seLat: Double
-    ): Flow<List<StoreDetail>> =
+    ): Result<List<StoreDetail>> =
         repository.getStoreDetail(
             nwLong,
             nwLat,
