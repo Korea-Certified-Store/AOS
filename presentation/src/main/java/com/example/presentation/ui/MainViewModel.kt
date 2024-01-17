@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.usecase.GetStoreDetailUsecase
-import com.example.presentation.mapper.toStoreDetailModel
 import com.example.presentation.model.StoreDetailModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,10 +26,15 @@ class MainViewModel @Inject constructor(private val storeDetailUseCase: GetStore
         seLong: Double,
         seLat: Double
     ) = viewModelScope.launch {
-        Log.d("서버", "서버 통신 시작")
-        storeDetailUseCase(nwLong, nwLat, seLong, seLat).collect { storeDetail ->
-            val storeDetailList = storeDetail.map { it.toStoreDetailModel() }
-            _storeDetailData.value = UiState.Success(storeDetailList)
+        storeDetailUseCase.invoke(
+            nwLong,
+            nwLat,
+            seLong,
+            seLat
+        ).onSuccess {
+            Log.d("MainViewModel 서버 통신", "$it")
+        }.onFailure {
+            Log.d("MainUser 서버 통신", "$it")
         }
     }
 }
