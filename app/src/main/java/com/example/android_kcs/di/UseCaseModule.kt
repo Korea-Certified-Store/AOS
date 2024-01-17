@@ -1,7 +1,7 @@
 package com.example.android_kcs.di
 
 import com.example.domain.repository.StoreDetailRepository
-import com.example.domain.usecase.StoreDetailUseCase
+import com.example.domain.usecase.GetStoreDetailUsecase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 class UseCaseModule {
     @Singleton
     @Provides
-    fun provideStoreDetailUseCase(repository: StoreDetailRepository): StoreDetailUseCase {
-        return StoreDetailUseCase(repository)
+    fun provideStoreDetailUseCase(repository: StoreDetailRepository): GetStoreDetailUsecase {
+        return GetStoreDetailUsecase(repository)
     }
 }

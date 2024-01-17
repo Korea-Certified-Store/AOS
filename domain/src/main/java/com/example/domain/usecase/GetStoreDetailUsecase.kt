@@ -4,7 +4,7 @@ import com.example.domain.model.StoreDetail
 import com.example.domain.repository.StoreDetailRepository
 import kotlinx.coroutines.flow.Flow
 
-class StoreDetailUseCase(
+class GetStoreDetailUsecase(
     private val repository: StoreDetailRepository
 ) {
     suspend operator fun invoke(
