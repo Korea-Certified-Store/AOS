@@ -20,6 +20,6 @@ class StoreDetailRepositoryImpl @Inject constructor(
             nwLat,
             seLong,
             seLat
-        ).map { storeDetail -> storeDetail.toStoreDetail() }
+        )
     }
 }

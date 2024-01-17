@@ -1,5 +1,6 @@
 package com.example.data.source.remote.api
 
+import com.example.data.dto.response.BaseResponse
 import com.example.data.dto.response.ResponseStoreDetailDto
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -12,7 +13,7 @@ interface StoreDetailApiService {
         @Query(NORTH_WEST_LAT) nwLat: Double,
         @Query(SOUTH_EAST_LONG) seLong: Double,
         @Query(SOUTH_EAST_LAT) seLat: Double
-    ): List<ResponseStoreDetailDto>
+    ): BaseResponse<List<ResponseStoreDetailDto>>
 
     companion object {
         const val NORTH_WEST_LONG = "nwLong"

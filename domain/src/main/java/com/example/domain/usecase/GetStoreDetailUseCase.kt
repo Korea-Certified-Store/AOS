@@ -3,7 +3,7 @@ package com.example.domain.usecase
 import com.example.domain.model.StoreDetail
 import com.example.domain.repository.StoreDetailRepository
 
-class GetStoreDetailUsecase(
+class GetStoreDetailUseCase(
     private val repository: StoreDetailRepository
 ) {
     suspend operator fun invoke(

@@ -13,46 +13,48 @@ data class ResponseStoreDetailDto(
     val primaryTypeDisplayName: String?,
     val formattedAddress: String,
     val phoneNumber: String?,
-    val location: CoordinateData,
-    val regularOpeningHours: List<OpeningHoursData>,
+    val location: CoordinateDto,
+    val regularOpeningHours: List<OpeningHoursDto>,
     val localPhotos: List<String?>,
     val certificationName: List<String>
 ) {
     @Serializable
-    data class CoordinateData(
+    data class CoordinateDto(
         val longitude: Double,
         val latitude: Double,
-    ) {
-        fun toDomainModel(): Coordinate = Coordinate(longitude = longitude, latitude = latitude)
-    }
+    )
 
     @Serializable
-    data class OpeningHoursData(
+    data class OpeningHoursDto(
         val open: TimeInfoData,
         val close: TimeInfoData,
-    ) {
-        fun toDomainModel(): OpeningHours =
-            OpeningHours(open.toDomainTimeInfoModel(), close.toDomainTimeInfoModel())
-    }
+    )
 
     @Serializable
     data class TimeInfoData(
         val day: String,
         val hour: Int,
         val minute: Int,
-    ) {
-        fun toDomainTimeInfoModel(): TimeInfo = TimeInfo(day = day, hour = hour, minute = minute)
-    }
-
-    fun toStoreDetail(): StoreDetail = StoreDetail(
-        id = id,
-        displayName = displayName,
-        primaryTypeDisplayName = primaryTypeDisplayName,
-        formattedAddress = formattedAddress,
-        phoneNumber = phoneNumber,
-        location = location.toDomainModel(),
-        regularOpeningHours = regularOpeningHours.map { openingHoursData -> openingHoursData.toDomainModel() },
-        localPhotos = localPhotos,
-        certificationName = certificationName
     )
 }
+
+internal fun ResponseStoreDetailDto.toDomainModel(): StoreDetail = StoreDetail(
+    id = id,
+    displayName = displayName,
+    primaryTypeDisplayName = primaryTypeDisplayName,
+    formattedAddress = formattedAddress,
+    phoneNumber = phoneNumber,
+    location = location.toDomainModel(),
+    regularOpeningHours = regularOpeningHours.map { openingHoursData -> openingHoursData.toDomainModel() },
+    localPhotos = localPhotos,
+    certificationName = certificationName
+)
+
+internal fun ResponseStoreDetailDto.CoordinateDto.toDomainModel(): Coordinate =
+    Coordinate(longitude = longitude, latitude = latitude)
+
+internal fun ResponseStoreDetailDto.OpeningHoursDto.toDomainModel(): OpeningHours =
+    OpeningHours(open.toDomainModel(), close.toDomainModel())
+
+internal fun ResponseStoreDetailDto.TimeInfoData.toDomainModel(): TimeInfo =
+    TimeInfo(day = day, hour = hour, minute = minute)
