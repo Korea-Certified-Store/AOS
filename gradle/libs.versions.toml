@@ -1,10 +1,14 @@
 [versions]
 accompanistPermissions = "0.30.0"
+converterMoshi = "2.9.0"
+google-material = "1.4.0"
 kotlin = "1.8.10"
 kotlinx-serialization-json = "1.6.0"
 kotlinx-serialization-converter = "1.0.0"
 
 ktx = "1.9.0"
+lifecycleRuntimeCompose = "2.7.0"
+moshiKotlin = "1.12.0"
 runtime-ktx = "2.6.1"
 
 compose = "1.4.3"
@@ -37,6 +41,7 @@ lifecycleViewmodelCompose = "2.7.0"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 androidx-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "runtime-ktx" }
 androidx-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -67,6 +72,7 @@ hilt-android-gradle-plugin = { group = "com.google.dagger", name = "hilt-android
 #hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 
 # Timer
+material-v140 = { module = "com.google.android.material:material", version.ref = "google-material" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -82,6 +88,8 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
 # Retrofit
+converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
+moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
 squareupRetrofit2 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-kotlin-serialization-converter = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "kotlinx-serialization-converter" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }

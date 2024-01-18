@@ -72,6 +72,7 @@ dependencies {
 
     // compose
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     // test
     testImplementation(libs.junit)
@@ -97,12 +98,8 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("com.google.android.material:material:1.4.0")
-
     // Mosh
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
+    implementation(libs.squareupRetrofit2)
+    implementation(libs.converter.moshi)
+    implementation(libs.moshi.kotlin)
 }

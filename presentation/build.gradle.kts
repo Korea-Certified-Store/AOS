@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 import java.util.Properties
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
@@ -88,13 +87,13 @@ dependencies {
     api(libs.bundles.naver.map)
 
     // multiple permission
-    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
+    implementation(libs.accompanist.permissions)
 
     //Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("com.google.android.material:material:1.4.0")
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.runtime.ktx)
+    implementation(libs.material)
 }
