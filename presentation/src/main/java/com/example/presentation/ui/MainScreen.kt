@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -28,10 +27,7 @@ import com.example.presentation.R
 import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.Contact
 import com.example.presentation.model.CoordinateModel
-import com.example.presentation.model.OpeningHoursModel
 import com.example.presentation.model.StoreDetailModel
-import com.example.presentation.model.StoreType
-import com.example.presentation.model.TimeInfoModel
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.ui.MainUtils.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
@@ -218,9 +214,6 @@ fun InitMap(
             }
         },
     ) {
-//        testMarkerData.forEach { storeInfo ->
-//            StoreMarker(onBottomSheetChanged, storeInfo, onStoreInfoChanged)
-//        }
 
         val lifecycleOwner = LocalLifecycleOwner.current
         val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(
@@ -230,7 +223,6 @@ fun InitMap(
             is UiState.Loading -> {
                 // 로딩 중일 때의 UI
             }
-
             is UiState.Success -> {
                 state.data.forEach { storeInfo ->
                     StoreMarker(
@@ -248,20 +240,6 @@ fun InitMap(
         }
     }
     InitLocationButton(isMarkerClicked, selectedOption)
-//    ApiTestText(mainViewModel)
-}
-
-@Composable
-fun ApiTestText(mainViewModel: MainViewModel) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(lifecycleOwner)
-    Column {
-        Button(onClick = {
-            mainViewModel.getStoreDetail(126.8, 37.8, 127.2, 37.6)
-        }) {
-            Text("서버 통신 시작")
-        }
-    }
 }
 
 @Composable
