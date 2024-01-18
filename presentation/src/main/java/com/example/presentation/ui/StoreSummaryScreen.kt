@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
-import com.example.presentation.model.StoreInfo
+import com.example.presentation.model.StoreDetailModel
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightBlue
@@ -58,7 +58,7 @@ import com.example.presentation.ui.theme.White
 @Composable
 fun StoreSummaryBottomSheet(
     heightType: Int,
-    clickedStoreInfo: StoreInfo,
+    clickedStoreInfo: StoreDetailModel,
     onCallDialogChanged: (Boolean) -> Unit
 ) {
     BottomSheetScaffold(
@@ -90,7 +90,7 @@ fun StoreSummaryBottomSheet(
 
 @Composable
 fun StoreSummaryInfo(
-    storeInfo: StoreInfo,
+    storeInfo: StoreDetailModel,
     onCallDialogChanged: (Boolean) -> Unit
 ) {
     Row(
@@ -103,11 +103,12 @@ fun StoreSummaryInfo(
             horizontalAlignment = Alignment.Start
         ) {
             Spacer(modifier = Modifier.height(12.dp))
-            StoreTitle(storeInfo.displayName, storeInfo.primaryType)
+            StoreTitle(storeInfo.displayName, storeInfo.primaryTypeDisplayName?:"상점")
             Spacer(modifier = Modifier.height(8.dp))
-            Chips(storeInfo.storeCertificationId)
+            Chips(storeInfo.certificationName)
             Spacer(modifier = Modifier.height(8.dp))
-            StoreOpeningTime(storeInfo.regularOpeningHours)
+            StoreOpeningTime()
+//            StoreOpeningTime(storeInfo.regularOpeningHours)
             Spacer(modifier = Modifier.height(11.dp))
             StoreCallButton(onCallDialogChanged)
             Spacer(modifier = Modifier.height(12.dp))
@@ -173,7 +174,7 @@ fun Chips(
 }
 
 @Composable
-fun StoreOpeningTime(openingHours: String) {
+fun StoreOpeningTime() {
     Row {
         Text(
             text = "영업 중",
@@ -184,7 +185,7 @@ fun StoreOpeningTime(openingHours: String) {
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = openingHours,
+            text = "openingHours",
             Modifier.alignByBaseline(),
             color = MediumGray,
             fontSize = 13.sp,
