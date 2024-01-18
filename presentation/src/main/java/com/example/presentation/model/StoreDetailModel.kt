@@ -9,7 +9,7 @@ data class StoreDetailModel(
     val location: CoordinateModel,
     val regularOpeningHours: List<OpeningHoursModel?>,
     val localPhotos: List<String?>,
-    val certificationName: List<String>
+    val certificationName: List<StoreType>
 )
 
 data class OpeningHoursModel(

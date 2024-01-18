@@ -25,10 +25,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
+import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.Contact
 import com.example.presentation.model.CoordinateModel
-import com.example.presentation.model.StoreInfo
+import com.example.presentation.model.OpeningHoursModel
+import com.example.presentation.model.StoreDetailModel
 import com.example.presentation.model.StoreType
+import com.example.presentation.model.TimeInfoModel
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.ui.MainUtils.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
@@ -53,54 +56,19 @@ fun MainScreen(
     onSaveStoreNumberChanged: (Contact) -> Unit,
     onClipboardChanged: (String) -> Unit,
 ) {
-    val testMarkerData = listOf(
-        StoreInfo(
-            storeId = 1,
-            displayName = "미진일식 1호점",
-            googlePlaceId = "",
-            primaryType = "일식",
-            formattedAddress = "주소",
-            regularOpeningHours = "11:00 - 23:00",
-            location = CoordinateModel(37.5657, 126.9775),
-            internationalPhoneNumber = "1234",
-            storeCertificationId = listOf(StoreType.KIND)
-        ),
-        StoreInfo(
-            storeId = 2,
-            displayName = "미진일식 2호점",
-            googlePlaceId = "",
-            primaryType = "일식",
-            formattedAddress = "주소",
-            regularOpeningHours = "11:00 - 23:00",
-            location = CoordinateModel(37.5667, 126.9785),
-            internationalPhoneNumber = "+82 2-1234-5678",
-            storeCertificationId = listOf(StoreType.GREAT, StoreType.KIND)
-        ),
-        StoreInfo(
-            storeId = 3,
-            displayName = "미진일식 3호점",
-            googlePlaceId = "",
-            primaryType = "일식",
-            formattedAddress = "주소",
-            regularOpeningHours = "11:00 - 23:00",
-            location = CoordinateModel(37.5647, 126.9770),
-            internationalPhoneNumber = "+82 2-1234-5678",
-            storeCertificationId = listOf(StoreType.SAFE, StoreType.GREAT, StoreType.KIND)
-        )
-    )
 
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
-            StoreInfo(
-                storeId = 0,
+            StoreDetailModel(
+                id = 0,
                 displayName = "",
-                googlePlaceId = "",
-                primaryType = "",
+                primaryTypeDisplayName = "",
                 formattedAddress = "",
-                regularOpeningHours = "",
+                regularOpeningHours = emptyList(),
                 location = CoordinateModel(0.0, 0.0),
-                internationalPhoneNumber = "",
-                storeCertificationId = listOf()
+                phoneNumber = "",
+                certificationName = listOf(),
+                localPhotos = listOf("")
             )
         )
     }
@@ -139,23 +107,23 @@ fun MainScreen(
         mainViewModel,
         isMarkerClicked,
         onBottomSheetChanged,
-        testMarkerData,
         clickedStoreInfo,
         onStoreInfoChanged,
         onOriginCoordinateChanged,
         onNewCoordinateChanged
     )
+
     StoreSummaryBottomSheet(
         if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
         clickedStoreInfo,
         onCallDialogChanged
     )
 
-    if (isCallClicked && isCallDialogCancelClicked.not()) {
+    if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
         StoreCallDialog(
             Contact(
                 clickedStoreInfo.displayName,
-                clickedStoreInfo.internationalPhoneNumber,
+                clickedStoreInfo.phoneNumber,
                 clickedStoreInfo.formattedAddress
             ),
             onCallDialogCanceled,
@@ -179,6 +147,12 @@ fun MainScreen(
     }
 
     if (isSearchOnCurrentMapButtonClicked) {
+        mainViewModel.getStoreDetail(
+            newCoordinate.longitude + 0.5,
+            newCoordinate.latitude + 0.5,
+            newCoordinate.longitude - 0.5,
+            newCoordinate.latitude - 0.5,
+        )
         onCurrentMapChanged(false)
         onSearchOnCurrentMapButtonChanged(false)
         onOriginCoordinateChanged(newCoordinate)
@@ -192,9 +166,8 @@ fun InitMap(
     mainViewModel: MainViewModel,
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
-    testMarkerData: List<StoreInfo>,
-    clickedStoreInfo: StoreInfo,
-    onStoreInfoChanged: (StoreInfo) -> Unit,
+    clickedStoreDetailModel: StoreDetailModel,
+    onStoreInfoChanged: (StoreDetailModel) -> Unit,
     onOriginCoordinateChanged: (CoordinateModel) -> Unit,
     onNewCoordinateChanged: (CoordinateModel) -> Unit
 ) {
@@ -245,16 +218,37 @@ fun InitMap(
             }
         },
     ) {
-        testMarkerData.forEach { storeInfo ->
-            StoreMarker(onBottomSheetChanged, storeInfo, onStoreInfoChanged)
-        }
+//        testMarkerData.forEach { storeInfo ->
+//            StoreMarker(onBottomSheetChanged, storeInfo, onStoreInfoChanged)
+//        }
 
+        val lifecycleOwner = LocalLifecycleOwner.current
+        val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(
+            lifecycleOwner
+        )
+        when (val state = storeDetailData) {
+            is UiState.Loading -> {
+                // 로딩 중일 때의 UI
+            }
+
+            is UiState.Success -> {
+                state.data.forEach { storeInfo ->
+                    StoreMarker(
+                        onBottomSheetChanged,
+                        storeInfo.toUiModel(),
+                        onStoreInfoChanged
+                    )
+                }
+            }
+
+            else -> {}
+        }
         if (isMarkerClicked) {
-            ClickedStoreMarker(clickedStoreInfo)
+            ClickedStoreMarker(clickedStoreDetailModel)
         }
     }
     InitLocationButton(isMarkerClicked, selectedOption)
-    ApiTestText(mainViewModel)
+//    ApiTestText(mainViewModel)
 }
 
 @Composable
@@ -322,20 +316,20 @@ fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrac
 @Composable
 fun StoreMarker(
     onBottomSheetChanged: (Boolean) -> Unit,
-    storeInfo: StoreInfo,
-    onStoreInfoChanged: (StoreInfo) -> Unit
+    storeDetailModel: StoreDetailModel,
+    onStoreInfoChanged: (StoreDetailModel) -> Unit
 ) {
     Marker(
         state = MarkerState(
             position = LatLng(
-                storeInfo.location.latitude,
-                storeInfo.location.longitude
+                storeDetailModel.location.latitude,
+                storeDetailModel.location.longitude
             )
         ),
-        icon = OverlayImage.fromResource(storeInfo.storeCertificationId.first().initPinImg),
+        icon = OverlayImage.fromResource(storeDetailModel.certificationName.first().initPinImg),
         onClick = {
             onBottomSheetChanged(true)
-            onStoreInfoChanged(storeInfo)
+            onStoreInfoChanged(storeDetailModel)
 
             true
         }
@@ -345,16 +339,16 @@ fun StoreMarker(
 @OptIn(ExperimentalNaverMapApi::class)
 @Composable
 fun ClickedStoreMarker(
-    storeInfo: StoreInfo
+    storeDetailModel: StoreDetailModel
 ) {
     Marker(
         state = MarkerState(
             position = LatLng(
-                storeInfo.location.latitude,
-                storeInfo.location.longitude
+                storeDetailModel.location.latitude,
+                storeDetailModel.location.longitude
             )
         ),
-        icon = OverlayImage.fromResource(storeInfo.storeCertificationId.first().clickedPinImg),
+        icon = OverlayImage.fromResource(storeDetailModel.certificationName.first().clickedPinImg),
         onClick = {
             true
         }

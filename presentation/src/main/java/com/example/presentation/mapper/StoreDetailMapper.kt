@@ -7,9 +7,10 @@ import com.example.domain.model.TimeInfo
 import com.example.presentation.model.CoordinateModel
 import com.example.presentation.model.OpeningHoursModel
 import com.example.presentation.model.StoreDetailModel
+import com.example.presentation.model.StoreType
 import com.example.presentation.model.TimeInfoModel
 
-fun StoreDetail.toStoreDetailModel(): StoreDetailModel = StoreDetailModel(
+fun StoreDetail.toUiModel(): StoreDetailModel = StoreDetailModel(
     id,
     displayName,
     primaryTypeDisplayName,
@@ -18,7 +19,7 @@ fun StoreDetail.toStoreDetailModel(): StoreDetailModel = StoreDetailModel(
     location.toLocationModel(),
     regularOpeningHours.map { it.toOpeningHoursModel() },
     localPhotos,
-    certificationName
+    certificationName.toStoreTypeModel()
 )
 
 fun Coordinate.toLocationModel(): CoordinateModel = CoordinateModel(latitude, longitude)
@@ -31,3 +32,13 @@ fun OpeningHours.toOpeningHoursModel(): OpeningHoursModel {
 }
 
 fun TimeInfo.toTimeInfoModel(): TimeInfoModel = TimeInfoModel(day, hour, minute)
+
+fun List<String>.toStoreTypeModel(): List<StoreType> {
+    return this.map {
+        when (it) {
+            "모범음식점" -> StoreType.GREAT
+            "착한가격업소" -> StoreType.KIND
+            else -> StoreType.SAFE
+        }
+    }
+}

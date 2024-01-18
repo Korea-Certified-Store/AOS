@@ -50,7 +50,8 @@ fun SearchOnCurrentMapButton(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { onSearchOnCurrentMapButtonChanged(true) },
+                onClick = {
+                    onSearchOnCurrentMapButtonChanged(true) },
                 modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = White, contentColor = Blue),
