@@ -11,19 +11,3 @@ data class StoreDetail(
     val localPhotos: List<String?>,
     val certificationName: List<String>
 )
-
-data class Coordinate(
-    val longitude: Double,
-    val latitude: Double,
-)
-
-data class OpeningHours(
-    val open: TimeInfo,
-    val close: TimeInfo,
-)
-
-data class TimeInfo(
-    val day: String,
-    val hour: Int,
-    val minute: Int,
-)
