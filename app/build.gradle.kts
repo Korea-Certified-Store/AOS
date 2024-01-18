@@ -1,8 +1,11 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     id(libs.plugins.hilt.plugin.get().pluginId)
+    kotlin("plugin.serialization") version "1.7.20"
 }
 
 android {
@@ -23,12 +26,20 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", Properties().apply {
+                load(project.rootProject.file("local.properties").inputStream())
+            }["base.url"].toString())
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "BASE_URL", Properties().apply {
+                load(project.rootProject.file("local.properties").inputStream())
+            }["base.url"].toString())
         }
     }
     compileOptions {
@@ -61,6 +72,7 @@ dependencies {
 
     // compose
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     // test
     testImplementation(libs.junit)
@@ -72,13 +84,22 @@ dependencies {
     // debug
     debugImplementation(libs.bundles.compose.debug)
 
-    // hilt
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-
     // Timber
     implementation(libs.timber)
 
     // multiple permission
-    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
+    implementation(libs.accompanist.permissions)
+
+    // retrofit
+    implementation(libs.bundles.retrofit)
+    implementation(libs.bundles.squareup)
+
+    // hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    // Mosh
+    implementation(libs.squareupRetrofit2)
+    implementation(libs.converter.moshi)
+    implementation(libs.moshi.kotlin)
 }

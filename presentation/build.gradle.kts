@@ -4,6 +4,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    id(libs.plugins.hilt.plugin.get().pluginId)
 }
 
 val properties = Properties()
@@ -70,6 +72,7 @@ dependencies {
 
     // androidx-compose
     implementation(libs.bundles.androidx.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     testImplementation(libs.junit)
 
     // android test
@@ -84,5 +87,13 @@ dependencies {
     api(libs.bundles.naver.map)
 
     // multiple permission
-    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
+    implementation(libs.accompanist.permissions)
+
+    //Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.runtime.ktx)
+    implementation(libs.material)
 }
