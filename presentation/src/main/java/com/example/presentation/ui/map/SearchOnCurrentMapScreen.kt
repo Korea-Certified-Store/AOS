@@ -1,4 +1,4 @@
-package com.example.presentation.ui
+package com.example.presentation.ui.map
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
-import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
-import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
-import com.example.presentation.ui.MainUtils.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
+import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 

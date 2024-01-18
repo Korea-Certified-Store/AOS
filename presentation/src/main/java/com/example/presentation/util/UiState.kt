@@ -1,4 +1,4 @@
-package com.example.presentation.ui
+package com.example.presentation.util
 
 sealed interface UiState<out T> {
     object Empty : UiState<Nothing>

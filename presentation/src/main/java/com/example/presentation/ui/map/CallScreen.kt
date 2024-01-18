@@ -1,4 +1,4 @@
-package com.example.presentation.ui
+package com.example.presentation.ui.map
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
