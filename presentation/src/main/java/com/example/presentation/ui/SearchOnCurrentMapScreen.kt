@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
@@ -45,7 +46,7 @@ fun SearchOnCurrentMapButton(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .padding(bottom = if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp),
+                .padding(bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked)),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -53,7 +54,10 @@ fun SearchOnCurrentMapButton(
                 onClick = { onSearchOnCurrentMapButtonChanged(true) },
                 modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = White, contentColor = Blue),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = White,
+                    contentColor = Blue
+                ),
                 shape = RoundedCornerShape(30.dp),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
             ) {
@@ -72,4 +76,9 @@ fun SearchOnCurrentMapButton(
             }
         }
     }
+}
+
+fun setSearchOnCurrentMapBottomPadding(isMarkerClicked: Boolean): Dp {
+    return if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp
+    else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp
 }
