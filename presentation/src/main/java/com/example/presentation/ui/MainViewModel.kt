@@ -1,6 +1,5 @@
 package com.example.presentation.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.StoreDetail
@@ -23,12 +22,13 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
         nwLat: Double,
         seLong: Double,
         seLat: Double
-    ) =
-        viewModelScope.launch {
-            getStoreDetailUseCase(nwLong, nwLat, seLong, seLat).onSuccess {
+    ) = viewModelScope.launch {
+        getStoreDetailUseCase(nwLong, nwLat, seLong, seLat).fold(
+            onSuccess = {
                 _storeDetailData.value = UiState.Success(it)
-            }.onFailure {
-                Log.d("ViewModel UiState 통신 결과", "실패")
+            }, onFailure = { e ->
+                _storeDetailData.value = UiState.Failure(e.toString())
             }
-        }
+        )
+    }
 }

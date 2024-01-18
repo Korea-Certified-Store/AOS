@@ -8,5 +8,5 @@ interface StoreDetailDataSource {
         nwLat: Double,
         seLong: Double,
         seLat: Double
-    ): List<StoreDetail>
+    ): Result<List<StoreDetail>>
 }

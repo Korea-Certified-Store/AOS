@@ -14,7 +14,18 @@ class StoreDetailSourceImpl @Inject constructor(
         nwLat: Double,
         seLong: Double,
         seLat: Double
-    ): List<StoreDetail> {
-        return apiService.getStoreDetailsByLocation(nwLong, nwLat, seLong, seLat).data!!.map { it.toDomainModel() }
+    ): Result<List<StoreDetail>> {
+        return runCatching {
+            apiService.getStoreDetailsByLocation(
+                nwLong,
+                nwLat,
+                seLong,
+                seLat
+            ).data.map { it.toDomainModel() }
+        }.fold(onSuccess = {
+            Result.success(it)
+        }, onFailure = { e ->
+            Result.failure(e)
+        })
     }
 }
