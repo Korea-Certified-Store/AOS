@@ -1,6 +1,6 @@
 package com.example.domain.usecase
 
-import com.example.domain.model.StoreDetail
+import com.example.domain.model.StoreDetailModel
 import com.example.domain.repository.StoreDetailRepository
 
 class GetStoreDetailUseCase(
@@ -11,7 +11,7 @@ class GetStoreDetailUseCase(
         nwLat: Double,
         seLong: Double,
         seLat: Double
-    ): Result<List<StoreDetail>> =
+    ): Result<List<StoreDetailModel>> =
         repository.getStoreDetail(
             nwLong,
             nwLat,

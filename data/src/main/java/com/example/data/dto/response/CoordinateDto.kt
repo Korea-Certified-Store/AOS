@@ -1,6 +1,6 @@
 package com.example.data.dto.response
 
-import com.example.domain.model.Coordinate
+import com.example.domain.model.CoordinateModel
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,5 +9,5 @@ data class CoordinateDto(
     val latitude: Double,
 )
 
-internal fun CoordinateDto.toDomainModel(): Coordinate =
-    Coordinate(longitude = longitude, latitude = latitude)
+internal fun CoordinateDto.toDomainModel(): CoordinateModel =
+    CoordinateModel(longitude = longitude, latitude = latitude)

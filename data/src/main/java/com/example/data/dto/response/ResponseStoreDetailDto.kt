@@ -1,7 +1,6 @@
 package com.example.data.dto.response
 
-import com.example.domain.model.StoreDetail
-import com.example.domain.model.TimeInfo
+import com.example.domain.model.StoreDetailModel
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,7 +16,7 @@ data class ResponseStoreDetailDto(
     val certificationName: List<String>
 )
 
-internal fun ResponseStoreDetailDto.toDomainModel(): StoreDetail = StoreDetail(
+internal fun ResponseStoreDetailDto.toDomainModel(): StoreDetailModel = StoreDetailModel(
     id = id,
     displayName = displayName,
     primaryTypeDisplayName = primaryTypeDisplayName,
