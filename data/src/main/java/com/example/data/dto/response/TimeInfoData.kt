@@ -1,6 +1,6 @@
 package com.example.data.dto.response
 
-import com.example.domain.model.TimeInfo
+import com.example.domain.model.TimeInfoModel
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,5 +10,5 @@ data class TimeInfoData(
     val minute: Int,
 )
 
-internal fun TimeInfoData.toDomainModel(): TimeInfo =
-    TimeInfo(day = day, hour = hour, minute = minute)
+internal fun TimeInfoData.toDomainModel(): TimeInfoModel =
+    TimeInfoModel(day = day, hour = hour, minute = minute)

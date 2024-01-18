@@ -1,39 +1,42 @@
 package com.example.presentation.mapper
 
-import com.example.domain.model.Coordinate
-import com.example.domain.model.OpeningHours
-import com.example.domain.model.StoreDetail
-import com.example.domain.model.TimeInfo
-import com.example.presentation.model.CoordinateModel
-import com.example.presentation.model.OpeningHoursModel
-import com.example.presentation.model.StoreDetailModel
+import com.example.domain.model.CoordinateModel
+import com.example.domain.model.OpeningHoursModel
+import com.example.domain.model.StoreDetailModel
+import com.example.domain.model.TimeInfoModel
+import com.example.presentation.model.Coordinate
+import com.example.presentation.model.OpeningHours
+import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
-import com.example.presentation.model.TimeInfoModel
+import com.example.presentation.model.TimeInfo
 
-fun StoreDetail.toUiModel(): StoreDetailModel = StoreDetailModel(
-    id,
-    displayName,
-    primaryTypeDisplayName,
-    formattedAddress,
-    phoneNumber,
-    location.toLocationModel(),
-    regularOpeningHours.map { it.toOpeningHoursModel() },
-    localPhotos,
-    certificationName.toStoreTypeModel()
-)
+fun StoreDetailModel.toUiModel(): StoreDetail =
+    StoreDetail(
+        id,
+        displayName,
+        primaryTypeDisplayName,
+        formattedAddress,
+        phoneNumber,
+        location.toUiModel(),
+        regularOpeningHours.map { it.toUiModel() },
+        localPhotos,
+        certificationName.toUiModel()
+    )
 
-fun Coordinate.toLocationModel(): CoordinateModel = CoordinateModel(latitude, longitude)
+fun CoordinateModel.toUiModel(): Coordinate =
+    Coordinate(latitude, longitude)
 
-fun OpeningHours.toOpeningHoursModel(): OpeningHoursModel {
-    return OpeningHoursModel(
-        open = this.open.toTimeInfoModel(),
-        close = this.close.toTimeInfoModel()
+fun OpeningHoursModel.toUiModel(): OpeningHours {
+    return OpeningHours(
+        open = this.open.toUiModel(),
+        close = this.close.toUiModel()
     )
 }
 
-fun TimeInfo.toTimeInfoModel(): TimeInfoModel = TimeInfoModel(day, hour, minute)
+fun TimeInfoModel.toUiModel(): TimeInfo =
+    TimeInfo(day, hour, minute)
 
-fun List<String>.toStoreTypeModel(): List<StoreType> {
+fun List<String>.toUiModel(): List<StoreType> {
     return this.map {
         when (it) {
             "모범음식점" -> StoreType.GREAT

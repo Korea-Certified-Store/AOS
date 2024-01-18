@@ -1,6 +1,6 @@
 package com.example.presentation.model
 
-data class CoordinateModel(
+data class Coordinate(
     val latitude: Double,
     val longitude: Double
 )

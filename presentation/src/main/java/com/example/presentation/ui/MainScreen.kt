@@ -26,8 +26,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.Contact
-import com.example.presentation.model.CoordinateModel
-import com.example.presentation.model.StoreDetailModel
+import com.example.presentation.model.Coordinate
+import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.ui.MainUtils.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
@@ -55,13 +55,13 @@ fun MainScreen(
 
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
-            StoreDetailModel(
+            StoreDetail(
                 id = 0,
                 displayName = "",
                 primaryTypeDisplayName = "",
                 formattedAddress = "",
                 regularOpeningHours = emptyList(),
-                location = CoordinateModel(0.0, 0.0),
+                location = Coordinate(0.0, 0.0),
                 phoneNumber = "",
                 certificationName = listOf(),
                 localPhotos = listOf("")
@@ -76,7 +76,7 @@ fun MainScreen(
 
     val (originCoordinate, onOriginCoordinateChanged) = remember {
         mutableStateOf(
-            CoordinateModel(
+            Coordinate(
                 0.0,
                 0.0
             )
@@ -84,7 +84,7 @@ fun MainScreen(
     }
     val (newCoordinate, onNewCoordinateChanged) = remember {
         mutableStateOf(
-            CoordinateModel(
+            Coordinate(
                 0.0,
                 0.0
             )
@@ -162,14 +162,14 @@ fun InitMap(
     mainViewModel: MainViewModel,
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
-    clickedStoreDetailModel: StoreDetailModel,
-    onStoreInfoChanged: (StoreDetailModel) -> Unit,
-    onOriginCoordinateChanged: (CoordinateModel) -> Unit,
-    onNewCoordinateChanged: (CoordinateModel) -> Unit
+    clickedStoreDetail: StoreDetail,
+    onStoreInfoChanged: (StoreDetail) -> Unit,
+    onOriginCoordinateChanged: (Coordinate) -> Unit,
+    onNewCoordinateChanged: (Coordinate) -> Unit
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
-            CoordinateModel(
+            Coordinate(
                 position.target.latitude,
                 position.target.longitude
             )
@@ -193,7 +193,7 @@ fun InitMap(
         cameraPositionState = cameraPositionState.apply {
             if (cameraUpdateReason == CameraUpdateReason.GESTURE) {
                 onNewCoordinateChanged(
-                    CoordinateModel(
+                    Coordinate(
                         position.target.latitude,
                         position.target.longitude
                     )
@@ -216,7 +216,7 @@ fun InitMap(
     ) {
 
         val lifecycleOwner = LocalLifecycleOwner.current
-        val storeDetailData by mainViewModel.storeDetailData.collectAsStateWithLifecycle(
+        val storeDetailData by mainViewModel.storeDetailModelData.collectAsStateWithLifecycle(
             lifecycleOwner
         )
         when (val state = storeDetailData) {
@@ -236,7 +236,7 @@ fun InitMap(
             else -> {}
         }
         if (isMarkerClicked) {
-            ClickedStoreMarker(clickedStoreDetailModel)
+            ClickedStoreMarker(clickedStoreDetail)
         }
     }
     InitLocationButton(isMarkerClicked, selectedOption)
@@ -294,20 +294,20 @@ fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrac
 @Composable
 fun StoreMarker(
     onBottomSheetChanged: (Boolean) -> Unit,
-    storeDetailModel: StoreDetailModel,
-    onStoreInfoChanged: (StoreDetailModel) -> Unit
+    storeDetail: StoreDetail,
+    onStoreInfoChanged: (StoreDetail) -> Unit
 ) {
     Marker(
         state = MarkerState(
             position = LatLng(
-                storeDetailModel.location.latitude,
-                storeDetailModel.location.longitude
+                storeDetail.location.latitude,
+                storeDetail.location.longitude
             )
         ),
-        icon = OverlayImage.fromResource(storeDetailModel.certificationName.first().initPinImg),
+        icon = OverlayImage.fromResource(storeDetail.certificationName.first().initPinImg),
         onClick = {
             onBottomSheetChanged(true)
-            onStoreInfoChanged(storeDetailModel)
+            onStoreInfoChanged(storeDetail)
 
             true
         }
@@ -317,16 +317,16 @@ fun StoreMarker(
 @OptIn(ExperimentalNaverMapApi::class)
 @Composable
 fun ClickedStoreMarker(
-    storeDetailModel: StoreDetailModel
+    storeDetail: StoreDetail
 ) {
     Marker(
         state = MarkerState(
             position = LatLng(
-                storeDetailModel.location.latitude,
-                storeDetailModel.location.longitude
+                storeDetail.location.latitude,
+                storeDetail.location.longitude
             )
         ),
-        icon = OverlayImage.fromResource(storeDetailModel.certificationName.first().clickedPinImg),
+        icon = OverlayImage.fromResource(storeDetail.certificationName.first().clickedPinImg),
         onClick = {
             true
         }

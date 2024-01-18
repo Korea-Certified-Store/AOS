@@ -1,7 +1,7 @@
 package com.example.data.repository
 
 import com.example.data.source.StoreDetailDataSource
-import com.example.domain.model.StoreDetail
+import com.example.domain.model.StoreDetailModel
 import com.example.domain.repository.StoreDetailRepository
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ class StoreDetailRepositoryImpl @Inject constructor(
         nwLat: Double,
         seLong: Double,
         seLat: Double
-    ): Result<List<StoreDetail>> {
+    ): Result<List<StoreDetailModel>> {
         return dataSource.getStoreDetail(
             nwLong,
             nwLat,

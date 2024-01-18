@@ -2,7 +2,7 @@ package com.example.presentation.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.StoreDetail
+import com.example.domain.model.StoreDetailModel
 import com.example.domain.usecase.GetStoreDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +14,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
     ViewModel() {
-    private val _storeDetailData = MutableStateFlow<UiState<List<StoreDetail>>>(UiState.Loading)
-    val storeDetailData: StateFlow<UiState<List<StoreDetail>>> = _storeDetailData.asStateFlow()
+    private val _storeDetailModelData = MutableStateFlow<UiState<List<StoreDetailModel>>>(UiState.Loading)
+    val storeDetailModelData: StateFlow<UiState<List<StoreDetailModel>>> = _storeDetailModelData.asStateFlow()
 
     fun getStoreDetail(
         nwLong: Double,
@@ -25,9 +25,9 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
     ) = viewModelScope.launch {
         getStoreDetailUseCase(nwLong, nwLat, seLong, seLat).fold(
             onSuccess = {
-                _storeDetailData.value = UiState.Success(it)
+                _storeDetailModelData.value = UiState.Success(it)
             }, onFailure = { e ->
-                _storeDetailData.value = UiState.Failure(e.toString())
+                _storeDetailModelData.value = UiState.Failure(e.toString())
             }
         )
     }

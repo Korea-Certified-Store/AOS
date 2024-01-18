@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
-import com.example.presentation.model.StoreDetailModel
+import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightBlue
@@ -58,7 +58,7 @@ import com.example.presentation.ui.theme.White
 @Composable
 fun StoreSummaryBottomSheet(
     heightType: Int,
-    clickedStoreInfo: StoreDetailModel,
+    clickedStoreInfo: StoreDetail,
     onCallDialogChanged: (Boolean) -> Unit
 ) {
     BottomSheetScaffold(
@@ -90,7 +90,7 @@ fun StoreSummaryBottomSheet(
 
 @Composable
 fun StoreSummaryInfo(
-    storeInfo: StoreDetailModel,
+    storeInfo: StoreDetail,
     onCallDialogChanged: (Boolean) -> Unit
 ) {
     Row(

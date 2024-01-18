@@ -1,6 +1,6 @@
 package com.example.data.source
 
-import com.example.domain.model.StoreDetail
+import com.example.domain.model.StoreDetailModel
 
 interface StoreDetailDataSource {
     suspend fun getStoreDetail(
@@ -8,5 +8,5 @@ interface StoreDetailDataSource {
         nwLat: Double,
         seLong: Double,
         seLat: Double
-    ): Result<List<StoreDetail>>
+    ): Result<List<StoreDetailModel>>
 }
