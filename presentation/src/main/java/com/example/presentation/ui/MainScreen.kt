@@ -32,6 +32,7 @@ import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.ui.MainUtils.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.ui.MainUtils.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
@@ -75,29 +76,18 @@ fun MainScreen(
     val (isCallDialogCancelClicked, onCallDialogCanceled) = remember { mutableStateOf(false) }
 
     val (originCoordinate, onOriginCoordinateChanged) = remember {
-        mutableStateOf(
-            CoordinateModel(
-                0.0,
-                0.0
-            )
-        )
+        mutableStateOf(Coordinate(0.0, 0.0))
     }
-    val (newCoordinate, onNewCoordinateChanged) = remember {
-        mutableStateOf(
-            CoordinateModel(
-                0.0,
-                0.0
-            )
-        )
-    }
+    val (newCoordinate, onNewCoordinateChanged) = remember { mutableStateOf(Coordinate(0.0, 0.0)) }
 
     val (isMapGestured, onCurrentMapChanged) = remember { mutableStateOf(false) }
-
     val (isSearchOnCurrentMapButtonClicked, onSearchOnCurrentMapButtonChanged) = remember {
-        mutableStateOf(
-            false
-        )
+        mutableStateOf(false)
     }
+
+    val (isKindFilterClicked, onKindFilterChanged) = remember { mutableStateOf(false) }
+    val (isGreatFilterClicked, onGreatFilterChanged) = remember { mutableStateOf(false) }
+    val (isSafeFilterClicked, onSafeFilterChanged) = remember { mutableStateOf(false) }
 
     InitMap(
         mainViewModel,
@@ -113,6 +103,14 @@ fun MainScreen(
         if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
         clickedStoreInfo,
         onCallDialogChanged
+    )
+    FilterButtons(
+        isKindFilterClicked,
+        onKindFilterChanged,
+        isGreatFilterClicked,
+        onGreatFilterChanged,
+        isSafeFilterClicked,
+        onSafeFilterChanged
     )
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
@@ -191,14 +189,7 @@ fun InitMap(
         modifier = Modifier.fillMaxSize(),
         uiSettings = MapUiSettings(isZoomControlEnabled = false),
         cameraPositionState = cameraPositionState.apply {
-            if (cameraUpdateReason == CameraUpdateReason.GESTURE) {
-                onNewCoordinateChanged(
-                    CoordinateModel(
-                        position.target.latitude,
-                        position.target.longitude
-                    )
-                )
-            }
+        setNewCoordinateIfGestured(this, onNewCoordinateChanged)
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
@@ -240,6 +231,20 @@ fun InitMap(
         }
     }
     InitLocationButton(isMarkerClicked, selectedOption)
+}
+
+fun setNewCoordinateIfGestured(
+    cameraPositionState: CameraPositionState,
+    onNewCoordinateChanged: (Coordinate) -> Unit
+) {
+    if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
+        onNewCoordinateChanged(
+            Coordinate(
+                cameraPositionState.position.target.latitude,
+                cameraPositionState.position.target.longitude
+            )
+        )
+    }
 }
 
 @Composable
