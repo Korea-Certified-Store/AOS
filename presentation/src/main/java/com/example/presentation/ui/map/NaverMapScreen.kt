@@ -138,10 +138,18 @@ fun getScreenCoordinate(
                     it.northWest.latitude,
                     it.northWest.longitude
                 ),
+                southWest = Coordinate(
+                    it.southWest.latitude,
+                    it.southWest.longitude
+                ),
                 southEast = Coordinate(
                     it.southEast.latitude,
                     it.southEast.longitude
-                )
+                ),
+                northEast = Coordinate(
+                    it.northEast.latitude,
+                    it.northEast.longitude
+                ),
             )
         )
     }

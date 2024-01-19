@@ -21,10 +21,22 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
     fun getStoreDetail(
         nwLong: Double,
         nwLat: Double,
+        swLong: Double,
+        swLat: Double,
         seLong: Double,
-        seLat: Double
+        seLat: Double,
+        neLong: Double,
+        neLat: Double,
     ) = viewModelScope.launch {
-        getStoreDetailUseCase(nwLong, nwLat, seLong, seLat).fold(
+        getStoreDetailUseCase(
+            nwLong,
+            nwLat,
+            swLong,
+            swLat,
+            seLong,
+            seLat,
+            neLong,
+            neLat,).fold(
             onSuccess = {
                 _storeDetailModelData.value = UiState.Success(it)
             }, onFailure = { e ->
