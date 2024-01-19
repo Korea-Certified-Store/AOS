@@ -1,12 +1,11 @@
 package com.example.presentation.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.example.presentation.R
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
+import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.map.FilterButtons
 import com.example.presentation.ui.map.InitMap
@@ -15,10 +14,7 @@ import com.example.presentation.ui.map.StoreCallDialog
 import com.example.presentation.ui.map.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
-import com.naver.maps.map.compose.CameraPositionState
-import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
-import com.naver.maps.map.compose.LocationTrackingMode
 
 @ExperimentalNaverMapApi
 @Composable
@@ -76,6 +72,15 @@ fun MainScreen(
     val (isGreatFilterClicked, onGreatFilterChanged) = remember { mutableStateOf(false) }
     val (isSafeFilterClicked, onSafeFilterChanged) = remember { mutableStateOf(false) }
 
+    val (isScreenCoordinate, onScreenChanged) = remember {
+        mutableStateOf(
+            ScreenCoordinate(
+                Coordinate(0.0, 0.0),
+                Coordinate(0.0, 0.0)
+            )
+        )
+    }
+
     InitMap(
         mainViewModel,
         isMarkerClicked,
@@ -83,7 +88,8 @@ fun MainScreen(
         clickedStoreInfo,
         onStoreInfoChanged,
         onOriginCoordinateChanged,
-        onNewCoordinateChanged
+        onNewCoordinateChanged,
+        onScreenChanged
     )
 
     StoreSummaryBottomSheet(

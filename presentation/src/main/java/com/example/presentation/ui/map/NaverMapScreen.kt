@@ -11,6 +11,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.Coordinate
+import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.MainViewModel
 import com.example.presentation.util.UiState
@@ -33,7 +34,8 @@ fun InitMap(
     clickedStoreDetail: StoreDetail,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onOriginCoordinateChanged: (Coordinate) -> Unit,
-    onNewCoordinateChanged: (Coordinate) -> Unit
+    onNewCoordinateChanged: (Coordinate) -> Unit,
+    onScreenChanged: (ScreenCoordinate) -> Unit
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -60,6 +62,7 @@ fun InitMap(
         uiSettings = MapUiSettings(isZoomControlEnabled = false),
         cameraPositionState = cameraPositionState.apply {
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
+            getScreenCoordinate(this, onScreenChanged)
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
@@ -113,6 +116,26 @@ fun setNewCoordinateIfGestured(
             Coordinate(
                 cameraPositionState.position.target.latitude,
                 cameraPositionState.position.target.longitude
+            )
+        )
+    }
+}
+
+fun getScreenCoordinate(
+    cameraPositionState: CameraPositionState,
+    onScreenChanged: (ScreenCoordinate) -> Unit
+) {
+    cameraPositionState.contentBounds?.let {
+        onScreenChanged(
+            ScreenCoordinate(
+                southWest = Coordinate(
+                    it.southEast.latitude,
+                    it.southEast.longitude
+                ),
+                northEast = Coordinate(
+                    it.northEast.latitude,
+                    it.northEast.longitude
+                )
             )
         )
     }
