@@ -53,7 +53,7 @@ fun SearchOnCurrentMapButton(
             Button(
                 onClick = { onSearchOnCurrentMapButtonChanged(true) },
                 modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 11.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = White,
                     contentColor = Blue
@@ -65,12 +65,12 @@ fun SearchOnCurrentMapButton(
                     imageVector = ImageVector.vectorResource(id = R.drawable.search),
                     tint = Blue,
                     contentDescription = "Search",
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(13.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = stringResource(R.string.search_on_current_map),
-                    fontSize = 13.sp,
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.Normal
                 )
             }
