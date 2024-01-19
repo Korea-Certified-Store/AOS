@@ -134,13 +134,13 @@ fun getScreenCoordinate(
     cameraPositionState.contentBounds?.let {
         onScreenChanged(
             ScreenCoordinate(
-                southWest = Coordinate(
-                    it.southWest.latitude,
-                    it.southWest.longitude
+                northWest = Coordinate(
+                    it.northWest.latitude,
+                    it.northWest.longitude
                 ),
-                northEast = Coordinate(
-                    it.northEast.latitude,
-                    it.northEast.longitude
+                southEast = Coordinate(
+                    it.southEast.latitude,
+                    it.southEast.longitude
                 )
             )
         )
