@@ -1,8 +1,11 @@
 package com.example.presentation.model
 
-enum class OperatingType(val description: String) {
-    OPERATING("영업 중"),
-    CLOSED("영업 종료"),
-    DAY_OFF("휴무일"),
-    BREAK_TIME("브레이크 타임")
+import androidx.annotation.StringRes
+import com.example.presentation.R
+
+enum class OperatingType(@StringRes val description: Int) {
+    OPERATING(R.string.operating),
+    CLOSED(R.string.closed),
+    DAY_OFF(R.string.day_off),
+    BREAK_TIME(R.string.break_time)
 }

@@ -184,7 +184,7 @@ fun StoreOpeningTime(regularOpeningHours: List<OpeningHours>) {
 
     Row {
         Text(
-            text = operatingTime.operatingType.description,
+            text = stringResource(operatingTime.operatingType.description),
             Modifier.alignByBaseline(),
             color = Red,
             fontSize = 15.sp,
