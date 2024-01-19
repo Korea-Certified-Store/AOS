@@ -44,6 +44,12 @@ fun InitMap(
                 position.target.longitude
             )
         )
+        onNewCoordinateChanged(
+            Coordinate(
+                position.target.latitude,
+                position.target.longitude
+            )
+        )
     }
     val cameraIsMoving = remember { mutableStateOf(cameraPositionState.isMoving) }
 
