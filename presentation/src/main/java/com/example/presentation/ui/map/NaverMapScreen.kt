@@ -1,5 +1,6 @@
 package com.example.presentation.ui.map
 
+import android.view.Gravity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -65,7 +66,7 @@ fun InitMap(
 
     NaverMap(
         modifier = Modifier.fillMaxSize(),
-        uiSettings = MapUiSettings(isZoomControlEnabled = false),
+        uiSettings = MapUiSettings(isZoomControlEnabled = false, logoGravity = Gravity.BOTTOM or Gravity.END),
         cameraPositionState = cameraPositionState.apply {
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
             getScreenCoordinate(this, onScreenChanged)
