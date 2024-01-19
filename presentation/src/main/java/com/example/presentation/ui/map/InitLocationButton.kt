@@ -28,7 +28,8 @@ import com.naver.maps.map.compose.LocationTrackingMode
 @Composable
 fun InitLocationButton(
     isMarkerClicked: Boolean,
-    selectedOption: MutableState<Pair<Int, LocationTrackingMode>>,
+    selectedOption: Pair<Int, LocationTrackingMode>,
+    onOptionChanged: (Pair<Int, LocationTrackingMode>) -> Unit,
 ) {
     val isFollow = remember { mutableStateOf(true) }
 
@@ -50,11 +51,11 @@ fun InitLocationButton(
                 containerColor = Color.Transparent
             ),
             onClick = {
-                selectedOption.value = getTrackingModePair(isFollow)
+                onOptionChanged(getTrackingModePair(isFollow))
             },
         ) {
             Image(
-                painter = painterResource(id = selectedOption.value.first),
+                painter = painterResource(id = selectedOption.first),
                 contentDescription = "location button",
             )
         }

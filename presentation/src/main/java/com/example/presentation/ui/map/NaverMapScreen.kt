@@ -54,34 +54,37 @@ fun InitMap(
     }
     val cameraIsMoving = remember { mutableStateOf(cameraPositionState.isMoving) }
 
-    val selectedOption =
+    val (selectedOption, onOptionChanged) =
         remember {
             mutableStateOf(
                 Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
             )
         }
     if (cameraIsMoving.value) {
-        selectedOption.value = Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow)
+        onOptionChanged(Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow))
     }
 
     NaverMap(
         modifier = Modifier.fillMaxSize(),
-        uiSettings = MapUiSettings(isZoomControlEnabled = false, logoGravity = Gravity.BOTTOM or Gravity.END),
+        uiSettings = MapUiSettings(
+            isZoomControlEnabled = false,
+            logoGravity = Gravity.BOTTOM or Gravity.END
+        ),
         cameraPositionState = cameraPositionState.apply {
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
             getScreenCoordinate(this, onScreenChanged)
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
-            locationTrackingMode = selectedOption.value.second
+            locationTrackingMode = selectedOption.second
         ),
         onMapClick = { _, _ ->
             onBottomSheetChanged(false)
-            selectedOption.value = Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow)
+            onOptionChanged(Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow))
         },
         onOptionChange = {
             cameraPositionState.locationTrackingMode?.let {
-                selectedOption.value.second
+                selectedOption.second
             }
         },
     ) {
@@ -111,7 +114,7 @@ fun InitMap(
             ClickedStoreMarker(clickedStoreDetail)
         }
     }
-    InitLocationButton(isMarkerClicked, selectedOption)
+    InitLocationButton(isMarkerClicked, selectedOption, onOptionChanged)
 }
 
 fun setNewCoordinateIfGestured(
