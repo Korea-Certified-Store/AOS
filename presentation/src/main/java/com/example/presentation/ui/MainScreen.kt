@@ -1,12 +1,11 @@
 package com.example.presentation.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.example.presentation.R
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
+import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.map.FilterButtons
 import com.example.presentation.ui.map.InitMap
@@ -15,10 +14,11 @@ import com.example.presentation.ui.map.StoreCallDialog
 import com.example.presentation.ui.map.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
-import com.naver.maps.map.compose.CameraPositionState
-import com.naver.maps.map.compose.CameraUpdateReason
+import com.example.presentation.util.MainConstants.LAT_LIMIT
+import com.example.presentation.util.MainConstants.LONG_LIMIT
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
-import com.naver.maps.map.compose.LocationTrackingMode
+import kotlin.math.max
+import kotlin.math.min
 
 @ExperimentalNaverMapApi
 @Composable
@@ -76,6 +76,15 @@ fun MainScreen(
     val (isGreatFilterClicked, onGreatFilterChanged) = remember { mutableStateOf(false) }
     val (isSafeFilterClicked, onSafeFilterChanged) = remember { mutableStateOf(false) }
 
+    val (screenCoordinate, onScreenChanged) = remember {
+        mutableStateOf(
+            ScreenCoordinate(
+                Coordinate(0.0, 0.0),
+                Coordinate(0.0, 0.0)
+            )
+        )
+    }
+
     InitMap(
         mainViewModel,
         isMarkerClicked,
@@ -83,7 +92,8 @@ fun MainScreen(
         clickedStoreInfo,
         onStoreInfoChanged,
         onOriginCoordinateChanged,
-        onNewCoordinateChanged
+        onNewCoordinateChanged,
+        onScreenChanged
     )
 
     StoreSummaryBottomSheet(
@@ -130,36 +140,13 @@ fun MainScreen(
 
     if (isSearchOnCurrentMapButtonClicked) {
         mainViewModel.getStoreDetail(
-            newCoordinate.longitude + 0.5,
-            newCoordinate.latitude + 0.5,
-            newCoordinate.longitude - 0.5,
-            newCoordinate.latitude - 0.5,
+            max(screenCoordinate.northWest.longitude, (newCoordinate.longitude - LONG_LIMIT)),
+            min(screenCoordinate.northWest.latitude, (newCoordinate.latitude + LAT_LIMIT)),
+            min(screenCoordinate.southEast.longitude, (newCoordinate.longitude + LONG_LIMIT)),
+            max(screenCoordinate.southEast.latitude, (newCoordinate.latitude - LAT_LIMIT)),
         )
         onCurrentMapChanged(false)
         onSearchOnCurrentMapButtonChanged(false)
         onOriginCoordinateChanged(newCoordinate)
-    }
-
-}
-
-fun setNewCoordinateIfGestured(
-    cameraPositionState: CameraPositionState,
-    onNewCoordinateChanged: (Coordinate) -> Unit
-) {
-    if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
-        onNewCoordinateChanged(
-            Coordinate(
-                cameraPositionState.position.target.latitude,
-                cameraPositionState.position.target.longitude
-            )
-        )
-    }
-}
-
-fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrackingMode> {
-    isFollow.value = !isFollow.value
-    return when (isFollow.value) {
-        true -> Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
-        false -> Pair(R.drawable.icon_face, LocationTrackingMode.Face)
     }
 }
