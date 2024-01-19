@@ -13,8 +13,9 @@ import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.MainViewModel
-import com.example.presentation.ui.setNewCoordinateIfGestured
 import com.example.presentation.util.UiState
+import com.naver.maps.map.compose.CameraPositionState
+import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
@@ -101,4 +102,18 @@ fun InitMap(
         }
     }
     InitLocationButton(isMarkerClicked, selectedOption)
+}
+
+fun setNewCoordinateIfGestured(
+    cameraPositionState: CameraPositionState,
+    onNewCoordinateChanged: (Coordinate) -> Unit
+) {
+    if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
+        onNewCoordinateChanged(
+            Coordinate(
+                cameraPositionState.position.target.latitude,
+                cameraPositionState.position.target.longitude
+            )
+        )
+    }
 }

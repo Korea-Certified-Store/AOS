@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.presentation.ui.getTrackingModePair
+import com.example.presentation.R
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
@@ -65,3 +65,10 @@ fun InitLocationButton(
 private fun getBottomPaddingByMarkerStatus(isMarkerClicked: Boolean) =
     if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING + 11).dp
 
+fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrackingMode> {
+    isFollow.value = !isFollow.value
+    return when (isFollow.value) {
+        true -> Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
+        false -> Pair(R.drawable.icon_face, LocationTrackingMode.Face)
+    }
+}

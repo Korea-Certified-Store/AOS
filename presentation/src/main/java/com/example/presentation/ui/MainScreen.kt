@@ -141,25 +141,3 @@ fun MainScreen(
     }
 
 }
-
-fun setNewCoordinateIfGestured(
-    cameraPositionState: CameraPositionState,
-    onNewCoordinateChanged: (Coordinate) -> Unit
-) {
-    if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
-        onNewCoordinateChanged(
-            Coordinate(
-                cameraPositionState.position.target.latitude,
-                cameraPositionState.position.target.longitude
-            )
-        )
-    }
-}
-
-fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrackingMode> {
-    isFollow.value = !isFollow.value
-    return when (isFollow.value) {
-        true -> Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
-        false -> Pair(R.drawable.icon_face, LocationTrackingMode.Face)
-    }
-}
