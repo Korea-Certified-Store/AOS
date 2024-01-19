@@ -80,6 +80,8 @@ fun MainScreen(
         mutableStateOf(
             ScreenCoordinate(
                 Coordinate(0.0, 0.0),
+                Coordinate(0.0, 0.0),
+                Coordinate(0.0, 0.0),
                 Coordinate(0.0, 0.0)
             )
         )
@@ -140,10 +142,17 @@ fun MainScreen(
 
     if (isSearchOnCurrentMapButtonClicked) {
         mainViewModel.getStoreDetail(
-            max(screenCoordinate.southWest.longitude, newCoordinate.longitude - LONG_LIMIT),
-            max(screenCoordinate.southWest.latitude, newCoordinate.latitude - LAT_LIMIT),
-            min(screenCoordinate.northEast.longitude, newCoordinate.longitude + LONG_LIMIT),
-            min(screenCoordinate.northEast.latitude, newCoordinate.latitude + LAT_LIMIT),
+            max(screenCoordinate.northWest.longitude, (newCoordinate.longitude - LONG_LIMIT)),
+            min(screenCoordinate.northWest.latitude, (newCoordinate.latitude + LAT_LIMIT)),
+
+            max(screenCoordinate.southWest.longitude, (newCoordinate.longitude - LONG_LIMIT)),
+            max(screenCoordinate.southWest.latitude, (newCoordinate.latitude - LAT_LIMIT)),
+
+            min(screenCoordinate.southEast.longitude, (newCoordinate.longitude + LONG_LIMIT)),
+            max(screenCoordinate.southEast.latitude, (newCoordinate.latitude - LAT_LIMIT)),
+
+            min(screenCoordinate.northEast.longitude, (newCoordinate.longitude + LONG_LIMIT)),
+            min(screenCoordinate.northEast.latitude, (newCoordinate.latitude - LAT_LIMIT)),
         )
         onCurrentMapChanged(false)
         onSearchOnCurrentMapButtonChanged(false)

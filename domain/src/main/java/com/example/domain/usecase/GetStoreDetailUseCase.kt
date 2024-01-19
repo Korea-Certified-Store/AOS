@@ -9,13 +9,21 @@ class GetStoreDetailUseCase(
     suspend operator fun invoke(
         nwLong: Double,
         nwLat: Double,
+        swLong: Double,
+        swLat: Double,
         seLong: Double,
-        seLat: Double
+        seLat: Double,
+        neLong: Double,
+        neLat: Double,
     ): Result<List<StoreDetailModel>> =
         repository.getStoreDetail(
             nwLong,
             nwLat,
+            swLong,
+            swLat,
             seLong,
-            seLat
+            seLat,
+            neLong,
+            neLat
         )
 }

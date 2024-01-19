@@ -6,6 +6,10 @@ interface StoreDetailRepository {
     suspend fun getStoreDetail(
         nwLong: Double,
         nwLat: Double,
+        swLong: Double,
+        swLat: Double,
         seLong: Double,
-        seLat: Double): Result<List<StoreDetailModel>>
+        seLat: Double,
+        neLong: Double,
+        neLat: Double,): Result<List<StoreDetailModel>>
 }

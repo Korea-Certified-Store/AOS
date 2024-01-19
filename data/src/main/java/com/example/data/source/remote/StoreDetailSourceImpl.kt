@@ -12,15 +12,23 @@ class StoreDetailSourceImpl @Inject constructor(
     override suspend fun getStoreDetail(
         nwLong: Double,
         nwLat: Double,
+        swLong: Double,
+        swLat: Double,
         seLong: Double,
-        seLat: Double
+        seLat: Double,
+        neLong: Double,
+        neLat: Double,
     ): Result<List<StoreDetailModel>> {
         return runCatching {
             apiService.getStoreDetailsByLocation(
                 nwLong,
                 nwLat,
+                swLong,
+                swLat,
                 seLong,
-                seLat
+                seLat,
+                neLong,
+                neLat
             ).data.map { it.toDomainModel() }
         }.fold(onSuccess = {
             Result.success(it)
