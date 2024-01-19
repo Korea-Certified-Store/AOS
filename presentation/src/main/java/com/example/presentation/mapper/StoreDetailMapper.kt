@@ -43,5 +43,5 @@ fun List<String>.toUiModel(): List<StoreType> {
             "착한가격업소" -> StoreType.KIND
             else -> StoreType.SAFE
         }
-    }
+    }.sortedBy { it.ordinal }
 }
