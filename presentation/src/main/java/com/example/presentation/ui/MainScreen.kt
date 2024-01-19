@@ -152,7 +152,7 @@ fun MainScreen(
             max(screenCoordinate.southEast.latitude, (newCoordinate.latitude - LAT_LIMIT)),
 
             min(screenCoordinate.northEast.longitude, (newCoordinate.longitude + LONG_LIMIT)),
-            min(screenCoordinate.northEast.latitude, (newCoordinate.latitude - LAT_LIMIT)),
+            min(screenCoordinate.northEast.latitude, (newCoordinate.latitude + LAT_LIMIT)),
         )
         onCurrentMapChanged(false)
         onSearchOnCurrentMapButtonChanged(false)
