@@ -1,7 +1,7 @@
 package com.example.presentation.model
 
 data class TimeInfo(
-    val day: String,
+    val day: Day,
     val hour: Int,
     val minute: Int,
 )

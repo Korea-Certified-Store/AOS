@@ -7,7 +7,7 @@ data class StoreDetail(
     val formattedAddress: String,
     val phoneNumber: String?,
     val location: Coordinate,
-    val regularOpeningHours: List<OpeningHours?>,
+    val regularOpeningHours: List<OpeningHours>,
     val localPhotos: List<String?>,
     val certificationName: List<StoreType>
 )
