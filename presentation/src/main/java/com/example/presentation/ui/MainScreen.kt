@@ -14,7 +14,11 @@ import com.example.presentation.ui.map.StoreCallDialog
 import com.example.presentation.ui.map.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
+import com.example.presentation.util.MainConstants.LAT_LIMIT
+import com.example.presentation.util.MainConstants.LONG_LIMIT
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import kotlin.math.max
+import kotlin.math.min
 
 @ExperimentalNaverMapApi
 @Composable
@@ -72,7 +76,7 @@ fun MainScreen(
     val (isGreatFilterClicked, onGreatFilterChanged) = remember { mutableStateOf(false) }
     val (isSafeFilterClicked, onSafeFilterChanged) = remember { mutableStateOf(false) }
 
-    val (isScreenCoordinate, onScreenChanged) = remember {
+    val (screenCoordinate, onScreenChanged) = remember {
         mutableStateOf(
             ScreenCoordinate(
                 Coordinate(0.0, 0.0),
@@ -136,14 +140,13 @@ fun MainScreen(
 
     if (isSearchOnCurrentMapButtonClicked) {
         mainViewModel.getStoreDetail(
-            newCoordinate.longitude + 0.5,
-            newCoordinate.latitude + 0.5,
-            newCoordinate.longitude - 0.5,
-            newCoordinate.latitude - 0.5,
+            max(screenCoordinate.southWest.longitude, newCoordinate.longitude - LONG_LIMIT),
+            max(screenCoordinate.southWest.latitude, newCoordinate.latitude - LAT_LIMIT),
+            min(screenCoordinate.northEast.longitude, newCoordinate.longitude + LONG_LIMIT),
+            min(screenCoordinate.northEast.latitude, newCoordinate.latitude + LAT_LIMIT),
         )
         onCurrentMapChanged(false)
         onSearchOnCurrentMapButtonChanged(false)
         onOriginCoordinateChanged(newCoordinate)
     }
-
 }

@@ -135,8 +135,8 @@ fun getScreenCoordinate(
         onScreenChanged(
             ScreenCoordinate(
                 southWest = Coordinate(
-                    it.southEast.latitude,
-                    it.southEast.longitude
+                    it.southWest.latitude,
+                    it.southWest.longitude
                 ),
                 northEast = Coordinate(
                     it.northEast.latitude,
