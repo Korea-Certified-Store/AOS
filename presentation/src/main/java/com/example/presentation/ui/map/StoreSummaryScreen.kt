@@ -41,8 +41,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.model.Day
+import com.example.presentation.model.OpeningHours
+import com.example.presentation.model.OperatingType
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
+import com.example.presentation.model.TimeInfo
 import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightGray
@@ -52,6 +56,8 @@ import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Pink
 import com.example.presentation.ui.theme.Red
 import com.example.presentation.ui.theme.White
+import java.util.Calendar
+import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,12 +109,11 @@ fun StoreSummaryInfo(
             horizontalAlignment = Alignment.Start
         ) {
             Spacer(modifier = Modifier.height(12.dp))
-            StoreTitle(storeInfo.displayName, storeInfo.primaryTypeDisplayName?:"상점")
+            StoreTitle(storeInfo.displayName, storeInfo.primaryTypeDisplayName ?: "상점")
             Spacer(modifier = Modifier.height(8.dp))
             Chips(storeInfo.certificationName)
             Spacer(modifier = Modifier.height(8.dp))
-            StoreOpeningTime()
-//            StoreOpeningTime(storeInfo.regularOpeningHours)
+            StoreOpeningTime(storeInfo.regularOpeningHours)
             Spacer(modifier = Modifier.height(11.dp))
             StoreCallButton(onCallDialogChanged)
             Spacer(modifier = Modifier.height(12.dp))
@@ -174,10 +179,10 @@ fun Chips(
 }
 
 @Composable
-fun StoreOpeningTime() {
+fun StoreOpeningTime(regularOpeningHours: List<OpeningHours>) {
     Row {
         Text(
-            text = "영업 중",
+            text = getOperatingType(regularOpeningHours).subscribe,
             Modifier.alignByBaseline(),
             color = Red,
             fontSize = 15.sp,
@@ -193,6 +198,48 @@ fun StoreOpeningTime() {
         )
     }
 }
+
+fun getOperatingType(regularOpeningHours: List<OpeningHours>): OperatingType {
+    val nowTime = getNowTimeInfo()
+    val operatingTimes = regularOpeningHours.filter { it.open.day == nowTime.day }
+    val type = if (operatingTimes.isEmpty()) {
+        OperatingType.DAY_OFF
+    } else if (nowTime.hour * 60 + nowTime.minute < operatingTimes.first().open.hour * 60 + operatingTimes.first().open.minute) {
+        OperatingType.BEFORE_OPEN
+    } else if (nowTime.hour * 60 + nowTime.minute > getCloseHour(operatingTimes.last().close.hour) * 60 + operatingTimes.last().close.minute) {
+        OperatingType.CLOSED
+    } else {
+        calculateOperating(nowTime, operatingTimes)
+    }
+
+    return type
+}
+
+fun getNowTimeInfo(): TimeInfo {
+    val currentDate = Date()
+    val calendar: Calendar = Calendar.getInstance()
+    calendar.time = currentDate
+
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    val minute = calendar.get(Calendar.MINUTE)
+    val day = Day.values()[calendar.get(Calendar.DAY_OF_WEEK) - 1]
+
+    return TimeInfo(day, hour, minute)
+}
+
+fun calculateOperating(nowTime: TimeInfo, operatingTimes: List<OpeningHours>): OperatingType {
+    for (time in operatingTimes) {
+        if (nowTime.hour * 60 + nowTime.minute in (time.open.hour * 60 + time.open.minute..getCloseHour(
+                time.close.hour
+            ) * 60 + time.close.minute)
+        ) {
+            return OperatingType.OPERATING
+        }
+    }
+    return OperatingType.BREAK_TIME
+}
+
+fun getCloseHour(hour: Int) = if (hour == 0) 24 else hour
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
