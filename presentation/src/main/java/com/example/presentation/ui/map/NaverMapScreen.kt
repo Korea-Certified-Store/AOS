@@ -53,14 +53,14 @@ fun InitMap(
     }
     val cameraIsMoving = remember { mutableStateOf(cameraPositionState.isMoving) }
 
-    val selectedOption =
+    val (selectedLocationMode, onLocationModeChanged) =
         remember {
             mutableStateOf(
                 Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
             )
         }
     if (cameraIsMoving.value) {
-        selectedOption.value = Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow)
+        onLocationModeChanged(Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow))
     }
 
     NaverMap(
@@ -72,15 +72,15 @@ fun InitMap(
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
-            locationTrackingMode = selectedOption.value.second
+            locationTrackingMode = selectedLocationMode.second
         ),
         onMapClick = { _, _ ->
             onBottomSheetChanged(false)
-            selectedOption.value = Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow)
+            onLocationModeChanged(Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow))
         },
         onOptionChange = {
             cameraPositionState.locationTrackingMode?.let {
-                selectedOption.value.second
+                selectedLocationMode.second
             }
         },
     ) {
@@ -110,7 +110,7 @@ fun InitMap(
             ClickedStoreMarker(clickedStoreDetail)
         }
     }
-    InitLocationButton(isMarkerClicked, selectedOption)
+    InitLocationButton(isMarkerClicked, selectedLocationMode, onLocationModeChanged)
 }
 
 fun setNewCoordinateIfGestured(
