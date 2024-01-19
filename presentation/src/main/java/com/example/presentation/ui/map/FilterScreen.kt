@@ -62,8 +62,8 @@ fun FilterChip(storeType: StoreType, isFilterClicked: Boolean, onFilterChanged: 
             onClick = { onFilterChanged(isFilterClicked.not()) },
             modifier = Modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-                .padding(end = 8.dp),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+                .padding(end = 6.dp),
+            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 11.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (isFilterClicked) Blue else White,
                 contentColor = if (isFilterClicked) White else Black
@@ -72,10 +72,10 @@ fun FilterChip(storeType: StoreType, isFilterClicked: Boolean, onFilterChanged: 
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
         ) {
             FilterCircle(storeType.color)
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = stringResource(storeType.storeTypeName),
-                fontSize = 10.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Thin
             )
         }
@@ -86,7 +86,7 @@ fun FilterChip(storeType: StoreType, isFilterClicked: Boolean, onFilterChanged: 
 fun FilterCircle(color: Color) {
     Box(
         modifier = Modifier
-            .size(12.dp)
+            .size(10.dp)
             .background(color = color, shape = CircleShape),
     )
 }
