@@ -1,6 +1,7 @@
 package com.example.presentation.ui.map
 
 import android.view.Gravity
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -9,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.mapper.toUiModel
@@ -70,7 +72,11 @@ fun InitMap(
         modifier = Modifier.fillMaxSize(),
         uiSettings = MapUiSettings(
             isZoomControlEnabled = false,
-            logoGravity = Gravity.BOTTOM or Gravity.END
+            logoGravity = Gravity.BOTTOM or Gravity.END,
+            logoMargin = PaddingValues(
+                end = 12.dp,
+                bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked, bottomSheetHeight)
+            )
         ),
         cameraPositionState = cameraPositionState.apply {
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
