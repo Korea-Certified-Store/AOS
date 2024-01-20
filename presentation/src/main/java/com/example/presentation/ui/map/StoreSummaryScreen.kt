@@ -5,6 +5,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -44,12 +45,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import com.example.presentation.R
+import com.example.presentation.model.Coordinate
 import com.example.presentation.model.Day
 import com.example.presentation.model.OpeningHours
 import com.example.presentation.model.OperatingTime
@@ -73,6 +76,31 @@ import java.util.Calendar
 import java.util.Date
 import kotlin.math.abs
 
+@Preview
+@Composable
+fun test() {
+    StoreSummaryBottomSheet(
+        true,
+        clickedStoreInfo = StoreDetail(
+            id = 1,
+            displayName = "미진일식미진일식미진일식미진일식미진일식",
+            primaryTypeDisplayName = "음식점",
+            formattedAddress = "몰라",
+            phoneNumber = null,
+            location = Coordinate(0.0, 0.0),
+            regularOpeningHours = listOf(),
+            localPhotos = listOf(),
+            certificationName = listOf(
+                StoreType.SAFE,
+                StoreType.GREAT,
+                StoreType.KIND,
+                StoreType.SAFE
+            )
+        ),
+        onCallDialogChanged = {})
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreSummaryBottomSheet(
@@ -88,7 +116,7 @@ fun StoreSummaryBottomSheet(
                 StoreSummaryInfo(clickedStoreInfo, onCallDialogChanged, onHeightChanged, height)
             }
         },
-        sheetPeekHeight = if (isMarkerClicked) height + 40.dp else BOTTOM_SHEET_HEIGHT_OFF.dp,
+        sheetPeekHeight = if (isMarkerClicked) height + 35.dp else BOTTOM_SHEET_HEIGHT_OFF.dp,
         sheetContainerColor = White,
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
         sheetShadowElevation = 5.dp,
@@ -137,7 +165,7 @@ fun StoreSummaryInfo(
                 "storeTitle",
                 maxWidth
             )
-            Chips(storeInfo.certificationName, "chips")
+            Chips(storeInfo.certificationName, "chips", maxWidth)
             StoreOpeningTime(storeInfo.regularOpeningHours, "storeOpeningTime")
             StoreCallButton(onCallDialogChanged, "storeCallButton")
             StoreImage("storeImage")
@@ -155,11 +183,11 @@ fun bottomSheetConstraints(): ConstraintSet {
 
         constrain(storeTitle) {
             top.linkTo(parent.top)
-            linkTo(start = parent.start, end = storeImage.start, endMargin = 100.dp, bias = 0F)
+            linkTo(start = parent.start, end = storeImage.start, endMargin = 12.dp, bias = 0F)
         }
         constrain(chips) {
-            start.linkTo(parent.start)
             top.linkTo(storeTitle.bottom, 4.dp)
+            linkTo(start = parent.start, end = storeImage.start, endMargin = 12.dp, bias = 0F)
         }
         constrain(storeOpeningTime) {
             start.linkTo(parent.start)
@@ -208,36 +236,44 @@ fun StoreTitle(storeName: String, storeType: String, id: String, maxWidth: Dp) {
 fun Chip(
     storeType: StoreType
 ) {
-    Surface(
-        color = when (storeType) {
-            StoreType.KIND -> Pink
-            StoreType.GREAT -> LightYellow
-            StoreType.SAFE -> LightBlue
-        },
-        shape = RoundedCornerShape(30.dp)
-    ) {
-        Text(
-            text = stringResource(storeType.storeTypeName),
-            color = MediumGray,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Thin,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-        )
+    Column {
+        Surface(
+            color = when (storeType) {
+                StoreType.KIND -> Pink
+                StoreType.GREAT -> LightYellow
+                StoreType.SAFE -> LightBlue
+            },
+            shape = RoundedCornerShape(30.dp)
+        ) {
+            Text(
+                text = stringResource(storeType.storeTypeName),
+                color = MediumGray,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Thin,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            )
+        }
+        Spacer(modifier = Modifier.padding(2.dp))
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Chips(
     elements: List<StoreType>,
-    id: String
+    id: String,
+    maxWidth: Dp
 ) {
-    LazyRow(modifier = Modifier.layoutId(id)) {
-        items(elements.size) { idx ->
-            Chip(storeType = elements[idx])
+    FlowRow(
+        modifier = Modifier
+            .layoutId(id)
+            .width(maxWidth - BOTTOM_SHEET_STORE_IMG_SIZE.dp - (DEFAULT_MARIN * 2).dp),
+    ) {
+        elements.forEach { item ->
+            Chip(storeType = item)
             Spacer(modifier = Modifier.padding(4.dp))
         }
     }
-
 }
 
 @Composable
