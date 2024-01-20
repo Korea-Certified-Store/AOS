@@ -29,24 +29,30 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
-import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
+import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchOnCurrentMapButton(
     isMarkerClicked: Boolean,
-    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit
+    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
+    bottomSheetHeight: Dp
 ) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .padding(bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked)),
+                .padding(
+                    bottom = setSearchOnCurrentMapBottomPadding(
+                        isMarkerClicked,
+                        bottomSheetHeight
+                    )
+                ),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -78,7 +84,7 @@ fun SearchOnCurrentMapButton(
     }
 }
 
-fun setSearchOnCurrentMapBottomPadding(isMarkerClicked: Boolean): Dp {
-    return if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp
+fun setSearchOnCurrentMapBottomPadding(isMarkerClicked: Boolean, bottomSheetHeight: Dp): Dp {
+    return if (isMarkerClicked) bottomSheetHeight + (SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING + BOTTOM_SHEET_DEFAULT_PADDING).dp
     else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp
 }

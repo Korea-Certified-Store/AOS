@@ -30,8 +30,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,14 +43,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import com.example.presentation.R
-import com.example.presentation.model.Coordinate
 import com.example.presentation.model.Day
 import com.example.presentation.model.OpeningHours
 import com.example.presentation.model.OperatingTime
@@ -69,6 +65,7 @@ import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Pink
 import com.example.presentation.ui.theme.Red
 import com.example.presentation.ui.theme.White
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_IMG_SIZE
 import com.example.presentation.util.MainConstants.DEFAULT_MARIN
@@ -76,47 +73,27 @@ import java.util.Calendar
 import java.util.Date
 import kotlin.math.abs
 
-@Preview
-@Composable
-fun test() {
-    StoreSummaryBottomSheet(
-        true,
-        clickedStoreInfo = StoreDetail(
-            id = 1,
-            displayName = "미진일식미진일식미진일식미진일식미진일식",
-            primaryTypeDisplayName = "음식점",
-            formattedAddress = "몰라",
-            phoneNumber = null,
-            location = Coordinate(0.0, 0.0),
-            regularOpeningHours = listOf(),
-            localPhotos = listOf(),
-            certificationName = listOf(
-                StoreType.SAFE,
-                StoreType.GREAT,
-                StoreType.KIND,
-                StoreType.SAFE
-            )
-        ),
-        onCallDialogChanged = {})
-}
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreSummaryBottomSheet(
     isMarkerClicked: Boolean,
     clickedStoreInfo: StoreDetail,
-    onCallDialogChanged: (Boolean) -> Unit
+    onCallDialogChanged: (Boolean) -> Unit,
+    bottomSheetHeight: Dp,
+    onHeightChanged: (Dp) -> Unit
 ) {
-    val (height, onHeightChanged) = remember { mutableStateOf(BOTTOM_SHEET_HEIGHT_OFF.dp) }
-
     BottomSheetScaffold(
         sheetContent = {
             Column {
-                StoreSummaryInfo(clickedStoreInfo, onCallDialogChanged, onHeightChanged, height)
+                StoreSummaryInfo(
+                    clickedStoreInfo,
+                    onCallDialogChanged,
+                    onHeightChanged,
+                    bottomSheetHeight
+                )
             }
         },
-        sheetPeekHeight = if (isMarkerClicked) height + 35.dp else BOTTOM_SHEET_HEIGHT_OFF.dp,
+        sheetPeekHeight = if (isMarkerClicked) bottomSheetHeight + BOTTOM_SHEET_DEFAULT_PADDING.dp else BOTTOM_SHEET_HEIGHT_OFF.dp,
         sheetContainerColor = White,
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
         sheetShadowElevation = 5.dp,

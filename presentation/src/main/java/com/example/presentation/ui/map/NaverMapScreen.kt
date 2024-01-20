@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.mapper.toUiModel
@@ -36,7 +37,8 @@ fun InitMap(
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onOriginCoordinateChanged: (Coordinate) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
-    onScreenChanged: (ScreenCoordinate) -> Unit
+    onScreenChanged: (ScreenCoordinate) -> Unit,
+    bottomSheetHeight: Dp
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -114,7 +116,7 @@ fun InitMap(
             ClickedStoreMarker(clickedStoreDetail)
         }
     }
-    InitLocationButton(isMarkerClicked, selectedOption, onOptionChanged)
+    InitLocationButton(isMarkerClicked, selectedOption, onOptionChanged, bottomSheetHeight)
 }
 
 fun setNewCoordinateIfGestured(

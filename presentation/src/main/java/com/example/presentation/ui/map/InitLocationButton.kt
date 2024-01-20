@@ -18,11 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.presentation.R
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
-import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 import com.naver.maps.map.compose.LocationTrackingMode
 
 @Composable
@@ -30,6 +28,7 @@ fun InitLocationButton(
     isMarkerClicked: Boolean,
     selectedOption: Pair<Int, LocationTrackingMode>,
     onOptionChanged: (Pair<Int, LocationTrackingMode>) -> Unit,
+    bottomSheetHeight: Dp
 ) {
     val isFollow = remember { mutableStateOf(true) }
 
@@ -38,7 +37,7 @@ fun InitLocationButton(
             .fillMaxHeight()
             .padding(
                 start = 12.dp,
-                bottom = getBottomPaddingByMarkerStatus(isMarkerClicked)
+                bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked, bottomSheetHeight)
             ),
         verticalArrangement = Arrangement.Bottom,
     ) {
@@ -61,10 +60,6 @@ fun InitLocationButton(
         }
     }
 }
-
-@Composable
-private fun getBottomPaddingByMarkerStatus(isMarkerClicked: Boolean) =
-    if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp
 
 fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrackingMode> {
     isFollow.value = !isFollow.value
