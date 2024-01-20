@@ -36,7 +36,6 @@ fun InitMap(
     onOriginCoordinateChanged: (Coordinate) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
     onScreenChanged: (ScreenCoordinate) -> Unit,
-    onLocationButtonClicked: (Boolean) -> Unit
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -115,7 +114,6 @@ fun InitMap(
         isMarkerClicked,
         selectedLocationMode,
         onLocationModeChanged,
-        onLocationButtonClicked,
         mainViewModel
     )
 }
