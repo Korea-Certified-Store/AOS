@@ -10,7 +10,6 @@ import com.example.domain.model.StoreDetailModel
 import com.example.domain.usecase.GetStoreDetailUseCase
 import com.example.presentation.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,8 +19,10 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
     ViewModel() {
-    private val _storeDetailModelData = MutableStateFlow<UiState<List<StoreDetailModel>>>(UiState.Loading)
-    val storeDetailModelData: StateFlow<UiState<List<StoreDetailModel>>> = _storeDetailModelData.asStateFlow()
+    private val _storeDetailModelData =
+        MutableStateFlow<UiState<List<StoreDetailModel>>>(UiState.Loading)
+    val storeDetailModelData: StateFlow<UiState<List<StoreDetailModel>>> =
+        _storeDetailModelData.asStateFlow()
 
     private val _isLocationPermissionGranted = MutableStateFlow<Boolean>(false)
     val isLocationPermissionGranted: StateFlow<Boolean> get() = _isLocationPermissionGranted
@@ -30,15 +31,12 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
         _isLocationPermissionGranted.emit(isGranted)
     }
 
-    suspend fun checkAndUpdatePermission(context: Context) {
-        while (!_isLocationPermissionGranted.value) {
-            _isLocationPermissionGranted.value = !(ActivityCompat.checkSelfPermission(
-                context, Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context, Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED)
-            delay(1000)
-        }
+    fun checkAndUpdatePermission(context: Context) {
+        _isLocationPermissionGranted.value = !(ActivityCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED)
     }
 
     fun getStoreDetail(
@@ -59,7 +57,8 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
             seLong,
             seLat,
             neLong,
-            neLat,).fold(
+            neLat,
+        ).fold(
             onSuccess = {
                 _storeDetailModelData.value = UiState.Success(it)
             }, onFailure = { e ->

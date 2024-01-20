@@ -68,10 +68,6 @@ class MainActivity : ComponentActivity() {
             lifecycleScope.launch {
                 mainViewModel.updateLocationPermission(true)
             }
-        } else {
-            lifecycleScope.launch {
-                mainViewModel.checkAndUpdatePermission(this@MainActivity)
-            }
         }
     }
 

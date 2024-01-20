@@ -115,7 +115,8 @@ fun InitMap(
         isMarkerClicked,
         selectedLocationMode,
         onLocationModeChanged,
-        onLocationButtonClicked
+        onLocationButtonClicked,
+        mainViewModel
     )
 }
 
