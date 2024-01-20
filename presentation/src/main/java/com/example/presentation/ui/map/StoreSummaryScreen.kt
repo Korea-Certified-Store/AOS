@@ -44,14 +44,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import com.example.presentation.R
-import com.example.presentation.model.Coordinate
 import com.example.presentation.model.Day
 import com.example.presentation.model.OpeningHours
 import com.example.presentation.model.OperatingTime
@@ -78,17 +76,19 @@ import kotlin.math.abs
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreSummaryBottomSheet(
-    heightType: Int,
+    isMarkerClicked: Boolean,
     clickedStoreInfo: StoreDetail,
     onCallDialogChanged: (Boolean) -> Unit
 ) {
+    val (height, onHeightChanged) = remember { mutableStateOf(BOTTOM_SHEET_HEIGHT_OFF.dp) }
+
     BottomSheetScaffold(
         sheetContent = {
             Column {
-                StoreSummaryInfo(clickedStoreInfo, onCallDialogChanged)
+                StoreSummaryInfo(clickedStoreInfo, onCallDialogChanged, onHeightChanged, height)
             }
         },
-        sheetPeekHeight = heightType.dp,
+        sheetPeekHeight = if (isMarkerClicked) height + 40.dp else BOTTOM_SHEET_HEIGHT_OFF.dp,
         sheetContainerColor = White,
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
         sheetShadowElevation = 5.dp,
@@ -111,14 +111,24 @@ fun StoreSummaryBottomSheet(
 @Composable
 fun StoreSummaryInfo(
     storeInfo: StoreDetail,
-    onCallDialogChanged: (Boolean) -> Unit
+    onCallDialogChanged: (Boolean) -> Unit,
+    onHeightChanged: (Dp) -> Unit,
+    currentHeight: Dp
 ) {
+    val density = LocalDensity.current
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
                 .padding(horizontal = DEFAULT_MARIN.dp, vertical = 13.dp)
                 .fillMaxWidth(1f)
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .onSizeChanged { size ->
+                    val newHeight = with(density) { size.height.toDp() }
+
+                    if (newHeight != currentHeight) {
+                        onHeightChanged(newHeight)
+                    }
+                },
             constraintSet = bottomSheetConstraints()
         ) {
             StoreTitle(

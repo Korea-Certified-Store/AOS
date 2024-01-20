@@ -12,8 +12,6 @@ import com.example.presentation.ui.map.InitMap
 import com.example.presentation.ui.map.SearchOnCurrentMapButton
 import com.example.presentation.ui.map.StoreCallDialog
 import com.example.presentation.ui.map.StoreSummaryBottomSheet
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.util.MainConstants.LAT_LIMIT
 import com.example.presentation.util.MainConstants.LONG_LIMIT
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -99,7 +97,7 @@ fun MainScreen(
     )
 
     StoreSummaryBottomSheet(
-        if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
+        isMarkerClicked,
         clickedStoreInfo,
         onCallDialogChanged
     )
