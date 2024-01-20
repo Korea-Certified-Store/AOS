@@ -96,4 +96,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.runtime.ktx)
     implementation(libs.material)
+
+    implementation(libs.constraintlayout.compose)
 }
