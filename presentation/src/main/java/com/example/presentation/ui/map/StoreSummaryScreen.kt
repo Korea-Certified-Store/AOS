@@ -59,6 +59,7 @@ import com.example.presentation.ui.theme.Red
 import com.example.presentation.ui.theme.White
 import java.util.Calendar
 import java.util.Date
+import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -209,6 +210,8 @@ fun getOperatingType(regularOpeningHours: List<OpeningHours>): OperatingTime {
 
     val type = if (operatingTimes.isEmpty()) {
         OperatingTime(OperatingType.DAY_OFF, "")
+    } else if (operatingTimes.size == 1 && (operatingTimes.first().open.hour == 0 && operatingTimes.first().open.minute == 0) && (operatingTimes.first().close.hour == 0 && operatingTimes.first().close.minute == 0)) {
+        OperatingTime(OperatingType.OPERATING, "24시간 영업")
     } else if (nowTime.hour * 60 + nowTime.minute < operatingTimes.first().open.hour * 60 + operatingTimes.first().open.minute) {
         OperatingTime(
             OperatingType.CLOSED,
@@ -249,7 +252,7 @@ fun calculateOperating(
     nextDay: List<OpeningHours>
 ): OperatingTime {
     for (idx in 0 until operatingTimes.size - 1) {
-        if (operatingTimes[idx].close.hour * 60 + operatingTimes[idx].close.minute - operatingTimes[idx + 1].open.hour * 60 + operatingTimes[idx + 1].open.minute <= 3 * 60) {
+        if (abs(operatingTimes[idx].close.hour * 60 + operatingTimes[idx].close.minute - operatingTimes[idx + 1].open.hour * 60 + operatingTimes[idx + 1].open.minute) <= 3 * 60) {
             if (nowTime.hour * 60 + nowTime.minute in (operatingTimes[idx].close.hour * 60 + operatingTimes[idx].close.minute until operatingTimes[idx + 1].open.hour * 60 + operatingTimes[idx + 1].open.minute)) {
                 return OperatingTime(
                     OperatingType.BREAK_TIME,
@@ -275,6 +278,8 @@ fun calculateOperating(
             OperatingType.OPERATING,
             "${operatingTimes.last().close.hour}:${getOperatingMinute(operatingTimes.last().close.minute)}에 영업 종료"
         )
+    } else if (nowTime.hour * 60 + nowTime.minute < operatingTimes.last().open.hour * 60 + operatingTimes.last().open.minute) {
+        return OperatingTime(OperatingType.CLOSED, "${operatingTimes.last().open.hour}:${getOperatingMinute(operatingTimes.last().open.minute)}에 영업 시작")
     }
 
     return OperatingTime(OperatingType.CLOSED, getNextDayOpeningHour(nextDay))
