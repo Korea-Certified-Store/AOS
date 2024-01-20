@@ -30,6 +30,7 @@ fun InitLocationButton(
     isMarkerClicked: Boolean,
     selectedLocationMode: Pair<Int, LocationTrackingMode>,
     onLocationModeChanged: (Pair<Int, LocationTrackingMode>) -> Unit,
+    onLocationButtonClicked: (Boolean) -> Unit,
 ) {
     val isFollow = remember { mutableStateOf(true) }
 
@@ -51,6 +52,7 @@ fun InitLocationButton(
                 containerColor = Color.Transparent
             ),
             onClick = {
+                onLocationButtonClicked(true)
                 onLocationModeChanged(getTrackingModePair(isFollow))
             },
         ) {

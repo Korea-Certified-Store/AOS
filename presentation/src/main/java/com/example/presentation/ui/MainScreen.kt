@@ -9,6 +9,7 @@ import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.map.FilterButtons
 import com.example.presentation.ui.map.InitMap
+import com.example.presentation.ui.map.MakeSnackBarForPermission
 import com.example.presentation.ui.map.SearchOnCurrentMapButton
 import com.example.presentation.ui.map.StoreCallDialog
 import com.example.presentation.ui.map.StoreSummaryBottomSheet
@@ -87,6 +88,8 @@ fun MainScreen(
         )
     }
 
+    val (isLocationButtonClicked, onLocationButtonClicked) = remember { mutableStateOf(false) }
+
     InitMap(
         mainViewModel,
         isMarkerClicked,
@@ -95,7 +98,8 @@ fun MainScreen(
         onStoreInfoChanged,
         onOriginCoordinateChanged,
         onNewCoordinateChanged,
-        onScreenChanged
+        onScreenChanged,
+        onLocationButtonClicked
     )
 
     StoreSummaryBottomSheet(
@@ -112,6 +116,8 @@ fun MainScreen(
         isSafeFilterClicked,
         onSafeFilterChanged
     )
+
+    MakeSnackBarForPermission(mainViewModel, onLocationButtonClicked)
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
         StoreCallDialog(
@@ -157,5 +163,9 @@ fun MainScreen(
         onCurrentMapChanged(false)
         onSearchOnCurrentMapButtonChanged(false)
         onOriginCoordinateChanged(newCoordinate)
+    }
+
+    if (isLocationButtonClicked) {
+        onLocationButtonClicked(false)
     }
 }
