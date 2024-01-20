@@ -65,7 +65,7 @@ fun InitMap(
 
     NaverMap(
         modifier = Modifier.fillMaxSize(),
-        uiSettings = MapUiSettings(isZoomControlEnabled = false),
+        uiSettings = MapUiSettings(isZoomControlEnabled = false, isCompassEnabled = false),
         cameraPositionState = cameraPositionState.apply {
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
             getScreenCoordinate(this, onScreenChanged)
