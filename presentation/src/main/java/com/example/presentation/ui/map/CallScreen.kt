@@ -33,8 +33,6 @@ fun StoreCallDialog(
     contactInfo: Contact,
     onCallDialogCanceled: (Boolean) -> Unit,
     onCallStoreChanged: (String) -> Unit,
-    onSaveStoreNumberChanged: (Contact) -> Unit,
-    onClipboardChanged: (String) -> Unit,
 ) {
     Dialog(onDismissRequest = { onCallDialogCanceled(true) }) {
         Surface(
@@ -53,16 +51,6 @@ fun StoreCallDialog(
                     description = R.string.call_number,
                     contactInfo = contactInfo,
                     onCallStoreChanged = onCallStoreChanged
-                )
-                CallOptionTextButton(
-                    description = R.string.save_number,
-                    contactInfo = contactInfo,
-                    onSaveStoreNumberChanged = onSaveStoreNumberChanged
-                )
-                CallOptionTextButton(
-                    description = R.string.copy_to_clipboard,
-                    contactInfo = contactInfo,
-                    onClipboardChanged = onClipboardChanged
                 )
                 CallCancelTextButton(onCallDialogCanceled = onCallDialogCanceled)
             }
