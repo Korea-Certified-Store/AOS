@@ -3,6 +3,7 @@ package com.example.presentation.ui.map
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
@@ -59,6 +61,7 @@ import com.example.presentation.ui.theme.MediumBlue
 import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Pink
 import com.example.presentation.ui.theme.Red
+import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
@@ -97,7 +100,7 @@ fun StoreSummaryBottomSheet(
                     modifier = Modifier
                         .width(32.dp)
                         .height(3.dp)
-                        .background(Color.LightGray)
+                        .background(White)
                 )
             }
         },
@@ -117,7 +120,7 @@ fun StoreSummaryInfo(
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
-                .padding(horizontal = DEFAULT_MARIN.dp, vertical = 13.dp)
+                .padding(horizontal = DEFAULT_MARIN.dp, vertical = 12.dp)
                 .fillMaxWidth(1f)
                 .wrapContentHeight()
                 .onSizeChanged { size ->
@@ -131,13 +134,20 @@ fun StoreSummaryInfo(
         ) {
             StoreTitle(
                 storeInfo.displayName,
-                storeInfo.primaryTypeDisplayName ?: "상점",
                 "storeTitle",
                 maxWidth
             )
-            Chips(storeInfo.certificationName, "chips", maxWidth)
+            StorePrimaryTypeText(
+                storeInfo.primaryTypeDisplayName ?: "상점",
+                "storePrimaryType",
+                maxWidth
+            )
+            StoreTypeChips(storeInfo.certificationName, "chips", maxWidth)
             StoreOpeningTime(storeInfo.operatingType, storeInfo.timeDescription, "storeOpeningTime")
-            StoreCallButton(onCallDialogChanged, "storeCallButton")
+            if (storeInfo.phoneNumber != null) StoreCallButton(
+                onCallDialogChanged,
+                "storeCallButton"
+            )
             StoreImageCard("storeImage", storeInfo.localPhotos)
         }
     }
@@ -146,6 +156,7 @@ fun StoreSummaryInfo(
 fun bottomSheetConstraints(): ConstraintSet {
     return ConstraintSet {
         val storeTitle = createRefFor("storeTitle")
+        val storePrimaryType = createRefFor("storePrimaryType")
         val chips = createRefFor("chips")
         val storeOpeningTime = createRefFor("storeOpeningTime")
         val storeCallButton = createRefFor("storeCallButton")
@@ -153,19 +164,23 @@ fun bottomSheetConstraints(): ConstraintSet {
 
         constrain(storeTitle) {
             top.linkTo(parent.top)
-            linkTo(start = parent.start, end = storeImage.start, endMargin = 12.dp, bias = 0F)
+            linkTo(start = parent.start, end = storeImage.start, endMargin = 8.dp, bias = 0F)
+        }
+        constrain(storePrimaryType) {
+            top.linkTo(storeTitle.bottom, 5.dp)
+            linkTo(start = parent.start, end = storeImage.start, endMargin = 8.dp, bias = 0F)
         }
         constrain(chips) {
-            top.linkTo(storeTitle.bottom, 4.dp)
-            linkTo(start = parent.start, end = storeImage.start, endMargin = 12.dp, bias = 0F)
+            top.linkTo(storePrimaryType.bottom, 5.dp)
+            linkTo(start = parent.start, end = storeImage.start, endMargin = 8.dp, bias = 0F)
         }
         constrain(storeOpeningTime) {
             start.linkTo(parent.start)
-            top.linkTo(chips.bottom, 3.dp)
+            top.linkTo(chips.bottom, 11.dp)
         }
         constrain(storeCallButton) {
             start.linkTo(parent.start)
-            top.linkTo(storeOpeningTime.bottom, 5.dp)
+            top.linkTo(storeOpeningTime.bottom, 21.dp)
             bottom.linkTo(parent.bottom)
         }
         constrain(storeImage) {
@@ -176,60 +191,59 @@ fun bottomSheetConstraints(): ConstraintSet {
 }
 
 @Composable
-fun StoreTitle(storeName: String, storeType: String, id: String, maxWidth: Dp) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+fun StoreTitle(storeName: String, id: String, maxWidth: Dp) {
+    Text(
+        text = storeName,
+        color = MediumBlue,
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
         modifier = Modifier
             .layoutId(id)
-            .width(maxWidth - BOTTOM_SHEET_STORE_IMG_SIZE.dp - (DEFAULT_MARIN * 2).dp)
-    ) {
-        Text(
-            text = storeName,
-            color = MediumBlue,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.layoutId(id),
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = storeType,
-            color = MediumGray,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Normal
-        )
-    }
+            .width(maxWidth - BOTTOM_SHEET_STORE_IMG_SIZE.dp - (DEFAULT_MARIN * 2).dp),
+    )
 }
 
 @Composable
-fun Chip(
+fun StorePrimaryTypeText(storeType: String, id: String, maxWidth: Dp) {
+    Text(
+        text = storeType,
+        color = MediumGray,
+        fontSize = 11.sp,
+        fontWeight = FontWeight.Normal,
+        modifier = Modifier
+            .layoutId(id)
+            .width(maxWidth - BOTTOM_SHEET_STORE_IMG_SIZE.dp - (DEFAULT_MARIN * 2).dp),
+    )
+}
+
+@Composable
+fun StoreTypeChip(
     storeType: StoreType
 ) {
-    Column {
-        Surface(
-            color = when (storeType) {
-                StoreType.KIND -> Pink
-                StoreType.GREAT -> LightYellow
-                StoreType.SAFE -> LightBlue
-            },
-            shape = RoundedCornerShape(30.dp)
-        ) {
-            Text(
-                text = stringResource(storeType.storeTypeName),
-                color = MediumGray,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Thin,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-            )
-        }
-        Spacer(modifier = Modifier.padding(2.dp))
+    Surface(
+        color = when (storeType) {
+            StoreType.KIND -> Pink
+            StoreType.GREAT -> LightYellow
+            StoreType.SAFE -> LightBlue
+        },
+        shape = RoundedCornerShape(30.dp),
+        modifier = Modifier.padding(end = 4.dp)
+    ) {
+        Text(
+            text = stringResource(storeType.storeTypeName),
+            color = MediumGray,
+            fontSize = 9.sp,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)
+        )
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun Chips(
+fun StoreTypeChips(
     elements: List<StoreType>,
     id: String,
     maxWidth: Dp
@@ -240,8 +254,7 @@ fun Chips(
             .width(maxWidth - BOTTOM_SHEET_STORE_IMG_SIZE.dp - (DEFAULT_MARIN * 2).dp),
     ) {
         elements.forEach { item ->
-            Chip(storeType = item)
-            Spacer(modifier = Modifier.padding(4.dp))
+            StoreTypeChip(storeType = item)
         }
     }
 }
@@ -252,23 +265,37 @@ fun StoreOpeningTime(
     timeDescription: String,
     id: String
 ) {
-    Row(modifier = Modifier.layoutId(id)) {
+    Row(
+        modifier = Modifier.layoutId(id),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
             text = operatingType,
             Modifier.alignByBaseline(),
             color = Red,
-            fontSize = 15.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Normal
         )
-        Spacer(modifier = Modifier.width(10.dp))
+        Spacer(modifier = Modifier.width(4.dp))
+        StoreOpeningTimeCircle()
+        Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = timeDescription,
             Modifier.alignByBaseline(),
             color = MediumGray,
-            fontSize = 13.sp,
+            fontSize = 11.sp,
             fontWeight = FontWeight.Normal
         )
     }
+}
+
+@Composable
+fun StoreOpeningTimeCircle() {
+    Box(
+        modifier = Modifier
+            .size(2.dp)
+            .background(color = LightGray, shape = CircleShape),
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -285,7 +312,7 @@ fun StoreCallButton(
             modifier = Modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
                 .layoutId(id),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 1.dp),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 0.dp),
             colors = ButtonDefaults.buttonColors(containerColor = White),
             shape = RoundedCornerShape(3.dp),
             border = BorderStroke(1.dp, Color.LightGray)
@@ -294,27 +321,27 @@ fun StoreCallButton(
                 imageVector = ImageVector.vectorResource(id = R.drawable.call),
                 tint = DarkGray,
                 contentDescription = "Call",
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(29.dp)
             )
         }
     }
 }
 
 @Composable
-fun StoreImageCard(id: String, localPhotos: List<String?>) {
+fun StoreImageCard(id: String, localPhotos: List<String>) {
     Card(
         modifier = Modifier
             .size(BOTTOM_SHEET_STORE_IMG_SIZE.dp)
             .layoutId(id),
         shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(0.3.dp, LightGray)
+        border = BorderStroke(0.3.dp, SemiLightGray)
     ) {
         StoreImage(localPhotos = localPhotos)
     }
 }
 
 @Composable
-fun StoreImage(localPhotos: List<String?>) {
+fun StoreImage(localPhotos: List<String>) {
     if (localPhotos.isNotEmpty()) {
         CoilImage(
             imageModel = localPhotos.first(),

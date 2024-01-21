@@ -9,9 +9,6 @@ data class StoreDetail(
     val location: Coordinate,
     val operatingType: String,
     val timeDescription: String,
-    val localPhotos: List<String?>,
+    val localPhotos: List<String>,
     val certificationName: List<StoreType>
 )
-
-
-

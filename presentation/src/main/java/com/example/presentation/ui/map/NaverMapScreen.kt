@@ -1,11 +1,15 @@
 package com.example.presentation.ui.map
 
+import android.app.Activity
+import android.graphics.Point
+import android.graphics.PointF
 import android.view.Gravity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,9 +44,11 @@ fun InitMap(
     onOriginCoordinateChanged: (Coordinate) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
     onScreenChanged: (ScreenCoordinate) -> Unit,
+    bottomSheetHeight: Dp,
+    clickedMarkerId: Long,
+    onMarkerChanged: (Long) -> Unit,
     selectedLocationButton: LocationTrackingButton,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
-    bottomSheetHeight: Dp
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -81,6 +87,7 @@ fun InitMap(
         ),
         onMapClick = { _, _ ->
             onBottomSheetChanged(false)
+            onMarkerChanged(-1)
         },
         onOptionChange = {
             cameraPositionState.locationTrackingMode?.let {
@@ -99,13 +106,22 @@ fun InitMap(
             }
 
             is UiState.Success -> {
+                state.data.forEach { storeDetail ->
+                    StoreMarker(
+                        onBottomSheetChanged,
+                        storeDetail.toUiModel(),
+                        onStoreInfoChanged,
+                        clickedMarkerId,
+                        onMarkerChanged
+                    )
+                }
                 ShowFilteredMarkers(state, mainViewModel, onBottomSheetChanged, onStoreInfoChanged)
             }
 
             else -> {}
         }
         if (isMarkerClicked) {
-            ClickedStoreMarker(clickedStoreDetail)
+            onMarkerChanged(clickedMarkerId)
         }
     }
     InitLocationButton(
@@ -167,28 +183,41 @@ fun setNewCoordinateIfGestured(
     }
 }
 
+@Composable
 fun getScreenCoordinate(
     cameraPositionState: CameraPositionState,
     onScreenChanged: (ScreenCoordinate) -> Unit
 ) {
-    cameraPositionState.contentBounds?.let {
+    val context = LocalContext.current as Activity
+    val display = context.windowManager.defaultDisplay
+    val size = Point()
+    display.getRealSize(size)
+    val width = size.x.toFloat()
+    val height = size.y.toFloat()
+
+    cameraPositionState.projection?.let {
+        val northWest = it.fromScreenLocation(PointF(0f, 0f))
+        val southWest = it.fromScreenLocation(PointF(0f, height))
+        val southEast = it.fromScreenLocation(PointF(width, height))
+        val northEast = it.fromScreenLocation(PointF(width, 0f))
+
         onScreenChanged(
             ScreenCoordinate(
                 northWest = Coordinate(
-                    it.northWest.latitude,
-                    it.northWest.longitude
+                    northWest.latitude,
+                    northWest.longitude
                 ),
                 southWest = Coordinate(
-                    it.southWest.latitude,
-                    it.southWest.longitude
+                    southWest.latitude,
+                    southWest.longitude
                 ),
                 southEast = Coordinate(
-                    it.southEast.latitude,
-                    it.southEast.longitude
+                    southEast.latitude,
+                    southEast.longitude
                 ),
                 northEast = Coordinate(
-                    it.northEast.latitude,
-                    it.northEast.longitude
+                    northEast.latitude,
+                    northEast.longitude
                 ),
             )
         )

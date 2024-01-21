@@ -12,7 +12,7 @@ data class ResponseStoreDetailDto(
     val phoneNumber: String?,
     val location: CoordinateDto,
     val regularOpeningHours: List<OpeningHoursDto>,
-    val localPhotos: List<String?>,
+    val localPhotos: List<String>,
     val certificationName: List<String>
 )
 
