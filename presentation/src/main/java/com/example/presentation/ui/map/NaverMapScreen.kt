@@ -19,7 +19,10 @@ import com.example.presentation.model.Coordinate
 import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
+import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainViewModel
+import com.example.presentation.util.MainConstants.GREAT_STORE
+import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.UiState
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
@@ -75,7 +78,7 @@ fun InitMap(
         cameraPositionState = cameraPositionState.apply {
             turnOffLocationButtonIfGestured(this, onLocationButtonChanged)
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
-            getScreenCoordinate(this, onScreenChanged)
+            GetScreenCoordinate(this, onScreenChanged)
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
@@ -102,15 +105,14 @@ fun InitMap(
             }
 
             is UiState.Success -> {
-                state.data.forEach { storeDetail ->
-                    StoreMarker(
-                        onBottomSheetChanged,
-                        storeDetail.toUiModel(),
-                        onStoreInfoChanged,
-                        clickedMarkerId,
-                        onMarkerChanged
-                    )
-                }
+                ShowFilteredMarkers(
+                    state,
+                    mainViewModel,
+                    onBottomSheetChanged,
+                    onStoreInfoChanged,
+                    clickedMarkerId,
+                    onMarkerChanged
+                )
             }
 
             else -> {}
@@ -126,6 +128,37 @@ fun InitMap(
         mainViewModel,
         bottomSheetHeight
     )
+}
+
+@ExperimentalNaverMapApi
+@Composable
+private fun ShowFilteredMarkers(
+    state: UiState.Success<List<com.example.domain.model.map.StoreDetail>>,
+    mainViewModel: MainViewModel,
+    onBottomSheetChanged: (Boolean) -> Unit,
+    onStoreInfoChanged: (StoreDetail) -> Unit,
+    clickedMarkerId: Long,
+    onMarkerChanged: (Long) -> Unit,
+) {
+    state.data.filter { storeInfo ->
+        mainViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet()).isNotEmpty()
+    }.forEach { storeInfo ->
+        val storeType =
+            when (mainViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet())
+                .last()) {
+                KIND_STORE -> StoreType.KIND
+                GREAT_STORE -> StoreType.GREAT
+                else -> StoreType.SAFE
+            }
+        StoreMarker(
+            onBottomSheetChanged,
+            storeInfo.toUiModel(),
+            onStoreInfoChanged,
+            clickedMarkerId,
+            onMarkerChanged,
+            storeType
+        )
+    }
 }
 
 fun turnOffLocationButtonIfGestured(
@@ -152,7 +185,7 @@ fun setNewCoordinateIfGestured(
 }
 
 @Composable
-fun getScreenCoordinate(
+fun GetScreenCoordinate(
     cameraPositionState: CameraPositionState,
     onScreenChanged: (ScreenCoordinate) -> Unit
 ) {
