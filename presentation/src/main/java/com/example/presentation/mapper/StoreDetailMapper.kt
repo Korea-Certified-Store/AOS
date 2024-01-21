@@ -4,6 +4,8 @@ import com.example.domain.model.map.CoordinateModel
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
+import com.example.presentation.util.MainConstants.GREAT_STORE
+import com.example.presentation.util.MainConstants.KIND_STORE
 
 fun com.example.domain.model.map.StoreDetail.toUiModel(): StoreDetail =
     StoreDetail(
@@ -25,8 +27,8 @@ fun CoordinateModel.toUiModel(): Coordinate =
 fun List<String>.toUiModel(): List<StoreType> {
     return this.map {
         when (it) {
-            "모범음식점" -> StoreType.GREAT
-            "착한가격업소" -> StoreType.KIND
+            GREAT_STORE -> StoreType.GREAT
+            KIND_STORE -> StoreType.KIND
             else -> StoreType.SAFE
         }
     }.sortedBy { it.ordinal }

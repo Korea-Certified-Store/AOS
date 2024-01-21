@@ -15,7 +15,10 @@ import com.example.presentation.model.Coordinate
 import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
+import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainViewModel
+import com.example.presentation.util.MainConstants.GREAT_STORE
+import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.UiState
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
@@ -96,13 +99,7 @@ fun InitMap(
             }
 
             is UiState.Success -> {
-                state.data.forEach { storeInfo ->
-                    StoreMarker(
-                        onBottomSheetChanged,
-                        storeInfo.toUiModel(),
-                        onStoreInfoChanged
-                    )
-                }
+                ShowFilteredMarkers(state, mainViewModel, onBottomSheetChanged, onStoreInfoChanged)
             }
 
             else -> {}
@@ -118,6 +115,33 @@ fun InitMap(
         mainViewModel,
         bottomSheetHeight
     )
+}
+
+@ExperimentalNaverMapApi
+@Composable
+private fun ShowFilteredMarkers(
+    state: UiState.Success<List<com.example.domain.model.map.StoreDetail>>,
+    mainViewModel: MainViewModel,
+    onBottomSheetChanged: (Boolean) -> Unit,
+    onStoreInfoChanged: (StoreDetail) -> Unit
+) {
+    state.data.filter { storeInfo ->
+        mainViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet()).isNotEmpty()
+    }.forEach { storeInfo ->
+        val storeType =
+            when (mainViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet())
+                .first()) {
+                KIND_STORE -> StoreType.KIND
+                GREAT_STORE -> StoreType.GREAT
+                else -> StoreType.SAFE
+            }
+        StoreMarker(
+            onBottomSheetChanged,
+            storeInfo.toUiModel(),
+            onStoreInfoChanged,
+            storeType
+        )
+    }
 }
 
 fun turnOffLocationButtonIfGestured(

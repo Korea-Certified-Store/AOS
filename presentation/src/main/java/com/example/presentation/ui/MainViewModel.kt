@@ -9,6 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.model.map.StoreDetail
 import com.example.domain.usecase.GetStoreDetailUseCase
 import com.example.presentation.model.LocationTrackingButton
+import com.example.presentation.util.MainConstants.GREAT_STORE
+import com.example.presentation.util.MainConstants.KIND_STORE
+import com.example.presentation.util.MainConstants.SAFE_STORE
 import com.example.presentation.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +33,11 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
 
     private val _isLocationPermissionGranted = MutableStateFlow<Boolean>(false)
     val isLocationPermissionGranted: StateFlow<Boolean> get() = _isLocationPermissionGranted
+
+    fun getFilterSet(): Set<String> {
+        return if (filterSet.isEmpty()) setOf(KIND_STORE, GREAT_STORE, SAFE_STORE)
+        else filterSet.toSet()
+    }
 
     fun updateFilterSet(certificationName: String, isClicked: Boolean) {
         if (isClicked) {

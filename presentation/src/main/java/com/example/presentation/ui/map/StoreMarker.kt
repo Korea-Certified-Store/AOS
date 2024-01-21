@@ -2,6 +2,7 @@ package com.example.presentation.ui.map
 
 import androidx.compose.runtime.Composable
 import com.example.presentation.model.StoreDetail
+import com.example.presentation.model.StoreType
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.Marker
@@ -13,7 +14,8 @@ import com.naver.maps.map.overlay.OverlayImage
 fun StoreMarker(
     onBottomSheetChanged: (Boolean) -> Unit,
     storeDetail: StoreDetail,
-    onStoreInfoChanged: (StoreDetail) -> Unit
+    onStoreInfoChanged: (StoreDetail) -> Unit,
+    storeType: StoreType
 ) {
     Marker(
         state = MarkerState(
@@ -22,11 +24,10 @@ fun StoreMarker(
                 storeDetail.location.longitude
             )
         ),
-        icon = OverlayImage.fromResource(storeDetail.certificationName.first().initPinImg),
+        icon = OverlayImage.fromResource(storeType.initPinImg),
         onClick = {
             onBottomSheetChanged(true)
             onStoreInfoChanged(storeDetail)
-
             true
         }
     )
