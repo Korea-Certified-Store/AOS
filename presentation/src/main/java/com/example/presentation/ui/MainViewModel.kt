@@ -21,6 +21,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
     ViewModel() {
 
+    private val filterSet = mutableSetOf<String>()
+
     private val _storeDetailModelData =
         MutableStateFlow<UiState<List<StoreDetail>>>(UiState.Loading)
     val storeDetailModelData: StateFlow<UiState<List<StoreDetail>>> =
@@ -28,6 +30,14 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
 
     private val _isLocationPermissionGranted = MutableStateFlow<Boolean>(false)
     val isLocationPermissionGranted: StateFlow<Boolean> get() = _isLocationPermissionGranted
+
+    fun updateFilterSet(certificationName: String, isClicked: Boolean) {
+        if (isClicked) {
+            filterSet.add(certificationName)
+        } else {
+            filterSet.remove(certificationName)
+        }
+    }
 
     fun getInitialLocationTrackingMode(): LocationTrackingButton {
         return if (isLocationPermissionGranted.value) {

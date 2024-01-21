@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.model.StoreType
+import com.example.presentation.ui.MainViewModel
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
@@ -39,8 +40,10 @@ fun FilterButtons(
     isGreatFilterClicked: Boolean,
     onGreatFilterChanged: (Boolean) -> Unit,
     isSafeFilterClicked: Boolean,
-    onSafeFilterChanged: (Boolean) -> Unit
+    onSafeFilterChanged: (Boolean) -> Unit,
+    mainViewModel: MainViewModel
 ) {
+
     Row(
         modifier = Modifier
             .fillMaxHeight()
@@ -48,18 +51,42 @@ fun FilterButtons(
             .padding(top = 12.dp, start = 16.dp),
         verticalAlignment = Alignment.Top
     ) {
-        FilterChip(storeType = StoreType.KIND, isKindFilterClicked, onKindFilterChanged)
-        FilterChip(storeType = StoreType.GREAT, isGreatFilterClicked, onGreatFilterChanged)
-        FilterChip(storeType = StoreType.SAFE, isSafeFilterClicked, onSafeFilterChanged)
+        FilterChip(
+            storeType = StoreType.KIND,
+            isKindFilterClicked,
+            onKindFilterChanged,
+            mainViewModel
+        )
+        FilterChip(
+            storeType = StoreType.GREAT,
+            isGreatFilterClicked,
+            onGreatFilterChanged,
+            mainViewModel
+        )
+        FilterChip(
+            storeType = StoreType.SAFE,
+            isSafeFilterClicked,
+            onSafeFilterChanged,
+            mainViewModel
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterChip(storeType: StoreType, isFilterClicked: Boolean, onFilterChanged: (Boolean) -> Unit) {
+fun FilterChip(
+    storeType: StoreType,
+    isFilterClicked: Boolean,
+    onFilterChanged: (Boolean) -> Unit,
+    mainViewModel: MainViewModel
+) {
+    val certificationName = stringResource(id = storeType.storeTypeName).replace(" ", "")
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Button(
-            onClick = { onFilterChanged(isFilterClicked.not()) },
+            onClick = {
+                mainViewModel.updateFilterSet(certificationName, isFilterClicked.not())
+                onFilterChanged(isFilterClicked.not())
+            },
             modifier = Modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
                 .padding(end = 6.dp),
