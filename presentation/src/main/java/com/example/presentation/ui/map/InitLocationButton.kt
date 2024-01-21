@@ -45,7 +45,6 @@ fun InitLocationButton(
         modifier = Modifier
             .fillMaxHeight()
             .padding(
-                start = 12.dp,
                 bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked, bottomSheetHeight)
             ),
         verticalArrangement = Arrangement.Bottom,
