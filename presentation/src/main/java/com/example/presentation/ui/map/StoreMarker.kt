@@ -16,7 +16,7 @@ fun StoreMarker(
     storeDetail: StoreDetail,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     clickedMarkerId: Long,
-    onMarkerChanged: (Long) -> Unit
+    onMarkerChanged: (Long) -> Unit,
     storeType: StoreType
 ) {
     Marker(
@@ -26,8 +26,7 @@ fun StoreMarker(
                 storeDetail.location.longitude
             )
         ),
-        icon = getMarkerIcon(storeDetail, storeDetail.id, clickedMarkerId),
-//        icon = OverlayImage.fromResource(storeType.initPinImg),
+        icon = getMarkerIcon(storeType, storeDetail.id, clickedMarkerId),
         onClick = {
             onBottomSheetChanged(true)
             onStoreInfoChanged(storeDetail)
@@ -38,13 +37,13 @@ fun StoreMarker(
 }
 
 fun getMarkerIcon(
-    storeDetail: StoreDetail,
+    storeType: StoreType,
     markerId: Long,
     clickedMarkerId: Long
 ): OverlayImage {
     return if (markerId == clickedMarkerId) {
-        OverlayImage.fromResource(storeDetail.certificationName.first().clickedPinImg)
+        OverlayImage.fromResource(storeType.clickedPinImg)
     } else {
-        OverlayImage.fromResource(storeDetail.certificationName.first().initPinImg)
+        OverlayImage.fromResource(storeType.initPinImg)
     }
 }

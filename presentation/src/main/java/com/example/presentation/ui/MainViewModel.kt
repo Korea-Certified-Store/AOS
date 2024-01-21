@@ -35,7 +35,7 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
     val isLocationPermissionGranted: StateFlow<Boolean> get() = _isLocationPermissionGranted
 
     fun getFilterSet(): Set<String> {
-        return if (filterSet.isEmpty()) setOf(KIND_STORE, GREAT_STORE, SAFE_STORE)
+        return if (filterSet.isEmpty()) setOf(SAFE_STORE, GREAT_STORE, KIND_STORE)
         else filterSet.toSet()
     }
 

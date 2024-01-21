@@ -39,7 +39,6 @@ fun InitMap(
     mainViewModel: MainViewModel,
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
-    clickedStoreDetail: StoreDetail,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onOriginCoordinateChanged: (Coordinate) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
@@ -79,7 +78,7 @@ fun InitMap(
         cameraPositionState = cameraPositionState.apply {
             turnOffLocationButtonIfGestured(this, onLocationButtonChanged)
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
-            getScreenCoordinate(this, onScreenChanged)
+            GetScreenCoordinate(this, onScreenChanged)
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
@@ -106,16 +105,14 @@ fun InitMap(
             }
 
             is UiState.Success -> {
-                state.data.forEach { storeDetail ->
-                    StoreMarker(
-                        onBottomSheetChanged,
-                        storeDetail.toUiModel(),
-                        onStoreInfoChanged,
-                        clickedMarkerId,
-                        onMarkerChanged
-                    )
-                }
-                ShowFilteredMarkers(state, mainViewModel, onBottomSheetChanged, onStoreInfoChanged)
+                ShowFilteredMarkers(
+                    state,
+                    mainViewModel,
+                    onBottomSheetChanged,
+                    onStoreInfoChanged,
+                    clickedMarkerId,
+                    onMarkerChanged
+                )
             }
 
             else -> {}
@@ -139,14 +136,16 @@ private fun ShowFilteredMarkers(
     state: UiState.Success<List<com.example.domain.model.map.StoreDetail>>,
     mainViewModel: MainViewModel,
     onBottomSheetChanged: (Boolean) -> Unit,
-    onStoreInfoChanged: (StoreDetail) -> Unit
+    onStoreInfoChanged: (StoreDetail) -> Unit,
+    clickedMarkerId: Long,
+    onMarkerChanged: (Long) -> Unit,
 ) {
     state.data.filter { storeInfo ->
         mainViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet()).isNotEmpty()
     }.forEach { storeInfo ->
         val storeType =
             when (mainViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet())
-                .first()) {
+                .last()) {
                 KIND_STORE -> StoreType.KIND
                 GREAT_STORE -> StoreType.GREAT
                 else -> StoreType.SAFE
@@ -155,6 +154,8 @@ private fun ShowFilteredMarkers(
             onBottomSheetChanged,
             storeInfo.toUiModel(),
             onStoreInfoChanged,
+            clickedMarkerId,
+            onMarkerChanged,
             storeType
         )
     }
@@ -184,7 +185,7 @@ fun setNewCoordinateIfGestured(
 }
 
 @Composable
-fun getScreenCoordinate(
+fun GetScreenCoordinate(
     cameraPositionState: CameraPositionState,
     onScreenChanged: (ScreenCoordinate) -> Unit
 ) {
