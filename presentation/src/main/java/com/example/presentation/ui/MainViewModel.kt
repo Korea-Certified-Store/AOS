@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.StoreDetailModel
 import com.example.domain.usecase.GetStoreDetailUseCase
+import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,8 +28,16 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
     private val _isLocationPermissionGranted = MutableStateFlow<Boolean>(false)
     val isLocationPermissionGranted: StateFlow<Boolean> get() = _isLocationPermissionGranted
 
-    suspend fun updateLocationPermission(isGranted: Boolean) {
-        _isLocationPermissionGranted.emit(isGranted)
+    fun getInitialLocationTrackingMode(): LocationTrackingButton {
+        return if (isLocationPermissionGranted.value) {
+            LocationTrackingButton.FOLLOW
+        } else {
+            LocationTrackingButton.NONE
+        }
+    }
+
+    fun updateLocationPermission(isGranted: Boolean) {
+        _isLocationPermissionGranted.value = isGranted
     }
 
     fun checkAndUpdatePermission(context: Context) {

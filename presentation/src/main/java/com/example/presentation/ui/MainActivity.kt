@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.presentation.R
 import com.example.presentation.model.Contact
+import com.example.presentation.ui.map.LocationPermissionRequest
 import com.example.presentation.ui.theme.Android_KCSTheme
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +34,8 @@ class MainActivity : ComponentActivity() {
         val mainViewModel by viewModels<MainViewModel>()
 
         setContent {
+            LocationPermissionRequest(mainViewModel)
+
             val (callStoreNumber, onCallStoreChanged) = remember { mutableStateOf("") }
             val (contactInfo, onSaveStoreNumberChanged) = remember {
                 mutableStateOf(INIT_CONTACT_INFO)

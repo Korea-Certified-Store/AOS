@@ -15,8 +15,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -26,25 +24,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.presentation.R
+import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.ui.MainViewModel
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
 import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
-import com.naver.maps.map.compose.LocationTrackingMode
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun InitLocationButton(
     isMarkerClicked: Boolean,
-    selectedLocationMode: Pair<Int, LocationTrackingMode>,
-    onLocationModeChanged: (Pair<Int, LocationTrackingMode>) -> Unit,
+    selectedLocationButton: LocationTrackingButton,
+    onLocationButtonChanged: (LocationTrackingButton) -> Unit,
     mainViewModel: MainViewModel,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackBarHost = remember { SnackbarHostState() }
-    val isFollow = remember { mutableStateOf(true) }
     val bottomPadding = getBottomPaddingByMarkerStatus(isMarkerClicked)
 
     Column(
@@ -65,12 +61,11 @@ fun InitLocationButton(
         }
         CreateLocationButton(
             context,
-            isFollow,
-            onLocationModeChanged,
+            selectedLocationButton,
+            onLocationButtonChanged,
             mainViewModel,
             scope,
             snackBarHost,
-            selectedLocationMode.first
         )
 
     }
@@ -84,12 +79,11 @@ private fun getBottomPaddingByMarkerStatus(isMarkerClicked: Boolean) =
 @Composable
 fun CreateLocationButton(
     context: Context,
-    isFollow: MutableState<Boolean>,
-    onLocationModeChanged: (Pair<Int, LocationTrackingMode>) -> Unit,
+    selectedLocationButton: LocationTrackingButton,
+    onLocationButtonChanged: (LocationTrackingButton) -> Unit,
     mainViewModel: MainViewModel,
     scope: CoroutineScope,
     snackBarHost: SnackbarHostState,
-    selectedLocationMode: Int
 ) {
     Button(
         modifier = Modifier
@@ -101,43 +95,48 @@ fun CreateLocationButton(
             containerColor = Color.Transparent
         ),
         onClick = {
-            handleButtonClick(
+            selectedLocationButton(
                 context,
-                isFollow,
-                onLocationModeChanged,
+                onLocationButtonChanged,
                 mainViewModel,
                 scope,
-                snackBarHost
+                snackBarHost,
+                selectedLocationButton
             )
         },
     ) {
         Image(
-            painter = painterResource(id = selectedLocationMode),
+            painter = painterResource(id = selectedLocationButton.img),
             contentDescription = "location button",
         )
     }
 }
 
-fun handleButtonClick(
+fun selectedLocationButton(
     context: Context,
-    isFollow: MutableState<Boolean>,
-    onLocationModeChanged: (Pair<Int, LocationTrackingMode>) -> Unit,
+    onLocationButtonChanged: (LocationTrackingButton) -> Unit,
     mainViewModel: MainViewModel,
     scope: CoroutineScope,
-    snackBarHost: SnackbarHostState
+    snackBarHost: SnackbarHostState,
+    selectedLocationButton: LocationTrackingButton
 ) {
     mainViewModel.checkAndUpdatePermission(context)
     if (!mainViewModel.isLocationPermissionGranted.value && snackBarHost.currentSnackbarData == null) {
         showPermissionSnackBar(context, scope, snackBarHost)
     }
-    onLocationModeChanged(getTrackingModePair(isFollow))
+    onLocationButtonChanged(changeLocationTrackingMode(selectedLocationButton, mainViewModel))
 }
 
+fun changeLocationTrackingMode(
+    selectedLocationButton: LocationTrackingButton, mainViewModel: MainViewModel
+): LocationTrackingButton {
+    return when (selectedLocationButton) {
+        LocationTrackingButton.NONE -> {
+            mainViewModel.getInitialLocationTrackingMode()
+        }
 
-fun getTrackingModePair(isFollow: MutableState<Boolean>): Pair<Int, LocationTrackingMode> {
-    isFollow.value = !isFollow.value
-    return when (isFollow.value) {
-        true -> Pair(R.drawable.icon_follow, LocationTrackingMode.Follow)
-        false -> Pair(R.drawable.icon_face, LocationTrackingMode.Face)
+        LocationTrackingButton.NO_FOLLOW -> LocationTrackingButton.FOLLOW
+        LocationTrackingButton.FOLLOW -> LocationTrackingButton.FACE
+        LocationTrackingButton.FACE -> LocationTrackingButton.FOLLOW
     }
 }
