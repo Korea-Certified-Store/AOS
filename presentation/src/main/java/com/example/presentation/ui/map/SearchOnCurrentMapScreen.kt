@@ -40,7 +40,9 @@ import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_
 fun SearchOnCurrentMapButton(
     isMarkerClicked: Boolean,
     onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
-    bottomSheetHeight: Dp
+    bottomSheetHeight: Dp,
+    onMarkerChanged: (Long) -> Unit,
+    onBottomSheetChanged: (Boolean) -> Unit
 ) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Column(
@@ -57,7 +59,11 @@ fun SearchOnCurrentMapButton(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { onSearchOnCurrentMapButtonChanged(true) },
+                onClick = {
+                    onSearchOnCurrentMapButtonChanged(true)
+                    onMarkerChanged(-1)
+                    onBottomSheetChanged(false)
+                },
                 modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 11.dp),
                 colors = ButtonDefaults.buttonColors(

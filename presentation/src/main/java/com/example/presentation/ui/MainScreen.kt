@@ -1,6 +1,7 @@
 package com.example.presentation.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
@@ -90,6 +91,8 @@ fun MainScreen(
 
     val (bottomSheetHeight, onBottomSheetHeightChanged) = remember { mutableStateOf(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp) }
 
+    val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(-1) }
+
     InitMap(
         mainViewModel,
         isMarkerClicked,
@@ -98,7 +101,9 @@ fun MainScreen(
         onOriginCoordinateChanged,
         onNewCoordinateChanged,
         onScreenChanged,
-        bottomSheetHeight
+        bottomSheetHeight,
+        clickedMarkerId,
+        onMarkerChanged
     )
 
     StoreSummaryBottomSheet(
@@ -145,7 +150,9 @@ fun MainScreen(
         SearchOnCurrentMapButton(
             isMarkerClicked,
             onSearchOnCurrentMapButtonChanged,
-            bottomSheetHeight
+            bottomSheetHeight,
+            onMarkerChanged,
+            onBottomSheetChanged
         )
     }
 
