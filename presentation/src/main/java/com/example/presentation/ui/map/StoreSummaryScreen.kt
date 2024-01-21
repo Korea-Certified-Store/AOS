@@ -97,7 +97,7 @@ fun StoreSummaryBottomSheet(
                     modifier = Modifier
                         .width(32.dp)
                         .height(3.dp)
-                        .background(Color.LightGray)
+                        .background(White)
                 )
             }
         },
@@ -131,13 +131,16 @@ fun StoreSummaryInfo(
         ) {
             StoreTitle(
                 storeInfo.displayName,
-                storeInfo.primaryTypeDisplayName ?: "상점",
+                storeInfo.primaryTypeDisplayName ?: "",
                 "storeTitle",
                 maxWidth
             )
             Chips(storeInfo.certificationName, "chips", maxWidth)
             StoreOpeningTime(storeInfo.operatingType, storeInfo.timeDescription, "storeOpeningTime")
-            if (storeInfo.phoneNumber != null) StoreCallButton(onCallDialogChanged, "storeCallButton")
+            if (storeInfo.phoneNumber != null) StoreCallButton(
+                onCallDialogChanged,
+                "storeCallButton"
+            )
             StoreImageCard("storeImage", storeInfo.localPhotos)
         }
     }
