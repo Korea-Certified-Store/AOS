@@ -137,7 +137,7 @@ fun StoreSummaryInfo(
             )
             Chips(storeInfo.certificationName, "chips", maxWidth)
             StoreOpeningTime(storeInfo.operatingType, storeInfo.timeDescription, "storeOpeningTime")
-            StoreCallButton(onCallDialogChanged, "storeCallButton")
+            if (storeInfo.phoneNumber != null) StoreCallButton(onCallDialogChanged, "storeCallButton")
             StoreImageCard("storeImage", storeInfo.localPhotos)
         }
     }
