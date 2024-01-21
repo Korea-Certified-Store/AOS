@@ -130,7 +130,8 @@ fun MainScreen(
         isGreatFilterClicked,
         onGreatFilterChanged,
         isSafeFilterClicked,
-        onSafeFilterChanged
+        onSafeFilterChanged,
+        mainViewModel
     )
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
