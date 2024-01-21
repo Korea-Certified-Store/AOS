@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -35,7 +36,6 @@ fun InitMap(
     mainViewModel: MainViewModel,
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
-    clickedStoreDetail: StoreDetail,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onOriginCoordinateChanged: (Coordinate) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
@@ -67,6 +67,8 @@ fun InitMap(
     if (cameraIsMoving.value) {
         onOptionChanged(Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow))
     }
+
+    val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(-1) }
 
     NaverMap(
         modifier = Modifier.fillMaxSize(),
@@ -107,11 +109,13 @@ fun InitMap(
             }
 
             is UiState.Success -> {
-                state.data.forEach { storeInfo ->
+                state.data.forEach { storeDetail ->
                     StoreMarker(
                         onBottomSheetChanged,
-                        storeInfo.toUiModel(),
-                        onStoreInfoChanged
+                        storeDetail.toUiModel(),
+                        onStoreInfoChanged,
+                        clickedMarkerId,
+                        onMarkerChanged
                     )
                 }
             }
@@ -119,7 +123,7 @@ fun InitMap(
             else -> {}
         }
         if (isMarkerClicked) {
-            ClickedStoreMarker(clickedStoreDetail)
+            onMarkerChanged(clickedMarkerId)
         }
     }
     InitLocationButton(isMarkerClicked, selectedOption, onOptionChanged, bottomSheetHeight)

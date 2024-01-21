@@ -94,7 +94,6 @@ fun MainScreen(
         mainViewModel,
         isMarkerClicked,
         onBottomSheetChanged,
-        clickedStoreInfo,
         onStoreInfoChanged,
         onOriginCoordinateChanged,
         onNewCoordinateChanged,

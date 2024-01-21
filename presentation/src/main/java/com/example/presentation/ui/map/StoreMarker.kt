@@ -13,7 +13,9 @@ import com.naver.maps.map.overlay.OverlayImage
 fun StoreMarker(
     onBottomSheetChanged: (Boolean) -> Unit,
     storeDetail: StoreDetail,
-    onStoreInfoChanged: (StoreDetail) -> Unit
+    onStoreInfoChanged: (StoreDetail) -> Unit,
+    clickedMarkerId: Long,
+    onMarkerChanged: (Long) -> Unit
 ) {
     Marker(
         state = MarkerState(
@@ -22,12 +24,25 @@ fun StoreMarker(
                 storeDetail.location.longitude
             )
         ),
-        icon = OverlayImage.fromResource(storeDetail.certificationName.first().initPinImg),
+        icon = getMarkerIcon(storeDetail, storeDetail.id, clickedMarkerId),
         onClick = {
             onBottomSheetChanged(true)
             onStoreInfoChanged(storeDetail)
+            onMarkerChanged(storeDetail.id)
 
             true
         }
     )
+}
+
+fun getMarkerIcon(
+    storeDetail: StoreDetail,
+    markerId: Long,
+    clickedMarkerId: Long
+): OverlayImage {
+    return if (markerId == clickedMarkerId) {
+        OverlayImage.fromResource(storeDetail.certificationName.first().clickedPinImg)
+    } else {
+        OverlayImage.fromResource(storeDetail.certificationName.first().initPinImg)
+    }
 }
