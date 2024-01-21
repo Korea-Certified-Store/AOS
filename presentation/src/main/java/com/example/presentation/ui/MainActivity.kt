@@ -1,8 +1,11 @@
 package com.example.presentation.ui
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -13,25 +16,31 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.presentation.R
 import com.example.presentation.model.Contact
+import com.example.presentation.ui.map.LocationPermissionRequest
 import com.example.presentation.ui.theme.Android_KCSTheme
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalNaverMapApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val mainViewModel by viewModels<MainViewModel>()
 
         setContent {
+            LocationPermissionRequest(mainViewModel)
+
             val (callStoreNumber, onCallStoreChanged) = remember { mutableStateOf("") }
             val (contactInfo, onSaveStoreNumberChanged) = remember {
                 mutableStateOf(INIT_CONTACT_INFO)
             }
             val (clipboardStoreNumber, onClipboardChanged) = remember { mutableStateOf("") }
-            val mainViewModel by viewModels<MainViewModel>()
 
             Android_KCSTheme {
                 MainScreen(
@@ -55,6 +64,12 @@ class MainActivity : ComponentActivity() {
             if (clipboardStoreNumber.isNotEmpty()) {
                 copyToClipboard(clipboardStoreNumber)
                 onClipboardChanged("")
+            }
+        }
+
+        if (isLocationPermissionGranted(this)) {
+            lifecycleScope.launch {
+                mainViewModel.updateLocationPermission(true)
             }
         }
     }
@@ -95,6 +110,13 @@ class MainActivity : ComponentActivity() {
             ).show()
         }
     }
+
+    private fun isLocationPermissionGranted(context: Context) =
+        !(ActivityCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED)
 
     companion object {
         val INIT_CONTACT_INFO = Contact("", "", "")

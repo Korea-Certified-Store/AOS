@@ -31,6 +31,3 @@ google-services.json
 
 # Android Profiling
 *.hprof
-
-# http 통신 허용을 위한 xml
-app/src/main/res/xml/network_security_config.xml

@@ -28,7 +28,6 @@ fun MainScreen(
     onSaveStoreNumberChanged: (Contact) -> Unit,
     onClipboardChanged: (String) -> Unit,
 ) {
-
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
             StoreDetail(
@@ -88,6 +87,13 @@ fun MainScreen(
         )
     }
 
+    val (selectedLocationButton, onLocationButtonChanged) =
+        remember {
+            mutableStateOf(
+                mainViewModel.getInitialLocationTrackingMode()
+            )
+        }
+
     val (bottomSheetHeight, onBottomSheetHeightChanged) = remember { mutableStateOf(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp) }
 
     InitMap(
@@ -99,6 +105,8 @@ fun MainScreen(
         onOriginCoordinateChanged,
         onNewCoordinateChanged,
         onScreenChanged,
+        selectedLocationButton,
+        onLocationButtonChanged,
         bottomSheetHeight
     )
 
