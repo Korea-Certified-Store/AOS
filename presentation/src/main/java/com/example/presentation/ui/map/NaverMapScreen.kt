@@ -91,6 +91,7 @@ fun InitMap(
         onMapClick = { _, _ ->
             onBottomSheetChanged(false)
             onOptionChanged(Pair(R.drawable.icon_none, LocationTrackingMode.NoFollow))
+            onMarkerChanged(-1)
         },
         onOptionChange = {
             cameraPositionState.locationTrackingMode?.let {
