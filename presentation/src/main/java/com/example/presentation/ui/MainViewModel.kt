@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.StoreDetailModel
+import com.example.domain.model.map.StoreDetail
 import com.example.domain.usecase.GetStoreDetailUseCase
 import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.util.UiState
@@ -20,9 +20,10 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
     ViewModel() {
+
     private val _storeDetailModelData =
-        MutableStateFlow<UiState<List<StoreDetailModel>>>(UiState.Loading)
-    val storeDetailModelData: StateFlow<UiState<List<StoreDetailModel>>> =
+        MutableStateFlow<UiState<List<StoreDetail>>>(UiState.Loading)
+    val storeDetailModelData: StateFlow<UiState<List<StoreDetail>>> =
         _storeDetailModelData.asStateFlow()
 
     private val _isLocationPermissionGranted = MutableStateFlow<Boolean>(false)

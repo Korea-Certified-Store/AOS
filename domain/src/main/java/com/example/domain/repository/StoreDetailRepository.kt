@@ -1,6 +1,6 @@
 package com.example.domain.repository
 
-import com.example.domain.model.StoreDetailModel
+import com.example.domain.model.map.StoreDetailModel
 
 interface StoreDetailRepository {
     suspend fun getStoreDetail(

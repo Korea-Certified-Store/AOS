@@ -1,6 +1,6 @@
 package com.example.data.dto.response
 
-import com.example.domain.model.CoordinateModel
+import com.example.domain.model.map.CoordinateModel
 import kotlinx.serialization.Serializable
 
 @Serializable

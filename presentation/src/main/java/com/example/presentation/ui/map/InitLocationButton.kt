@@ -23,12 +23,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.ui.MainViewModel
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
-import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
@@ -37,17 +35,18 @@ fun InitLocationButton(
     selectedLocationButton: LocationTrackingButton,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
     mainViewModel: MainViewModel,
+    bottomSheetHeight: Dp
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackBarHost = remember { SnackbarHostState() }
-    val bottomPadding = getBottomPaddingByMarkerStatus(isMarkerClicked)
 
     Column(
         modifier = Modifier
             .fillMaxHeight()
             .padding(
-                bottom = bottomPadding
+                start = 12.dp,
+                bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked, bottomSheetHeight)
             ),
         verticalArrangement = Arrangement.Bottom,
     ) {
@@ -70,11 +69,6 @@ fun InitLocationButton(
 
     }
 }
-
-@Composable
-private fun getBottomPaddingByMarkerStatus(isMarkerClicked: Boolean) =
-    if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp
-    else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING + 11).dp
 
 @Composable
 fun CreateLocationButton(

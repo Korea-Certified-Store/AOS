@@ -11,4 +11,8 @@
     <string name="copy_to_clipboard_description">클립보드에 복사되었어요.</string>
     <string name="tel">tel:%s</string>
     <string name="search_on_current_map">현 지도에서 검색</string>
+    <string name="operating">영업 중</string>
+    <string name="closed">영업 종료</string>
+    <string name="day_off">휴무일</string>
+    <string name="break_time">브레이크 타임</string>
 </resources>

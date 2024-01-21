@@ -1,6 +1,6 @@
 package com.example.data.dto.response
 
-import com.example.domain.model.StoreDetailModel
+import com.example.domain.model.map.StoreDetailModel
 import kotlinx.serialization.Serializable
 
 @Serializable

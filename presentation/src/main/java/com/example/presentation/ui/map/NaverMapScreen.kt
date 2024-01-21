@@ -1,10 +1,14 @@
 package com.example.presentation.ui.map
 
+import android.view.Gravity
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.Coordinate
@@ -35,6 +39,7 @@ fun InitMap(
     onScreenChanged: (ScreenCoordinate) -> Unit,
     selectedLocationButton: LocationTrackingButton,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
+    bottomSheetHeight: Dp
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -53,7 +58,15 @@ fun InitMap(
 
     NaverMap(
         modifier = Modifier.fillMaxSize(),
-        uiSettings = MapUiSettings(isZoomControlEnabled = false, isCompassEnabled = false),
+        uiSettings = MapUiSettings(
+            isZoomControlEnabled = false,
+            logoGravity = Gravity.BOTTOM or Gravity.END,
+            logoMargin = PaddingValues(
+                end = 12.dp,
+                bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked, bottomSheetHeight)
+            ),
+            isCompassEnabled = false
+        ),
         cameraPositionState = cameraPositionState.apply {
             turnOffLocationButtonIfGestured(this, onLocationButtonChanged)
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
@@ -102,7 +115,8 @@ fun InitMap(
         isMarkerClicked,
         selectedLocationButton,
         onLocationButtonChanged,
-        mainViewModel
+        mainViewModel,
+        bottomSheetHeight
     )
 }
 
