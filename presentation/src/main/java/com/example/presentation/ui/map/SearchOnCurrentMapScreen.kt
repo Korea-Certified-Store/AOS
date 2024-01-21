@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
+import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
@@ -65,13 +66,13 @@ fun SearchOnCurrentMapButton(
                     onBottomSheetChanged(false)
                 },
                 modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 11.dp),
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = White,
-                    contentColor = Blue
+                    contentColor = Black
                 ),
                 shape = RoundedCornerShape(30.dp),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.search),
@@ -82,7 +83,7 @@ fun SearchOnCurrentMapButton(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = stringResource(R.string.search_on_current_map),
-                    fontSize = 10.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Normal
                 )
             }
