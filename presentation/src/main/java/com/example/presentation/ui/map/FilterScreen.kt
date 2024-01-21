@@ -69,10 +69,10 @@ fun FilterChip(storeType: StoreType, isFilterClicked: Boolean, onFilterChanged: 
                 contentColor = if (isFilterClicked) White else Black
             ),
             shape = RoundedCornerShape(30.dp),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
         ) {
             FilterCircle(storeType.color)
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(7.dp))
             Text(
                 text = stringResource(storeType.storeTypeName),
                 fontSize = 12.sp,
