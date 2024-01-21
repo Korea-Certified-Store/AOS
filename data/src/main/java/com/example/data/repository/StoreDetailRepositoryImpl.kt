@@ -1,7 +1,7 @@
 package com.example.data.repository
 
 import com.example.data.source.StoreDetailDataSource
-import com.example.domain.model.StoreDetailModel
+import com.example.domain.model.map.StoreDetailModel
 import com.example.domain.repository.StoreDetailRepository
 import javax.inject.Inject
 

@@ -49,13 +49,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import com.example.presentation.R
-import com.example.presentation.model.Day
-import com.example.presentation.model.OpeningHours
-import com.example.presentation.model.OperatingTime
-import com.example.presentation.model.OperatingType
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
-import com.example.presentation.model.TimeInfo
 import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightGray
@@ -69,9 +64,6 @@ import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_IMG_SIZE
 import com.example.presentation.util.MainConstants.DEFAULT_MARIN
-import java.util.Calendar
-import java.util.Date
-import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -143,7 +135,7 @@ fun StoreSummaryInfo(
                 maxWidth
             )
             Chips(storeInfo.certificationName, "chips", maxWidth)
-            StoreOpeningTime(storeInfo.regularOpeningHours, "storeOpeningTime")
+            StoreOpeningTime(storeInfo.operatingType, storeInfo.timeDescription, "storeOpeningTime")
             StoreCallButton(onCallDialogChanged, "storeCallButton")
             StoreImage("storeImage")
         }
@@ -255,14 +247,13 @@ fun Chips(
 
 @Composable
 fun StoreOpeningTime(
-    regularOpeningHours: List<OpeningHours>,
+    operatingType: String,
+    timeDescription: String,
     id: String
 ) {
-    val operatingTime = getOperatingType(regularOpeningHours)
-
     Row(modifier = Modifier.layoutId(id)) {
         Text(
-            text = stringResource(operatingTime.operatingType.description),
+            text = operatingType,
             Modifier.alignByBaseline(),
             color = Red,
             fontSize = 15.sp,
@@ -270,7 +261,7 @@ fun StoreOpeningTime(
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
-            text = operatingTime.timeDescription,
+            text = timeDescription,
             Modifier.alignByBaseline(),
             color = MediumGray,
             fontSize = 13.sp,
@@ -278,94 +269,6 @@ fun StoreOpeningTime(
         )
     }
 }
-
-fun getOperatingType(regularOpeningHours: List<OpeningHours>): OperatingTime {
-    val nowTime = getNowTimeInfo()
-    val operatingTimes = regularOpeningHours.filter { it.open.day == nowTime.day }
-    val nextDay =
-        regularOpeningHours.filter { it.open.day == Day.values()[(nowTime.day.ordinal + 1) % 7] }
-
-    val type = if (operatingTimes.isEmpty()) {
-        OperatingTime(OperatingType.DAY_OFF, "")
-    } else if (operatingTimes.size == 1 && (operatingTimes.first().open.hour == 0 && operatingTimes.first().open.minute == 0) && (operatingTimes.first().close.hour == 0 && operatingTimes.first().close.minute == 0)) {
-        OperatingTime(OperatingType.OPERATING, "24시간 영업")
-    } else if (nowTime.hour * 60 + nowTime.minute < operatingTimes.first().open.hour * 60 + operatingTimes.first().open.minute) {
-        OperatingTime(
-            OperatingType.CLOSED,
-            "${operatingTimes.first().open.hour}:${getOperatingMinute(operatingTimes.first().open.minute)}에 영업 시작"
-        )
-    } else if (nowTime.hour * 60 + nowTime.minute > getCloseHour(operatingTimes.last().close.hour) * 60 + operatingTimes.last().close.minute) {
-        OperatingTime(OperatingType.CLOSED, getNextDayOpeningHour(nextDay))
-    } else {
-        calculateOperating(nowTime, operatingTimes, nextDay)
-    }
-
-    return type
-}
-
-fun getNextDayOpeningHour(nextDay: List<OpeningHours>): String {
-    return if (nextDay.isEmpty()) "" else "${nextDay.first().open.hour}:${getOperatingMinute(nextDay.first().open.minute)}에 영업 시작"
-}
-
-fun getOperatingMinute(minute: Int): String {
-    return if (minute == 0) "00" else minute.toString()
-}
-
-fun getNowTimeInfo(): TimeInfo {
-    val currentDate = Date()
-    val calendar: Calendar = Calendar.getInstance()
-    calendar.time = currentDate
-
-    val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    val minute = calendar.get(Calendar.MINUTE)
-    val day = Day.values()[calendar.get(Calendar.DAY_OF_WEEK) - 1]
-
-    return TimeInfo(day, hour, minute)
-}
-
-fun calculateOperating(
-    nowTime: TimeInfo,
-    operatingTimes: List<OpeningHours>,
-    nextDay: List<OpeningHours>
-): OperatingTime {
-    for (idx in 0 until operatingTimes.size - 1) {
-        if (abs(operatingTimes[idx].close.hour * 60 + operatingTimes[idx].close.minute - operatingTimes[idx + 1].open.hour * 60 + operatingTimes[idx + 1].open.minute) <= 3 * 60) {
-            if (nowTime.hour * 60 + nowTime.minute in (operatingTimes[idx].close.hour * 60 + operatingTimes[idx].close.minute until operatingTimes[idx + 1].open.hour * 60 + operatingTimes[idx + 1].open.minute)) {
-                return OperatingTime(
-                    OperatingType.BREAK_TIME,
-                    "${operatingTimes[idx + 1].open.hour}:${getOperatingMinute(operatingTimes[idx + 1].open.minute)}에 영업 시작"
-                )
-            }
-        } else if (nowTime.hour * 60 + nowTime.minute in (operatingTimes[idx].open.hour * 60 + operatingTimes[idx].open.minute..getCloseHour(
-                operatingTimes[idx].close.hour
-            ) * 60 + operatingTimes[idx].close.minute)
-        ) {
-            return OperatingTime(
-                OperatingType.OPERATING,
-                "${operatingTimes[idx].open.hour}:${getOperatingMinute(operatingTimes[idx].open.minute)}에 브레이크 타임 시작"
-            )
-        }
-    }
-
-    if (nowTime.hour * 60 + nowTime.minute in (operatingTimes.last().open.hour * 60 + operatingTimes.last().open.minute..getCloseHour(
-            operatingTimes.last().close.hour
-        ) * 60 + operatingTimes.last().close.minute)
-    ) {
-        return OperatingTime(
-            OperatingType.OPERATING,
-            "${operatingTimes.last().close.hour}:${getOperatingMinute(operatingTimes.last().close.minute)}에 영업 종료"
-        )
-    } else if (nowTime.hour * 60 + nowTime.minute < operatingTimes.last().open.hour * 60 + operatingTimes.last().open.minute) {
-        return OperatingTime(
-            OperatingType.CLOSED,
-            "${operatingTimes.last().open.hour}:${getOperatingMinute(operatingTimes.last().open.minute)}에 영업 시작"
-        )
-    }
-
-    return OperatingTime(OperatingType.CLOSED, getNextDayOpeningHour(nextDay))
-}
-
-fun getCloseHour(hour: Int) = if (hour == 0) 24 else hour
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

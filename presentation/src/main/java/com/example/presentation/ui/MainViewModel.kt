@@ -2,7 +2,7 @@ package com.example.presentation.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.StoreDetailModel
+import com.example.domain.model.map.StoreDetail
 import com.example.domain.usecase.GetStoreDetailUseCase
 import com.example.presentation.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +15,10 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
     ViewModel() {
-    private val _storeDetailModelData = MutableStateFlow<UiState<List<StoreDetailModel>>>(UiState.Loading)
-    val storeDetailModelData: StateFlow<UiState<List<StoreDetailModel>>> = _storeDetailModelData.asStateFlow()
+    private val _storeDetailModelData =
+        MutableStateFlow<UiState<List<StoreDetail>>>(UiState.Loading)
+    val storeDetailModelData: StateFlow<UiState<List<StoreDetail>>> =
+        _storeDetailModelData.asStateFlow()
 
     fun getStoreDetail(
         nwLong: Double,
@@ -36,7 +38,8 @@ class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetSt
             seLong,
             seLat,
             neLong,
-            neLat,).fold(
+            neLat
+        ).fold(
             onSuccess = {
                 _storeDetailModelData.value = UiState.Success(it)
             }, onFailure = { e ->

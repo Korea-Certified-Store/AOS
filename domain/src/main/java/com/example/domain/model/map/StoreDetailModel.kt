@@ -1,4 +1,4 @@
-package com.example.domain.model
+package com.example.domain.model.map
 
 data class StoreDetailModel(
     val id: Long,
