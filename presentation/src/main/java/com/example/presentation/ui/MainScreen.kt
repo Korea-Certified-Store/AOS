@@ -25,7 +25,6 @@ fun MainScreen(
     mainViewModel: MainViewModel,
     onCallStoreChanged: (String) -> Unit
 ) {
-
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
             StoreDetail(
@@ -85,6 +84,13 @@ fun MainScreen(
         )
     }
 
+    val (selectedLocationButton, onLocationButtonChanged) =
+        remember {
+            mutableStateOf(
+                mainViewModel.getInitialLocationTrackingMode()
+            )
+        }
+
     val (bottomSheetHeight, onBottomSheetHeightChanged) = remember { mutableStateOf(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp) }
 
     val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(-1) }
@@ -99,7 +105,9 @@ fun MainScreen(
         onScreenChanged,
         bottomSheetHeight,
         clickedMarkerId,
-        onMarkerChanged
+        onMarkerChanged,
+        selectedLocationButton,
+        onLocationButtonChanged
     )
 
     StoreSummaryBottomSheet(
