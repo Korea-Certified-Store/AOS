@@ -20,6 +20,7 @@ import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.MainViewModel
+import com.example.presentation.util.MainConstants.LOCATION_SIZE
 import com.example.presentation.util.UiState
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
@@ -45,6 +46,9 @@ fun InitMap(
     onMarkerChanged: (Long) -> Unit,
     selectedLocationButton: LocationTrackingButton,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
+    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
+    initLocationSize: Int,
+    onInitLocationChanged: (Int) -> Unit
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -73,9 +77,16 @@ fun InitMap(
             isCompassEnabled = false
         ),
         cameraPositionState = cameraPositionState.apply {
-            turnOffLocationButtonIfGestured(this, onLocationButtonChanged)
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
-            getScreenCoordinate(this, onScreenChanged)
+            TurnOffLocationButtonIfGestured(
+                this,
+                onLocationButtonChanged,
+                onSearchOnCurrentMapButtonChanged,
+                initLocationSize,
+                onInitLocationChanged,
+                onNewCoordinateChanged
+            )
+            GetScreenCoordinate(this, onScreenChanged)
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
@@ -128,12 +139,30 @@ fun InitMap(
     )
 }
 
-fun turnOffLocationButtonIfGestured(
+@Composable
+fun TurnOffLocationButtonIfGestured(
     cameraPositionState: CameraPositionState,
-    onLocationButtonChanged: (LocationTrackingButton) -> Unit
+    onLocationButtonChanged: (LocationTrackingButton) -> Unit,
+    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
+    initLocationSize: Int,
+    onInitLocationChanged: (Int) -> Unit,
+    onNewCoordinateChanged: (Coordinate) -> Unit
 ) {
     if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
         onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
+    } else if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.LOCATION) {
+        if (initLocationSize == LOCATION_SIZE) {
+            onNewCoordinateChanged(
+                Coordinate(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude
+                )
+            )
+            onSearchOnCurrentMapButtonChanged(true)
+            onInitLocationChanged(initLocationSize + 1)
+        } else if (initLocationSize < LOCATION_SIZE) {
+            onInitLocationChanged(initLocationSize + 1)
+        }
     }
 }
 
@@ -152,7 +181,7 @@ fun setNewCoordinateIfGestured(
 }
 
 @Composable
-fun getScreenCoordinate(
+fun GetScreenCoordinate(
     cameraPositionState: CameraPositionState,
     onScreenChanged: (ScreenCoordinate) -> Unit
 ) {

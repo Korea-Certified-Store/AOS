@@ -1,6 +1,7 @@
 package com.example.presentation.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -95,6 +96,8 @@ fun MainScreen(
 
     val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(-1) }
 
+    val (initLocationSize, onInitLocationChanged) = remember { mutableIntStateOf(0) }
+
     InitMap(
         mainViewModel,
         isMarkerClicked,
@@ -107,7 +110,10 @@ fun MainScreen(
         clickedMarkerId,
         onMarkerChanged,
         selectedLocationButton,
-        onLocationButtonChanged
+        onLocationButtonChanged,
+        onSearchOnCurrentMapButtonChanged,
+        initLocationSize,
+        onInitLocationChanged
     )
 
     StoreSummaryBottomSheet(
