@@ -3,7 +3,7 @@ package com.example.data.source.remote
 import com.example.data.dto.response.toDomainModel
 import com.example.data.source.StoreDetailDataSource
 import com.example.data.source.remote.api.StoreDetailApiService
-import com.example.domain.model.StoreDetailModel
+import com.example.domain.model.map.StoreDetailModel
 import javax.inject.Inject
 
 class StoreDetailSourceImpl @Inject constructor(

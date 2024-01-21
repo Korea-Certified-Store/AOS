@@ -1,6 +1,6 @@
 package com.example.data.source
 
-import com.example.domain.model.StoreDetailModel
+import com.example.domain.model.map.StoreDetailModel
 
 interface StoreDetailDataSource {
     suspend fun getStoreDetail(

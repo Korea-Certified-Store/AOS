@@ -1,4 +1,4 @@
-package com.example.presentation.model
+package com.example.domain.model.map
 
 data class StoreDetail(
     val id: Long,
@@ -6,12 +6,9 @@ data class StoreDetail(
     val primaryTypeDisplayName: String?,
     val formattedAddress: String,
     val phoneNumber: String?,
-    val location: Coordinate,
+    val location: CoordinateModel,
     val operatingType: String,
     val timeDescription: String,
     val localPhotos: List<String?>,
-    val certificationName: List<StoreType>
+    val certificationName: List<String>
 )
-
-
-

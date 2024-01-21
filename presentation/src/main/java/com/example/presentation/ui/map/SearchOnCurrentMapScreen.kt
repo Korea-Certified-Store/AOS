@@ -29,31 +29,37 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
-import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
+import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchOnCurrentMapButton(
     isMarkerClicked: Boolean,
-    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit
+    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
+    bottomSheetHeight: Dp
 ) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .padding(bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked)),
+                .padding(
+                    bottom = setSearchOnCurrentMapBottomPadding(
+                        isMarkerClicked,
+                        bottomSheetHeight
+                    )
+                ),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
                 onClick = { onSearchOnCurrentMapButtonChanged(true) },
                 modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 11.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = White,
                     contentColor = Blue
@@ -65,12 +71,12 @@ fun SearchOnCurrentMapButton(
                     imageVector = ImageVector.vectorResource(id = R.drawable.search),
                     tint = Blue,
                     contentDescription = "Search",
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(13.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = stringResource(R.string.search_on_current_map),
-                    fontSize = 13.sp,
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.Normal
                 )
             }
@@ -78,7 +84,7 @@ fun SearchOnCurrentMapButton(
     }
 }
 
-fun setSearchOnCurrentMapBottomPadding(isMarkerClicked: Boolean): Dp {
-    return if (isMarkerClicked) (BOTTOM_SHEET_HEIGHT_ON + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp
+fun setSearchOnCurrentMapBottomPadding(isMarkerClicked: Boolean, bottomSheetHeight: Dp): Dp {
+    return if (isMarkerClicked) bottomSheetHeight + (SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING + BOTTOM_SHEET_DEFAULT_PADDING).dp
     else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp
 }

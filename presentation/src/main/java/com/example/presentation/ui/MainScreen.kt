@@ -3,6 +3,7 @@ package com.example.presentation.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.dp
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.ScreenCoordinate
@@ -12,8 +13,7 @@ import com.example.presentation.ui.map.InitMap
 import com.example.presentation.ui.map.SearchOnCurrentMapButton
 import com.example.presentation.ui.map.StoreCallDialog
 import com.example.presentation.ui.map.StoreSummaryBottomSheet
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_ON
+import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.LAT_LIMIT
 import com.example.presentation.util.MainConstants.LONG_LIMIT
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -36,7 +36,8 @@ fun MainScreen(
                 displayName = "",
                 primaryTypeDisplayName = "",
                 formattedAddress = "",
-                regularOpeningHours = emptyList(),
+                operatingType = "",
+                timeDescription = "",
                 location = Coordinate(0.0, 0.0),
                 phoneNumber = "",
                 certificationName = listOf(),
@@ -87,6 +88,8 @@ fun MainScreen(
         )
     }
 
+    val (bottomSheetHeight, onBottomSheetHeightChanged) = remember { mutableStateOf(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp) }
+
     InitMap(
         mainViewModel,
         isMarkerClicked,
@@ -95,13 +98,16 @@ fun MainScreen(
         onStoreInfoChanged,
         onOriginCoordinateChanged,
         onNewCoordinateChanged,
-        onScreenChanged
+        onScreenChanged,
+        bottomSheetHeight
     )
 
     StoreSummaryBottomSheet(
-        if (isMarkerClicked) BOTTOM_SHEET_HEIGHT_ON else BOTTOM_SHEET_HEIGHT_OFF,
+        isMarkerClicked,
         clickedStoreInfo,
-        onCallDialogChanged
+        onCallDialogChanged,
+        bottomSheetHeight,
+        onBottomSheetHeightChanged
     )
 
     FilterButtons(
@@ -137,7 +143,11 @@ fun MainScreen(
     }
 
     if (isMapGestured) {
-        SearchOnCurrentMapButton(isMarkerClicked, onSearchOnCurrentMapButtonChanged)
+        SearchOnCurrentMapButton(
+            isMarkerClicked,
+            onSearchOnCurrentMapButtonChanged,
+            bottomSheetHeight
+        )
     }
 
     if (isSearchOnCurrentMapButtonClicked) {
@@ -152,7 +162,7 @@ fun MainScreen(
             max(screenCoordinate.southEast.latitude, (newCoordinate.latitude - LAT_LIMIT)),
 
             min(screenCoordinate.northEast.longitude, (newCoordinate.longitude + LONG_LIMIT)),
-            min(screenCoordinate.northEast.latitude, (newCoordinate.latitude - LAT_LIMIT)),
+            min(screenCoordinate.northEast.latitude, (newCoordinate.latitude + LAT_LIMIT)),
         )
         onCurrentMapChanged(false)
         onSearchOnCurrentMapButtonChanged(false)

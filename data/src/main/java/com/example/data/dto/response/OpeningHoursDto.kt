@@ -1,6 +1,6 @@
 package com.example.data.dto.response
 
-import com.example.domain.model.OpeningHoursModel
+import com.example.domain.model.map.OpeningHoursModel
 import kotlinx.serialization.Serializable
 
 @Serializable

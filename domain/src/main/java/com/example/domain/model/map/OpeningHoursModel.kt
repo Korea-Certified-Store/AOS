@@ -1,4 +1,4 @@
-package com.example.domain.model
+package com.example.domain.model.map
 
 data class OpeningHoursModel(
     val open: TimeInfoModel,
