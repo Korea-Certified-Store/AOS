@@ -25,9 +25,7 @@ import kotlin.math.min
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel,
-    onCallStoreChanged: (String) -> Unit,
-    onSaveStoreNumberChanged: (Contact) -> Unit,
-    onClipboardChanged: (String) -> Unit,
+    onCallStoreChanged: (String) -> Unit
 ) {
 
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
@@ -131,9 +129,7 @@ fun MainScreen(
                 clickedStoreInfo.formattedAddress
             ),
             onCallDialogCanceled,
-            onCallStoreChanged,
-            onSaveStoreNumberChanged,
-            onClipboardChanged
+            onCallStoreChanged
         )
     }
 
