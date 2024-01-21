@@ -64,6 +64,7 @@ import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_IMG_SIZE
 import com.example.presentation.util.MainConstants.DEFAULT_MARIN
+import com.skydoves.landscapist.coil.CoilImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -137,7 +138,7 @@ fun StoreSummaryInfo(
             Chips(storeInfo.certificationName, "chips", maxWidth)
             StoreOpeningTime(storeInfo.operatingType, storeInfo.timeDescription, "storeOpeningTime")
             StoreCallButton(onCallDialogChanged, "storeCallButton")
-            StoreImage("storeImage")
+            StoreImageCard("storeImage", storeInfo.localPhotos)
         }
     }
 }
@@ -300,7 +301,7 @@ fun StoreCallButton(
 }
 
 @Composable
-fun StoreImage(id: String) {
+fun StoreImageCard(id: String, localPhotos: List<String?>) {
     Card(
         modifier = Modifier
             .size(BOTTOM_SHEET_STORE_IMG_SIZE.dp)
@@ -308,8 +309,22 @@ fun StoreImage(id: String) {
         shape = RoundedCornerShape(6.dp),
         border = BorderStroke(0.3.dp, LightGray)
     ) {
+        StoreImage(localPhotos = localPhotos)
+    }
+}
+
+@Composable
+fun StoreImage(localPhotos: List<String?>) {
+    if (localPhotos.isNotEmpty()) {
+        CoilImage(
+            imageModel = localPhotos.first(),
+            contentScale = ContentScale.Crop,
+            placeHolder = painterResource(R.drawable.empty_store_img),
+            error = painterResource(R.drawable.empty_store_img)
+        )
+    } else {
         Image(
-            painter = painterResource(R.drawable.store_example),
+            painter = painterResource(R.drawable.empty_store_img),
             contentDescription = "Store Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(1f)

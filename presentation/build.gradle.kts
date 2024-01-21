@@ -98,4 +98,8 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.constraintlayout.compose)
+
+    implementation(libs.landscapist.coil)
+
+
 }
