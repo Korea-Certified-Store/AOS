@@ -138,7 +138,7 @@ fun StoreSummaryInfo(
                 maxWidth
             )
             StorePrimaryTypeText(
-                storeInfo.primaryTypeDisplayName ?: "",
+                storeInfo.primaryTypeDisplayName ?: "상점",
                 "storePrimaryType",
                 maxWidth
             )
