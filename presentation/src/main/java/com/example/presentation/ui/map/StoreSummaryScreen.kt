@@ -301,7 +301,7 @@ fun StoreCallButton(
 }
 
 @Composable
-fun StoreImageCard(id: String, localPhotos: List<String?>) {
+fun StoreImageCard(id: String, localPhotos: List<String>) {
     Card(
         modifier = Modifier
             .size(BOTTOM_SHEET_STORE_IMG_SIZE.dp)
@@ -314,7 +314,7 @@ fun StoreImageCard(id: String, localPhotos: List<String?>) {
 }
 
 @Composable
-fun StoreImage(localPhotos: List<String?>) {
+fun StoreImage(localPhotos: List<String>) {
     if (localPhotos.isNotEmpty()) {
         CoilImage(
             imageModel = localPhotos.first(),

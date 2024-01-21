@@ -8,6 +8,6 @@ data class StoreDetailModel(
     val phoneNumber: String?,
     val location: CoordinateModel,
     val regularOpeningHours: List<OpeningHoursModel>,
-    val localPhotos: List<String?>,
+    val localPhotos: List<String>,
     val certificationName: List<String>
 )
