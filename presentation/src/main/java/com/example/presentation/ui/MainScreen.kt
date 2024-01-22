@@ -190,6 +190,7 @@ fun MainScreen(
     }
 
     if (isFilterStateChanged) {
+        onMarkerChanged(-1)
         onFilterStateChanged(false)
         onBottomSheetChanged(false)
         onBottomSheetHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
