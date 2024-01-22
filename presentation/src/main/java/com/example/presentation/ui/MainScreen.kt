@@ -98,6 +98,8 @@ fun MainScreen(
 
     val (initLocationSize, onInitLocationChanged) = remember { mutableIntStateOf(0) }
 
+    val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
+
     InitMap(
         mainViewModel,
         isMarkerClicked,
@@ -132,7 +134,8 @@ fun MainScreen(
         onGreatFilterChanged,
         isSafeFilterClicked,
         onSafeFilterChanged,
-        mainViewModel
+        mainViewModel,
+        onFilterStateChanged
     )
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
@@ -184,6 +187,12 @@ fun MainScreen(
         onCurrentMapChanged(false)
         onSearchOnCurrentMapButtonChanged(false)
         onOriginCoordinateChanged(newCoordinate)
+    }
+
+    if (isFilterStateChanged) {
+        onFilterStateChanged(false)
+        onBottomSheetChanged(false)
+        onBottomSheetHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
     }
 }
 
