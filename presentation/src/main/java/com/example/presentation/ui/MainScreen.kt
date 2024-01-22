@@ -113,7 +113,8 @@ fun MainScreen(
         onLocationButtonChanged,
         onSearchOnCurrentMapButtonChanged,
         initLocationSize,
-        onInitLocationChanged
+        onInitLocationChanged,
+        screenCoordinate
     )
 
     StoreSummaryBottomSheet(
