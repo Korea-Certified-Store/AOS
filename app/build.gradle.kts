@@ -13,7 +13,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.android_kcs"
+        applicationId = "nainga_store.android_kcs"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
