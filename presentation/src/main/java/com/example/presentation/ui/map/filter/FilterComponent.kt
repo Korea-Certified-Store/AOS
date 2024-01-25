@@ -1,4 +1,4 @@
-package com.example.presentation.ui.map
+package com.example.presentation.ui.map.filter
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

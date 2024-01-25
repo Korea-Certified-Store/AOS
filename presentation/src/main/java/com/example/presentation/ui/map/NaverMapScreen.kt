@@ -93,7 +93,7 @@ fun NaverMapScreen(
                     initLocationSize,
                     onInitLocationChanged,
                     onNewCoordinateChanged,
-                    mainViewModel,
+                    mapViewModel,
                     selectedLocationButton,
                     screenCoordinate
                 )
@@ -193,7 +193,7 @@ fun InitializeMarker(
     initLocationSize: Int,
     onInitLocationChanged: (Int) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
-    mainViewModel: MainViewModel,
+    mainViewModel: MapViewModel,
     selectedLocationButton: LocationTrackingButton,
     screenCoordinate: ScreenCoordinate,
 ) {
