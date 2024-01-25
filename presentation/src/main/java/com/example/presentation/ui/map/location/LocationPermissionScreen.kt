@@ -10,8 +10,9 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.MediumBlue
+import com.example.presentation.ui.theme.White
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
 fun CreateSnackBar(data: SnackbarData) {
     Snackbar(
         actionColor = MediumBlue,
-        containerColor = Color.White,
+        containerColor = White,
+        contentColor = Black,
         snackbarData = data,
     )
 }

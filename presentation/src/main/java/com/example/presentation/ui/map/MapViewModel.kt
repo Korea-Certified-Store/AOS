@@ -24,6 +24,8 @@ import javax.inject.Inject
 class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
     ViewModel() {
 
+    var ableToShowInitialMarker = true
+
     private val filterSet = mutableSetOf<String>()
 
     private val _storeDetailModelData =

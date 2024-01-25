@@ -1,4 +1,4 @@
-package com.example.presentation.ui.map.filter
+package com.example.presentation.ui.map
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -41,7 +41,8 @@ fun FilterComponent(
     onGreatFilterChanged: (Boolean) -> Unit,
     isSafeFilterClicked: Boolean,
     onSafeFilterChanged: (Boolean) -> Unit,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    onFilterStateChanged: (Boolean) -> Unit,
 ) {
 
     Row(
@@ -55,19 +56,22 @@ fun FilterComponent(
             storeType = StoreType.KIND,
             isKindFilterClicked,
             onKindFilterChanged,
-            mapViewModel
+            mapViewModel,
+            onFilterStateChanged
         )
         FilterButton(
             storeType = StoreType.GREAT,
             isGreatFilterClicked,
             onGreatFilterChanged,
-            mapViewModel
+            mapViewModel,
+            onFilterStateChanged
         )
         FilterButton(
             storeType = StoreType.SAFE,
             isSafeFilterClicked,
             onSafeFilterChanged,
-            mapViewModel
+            mapViewModel,
+            onFilterStateChanged
         )
     }
 }
@@ -78,7 +82,8 @@ fun FilterButton(
     storeType: StoreType,
     isFilterClicked: Boolean,
     onFilterChanged: (Boolean) -> Unit,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    onFilterStateChanged: (Boolean) -> Unit
 ) {
     val certificationName = stringResource(id = storeType.storeTypeName).replace(" ", "")
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
@@ -86,6 +91,7 @@ fun FilterButton(
             onClick = {
                 mapViewModel.updateFilterSet(certificationName, isFilterClicked.not())
                 onFilterChanged(isFilterClicked.not())
+                onFilterStateChanged(true)
             },
             modifier = Modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)

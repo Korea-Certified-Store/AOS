@@ -1,6 +1,7 @@
 package com.example.presentation.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,8 +10,8 @@ import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
-import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.filter.FilterComponent
+import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.reload.ReloadButton
 import com.example.presentation.ui.map.call.StoreCallDialog
@@ -96,6 +97,10 @@ fun MainScreen(
 
     val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(-1) }
 
+    val (initLocationSize, onInitLocationChanged) = remember { mutableIntStateOf(0) }
+
+    val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -108,7 +113,11 @@ fun MainScreen(
         clickedMarkerId,
         onMarkerChanged,
         selectedLocationButton,
-        onLocationButtonChanged
+        onLocationButtonChanged,
+        onReloadButtonChanged,
+        initLocationSize,
+        onInitLocationChanged,
+        screenCoordinate
     )
 
     StoreSummaryBottomSheet(
@@ -126,7 +135,8 @@ fun MainScreen(
         onGreatFilterChanged,
         isSafeFilterClicked,
         onSafeFilterChanged,
-        mapViewModel
+        mapViewModel,
+        onFilterStateChanged
     )
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
@@ -178,6 +188,13 @@ fun MainScreen(
         onCurrentMapChanged(false)
         onReloadButtonChanged(false)
         onOriginCoordinateChanged(newCoordinate)
+    }
+
+    if (isFilterStateChanged) {
+        onMarkerChanged(-1)
+        onFilterStateChanged(false)
+        onBottomSheetChanged(false)
+        onBottomSheetHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
     }
 }
 
