@@ -10,11 +10,12 @@ import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
-import com.example.presentation.ui.map.FilterButtons
-import com.example.presentation.ui.map.InitMap
-import com.example.presentation.ui.map.SearchOnCurrentMapButton
-import com.example.presentation.ui.map.StoreCallDialog
-import com.example.presentation.ui.map.StoreSummaryBottomSheet
+import com.example.presentation.ui.map.filter.FilterComponent
+import com.example.presentation.ui.map.MapViewModel
+import com.example.presentation.ui.map.NaverMapScreen
+import com.example.presentation.ui.map.call.StoreCallDialog
+import com.example.presentation.ui.map.reload.ReloadButton
+import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import kotlin.math.pow
@@ -23,7 +24,7 @@ import kotlin.math.sqrt
 @ExperimentalNaverMapApi
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel,
+    mapViewModel: MapViewModel,
     onCallStoreChanged: (String) -> Unit
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
@@ -66,7 +67,7 @@ fun MainScreen(
     }
 
     val (isMapGestured, onCurrentMapChanged) = remember { mutableStateOf(false) }
-    val (isSearchOnCurrentMapButtonClicked, onSearchOnCurrentMapButtonChanged) = remember {
+    val (isReloadButtonClicked, onReloadButtonChanged) = remember {
         mutableStateOf(false)
     }
 
@@ -88,7 +89,7 @@ fun MainScreen(
     val (selectedLocationButton, onLocationButtonChanged) =
         remember {
             mutableStateOf(
-                mainViewModel.getInitialLocationTrackingMode()
+                mapViewModel.getInitialLocationTrackingMode()
             )
         }
 
@@ -100,8 +101,8 @@ fun MainScreen(
 
     val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
 
-    InitMap(
-        mainViewModel,
+    NaverMapScreen(
+        mapViewModel,
         isMarkerClicked,
         onBottomSheetChanged,
         onStoreInfoChanged,
@@ -113,7 +114,7 @@ fun MainScreen(
         onMarkerChanged,
         selectedLocationButton,
         onLocationButtonChanged,
-        onSearchOnCurrentMapButtonChanged,
+        onReloadButtonChanged,
         initLocationSize,
         onInitLocationChanged,
         screenCoordinate
@@ -127,14 +128,14 @@ fun MainScreen(
         onBottomSheetHeightChanged
     )
 
-    FilterButtons(
+    FilterComponent(
         isKindFilterClicked,
         onKindFilterChanged,
         isGreatFilterClicked,
         onGreatFilterChanged,
         isSafeFilterClicked,
         onSafeFilterChanged,
-        mainViewModel,
+        mapViewModel,
         onFilterStateChanged
     )
 
@@ -160,18 +161,18 @@ fun MainScreen(
     }
 
     if (isMapGestured) {
-        SearchOnCurrentMapButton(
+        ReloadButton(
             isMarkerClicked,
-            onSearchOnCurrentMapButtonChanged,
+            onReloadButtonChanged,
             bottomSheetHeight,
             onMarkerChanged,
             onBottomSheetChanged
         )
     }
 
-    if (isSearchOnCurrentMapButtonClicked) {
+    if (isReloadButtonClicked) {
         val limitScreenCoordinate = parallelTranslate(screenCoordinate)
-        mainViewModel.getStoreDetail(
+        mapViewModel.getStoreDetail(
             nwLong = limitScreenCoordinate.northWest.longitude,
             nwLat = limitScreenCoordinate.northWest.latitude,
 
@@ -185,7 +186,7 @@ fun MainScreen(
             neLat = limitScreenCoordinate.northEast.latitude
         )
         onCurrentMapChanged(false)
-        onSearchOnCurrentMapButtonChanged(false)
+        onReloadButtonChanged(false)
         onOriginCoordinateChanged(newCoordinate)
     }
 

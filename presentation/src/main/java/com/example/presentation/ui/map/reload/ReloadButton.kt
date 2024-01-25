@@ -1,4 +1,4 @@
-package com.example.presentation.ui.map
+package com.example.presentation.ui.map.reload
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,13 +34,13 @@ import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
-import com.example.presentation.util.MainConstants.SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING
+import com.example.presentation.util.MainConstants.RELOAD_BUTTON_DEFAULT_PADDING
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchOnCurrentMapButton(
+fun ReloadButton(
     isMarkerClicked: Boolean,
-    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
+    onReloadButtonChanged: (Boolean) -> Unit,
     bottomSheetHeight: Dp,
     onMarkerChanged: (Long) -> Unit,
     onBottomSheetChanged: (Boolean) -> Unit
@@ -51,7 +51,7 @@ fun SearchOnCurrentMapButton(
                 .fillMaxHeight()
                 .fillMaxWidth()
                 .padding(
-                    bottom = setSearchOnCurrentMapBottomPadding(
+                    bottom = setReloadButtonBottomPadding(
                         isMarkerClicked,
                         bottomSheetHeight
                     )
@@ -61,7 +61,7 @@ fun SearchOnCurrentMapButton(
         ) {
             Button(
                 onClick = {
-                    onSearchOnCurrentMapButtonChanged(true)
+                    onReloadButtonChanged(true)
                     onMarkerChanged(-1)
                     onBottomSheetChanged(false)
                 },
@@ -91,7 +91,7 @@ fun SearchOnCurrentMapButton(
     }
 }
 
-fun setSearchOnCurrentMapBottomPadding(isMarkerClicked: Boolean, bottomSheetHeight: Dp): Dp {
-    return if (isMarkerClicked) bottomSheetHeight + (SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING + BOTTOM_SHEET_DEFAULT_PADDING).dp
-    else (BOTTOM_SHEET_HEIGHT_OFF + SEARCH_ON_CURRENT_MAP_BUTTON_DEFAULT_PADDING).dp
+fun setReloadButtonBottomPadding(isMarkerClicked: Boolean, bottomSheetHeight: Dp): Dp {
+    return if (isMarkerClicked) bottomSheetHeight + (RELOAD_BUTTON_DEFAULT_PADDING + BOTTOM_SHEET_DEFAULT_PADDING).dp
+    else (BOTTOM_SHEET_HEIGHT_OFF + RELOAD_BUTTON_DEFAULT_PADDING).dp
 }

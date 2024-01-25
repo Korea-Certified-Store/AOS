@@ -1,4 +1,4 @@
-package com.example.presentation.ui
+package com.example.presentation.ui.map
 
 import android.Manifest
 import android.content.Context
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
+class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
     ViewModel() {
 
     var ableToShowInitialMarker = true

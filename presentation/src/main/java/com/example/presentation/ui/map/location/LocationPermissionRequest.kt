@@ -1,10 +1,10 @@
-package com.example.presentation.ui.map
+package com.example.presentation.ui.map.location
 
 import android.Manifest
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import com.example.presentation.ui.MainViewModel
+import com.example.presentation.ui.map.MapViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun LocationPermissionRequest(mainViewModel: MainViewModel) {
+fun LocationPermissionRequest(mapViewModel: MapViewModel) {
     val coroutineScope = rememberCoroutineScope()
     val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -22,7 +22,7 @@ fun LocationPermissionRequest(mainViewModel: MainViewModel) {
     )
     when {
         permissionsState.allPermissionsGranted -> {
-            mainViewModel.updateLocationPermission(true)
+            mapViewModel.updateLocationPermission(true)
         }
 
         permissionsState.shouldShowRationale -> {
@@ -32,7 +32,7 @@ fun LocationPermissionRequest(mainViewModel: MainViewModel) {
         }
 
         else -> {
-            mainViewModel.updateLocationPermission(false)
+            mapViewModel.updateLocationPermission(false)
         }
     }
 }

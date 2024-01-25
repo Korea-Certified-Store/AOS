@@ -1,4 +1,4 @@
-package com.example.presentation.ui.map
+package com.example.presentation.ui.map.filter
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -28,20 +28,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.model.StoreType
-import com.example.presentation.ui.MainViewModel
+import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 
 @Composable
-fun FilterButtons(
+fun FilterComponent(
     isKindFilterClicked: Boolean,
     onKindFilterChanged: (Boolean) -> Unit,
     isGreatFilterClicked: Boolean,
     onGreatFilterChanged: (Boolean) -> Unit,
     isSafeFilterClicked: Boolean,
     onSafeFilterChanged: (Boolean) -> Unit,
-    mainViewModel: MainViewModel,
+    mapViewModel: MapViewModel,
     onFilterStateChanged: (Boolean) -> Unit,
 ) {
 
@@ -52,25 +52,25 @@ fun FilterButtons(
             .padding(top = 12.dp, start = 16.dp),
         verticalAlignment = Alignment.Top
     ) {
-        FilterChip(
+        FilterButton(
             storeType = StoreType.KIND,
             isKindFilterClicked,
             onKindFilterChanged,
-            mainViewModel,
+            mapViewModel,
             onFilterStateChanged
         )
-        FilterChip(
+        FilterButton(
             storeType = StoreType.GREAT,
             isGreatFilterClicked,
             onGreatFilterChanged,
-            mainViewModel,
+            mapViewModel,
             onFilterStateChanged
         )
-        FilterChip(
+        FilterButton(
             storeType = StoreType.SAFE,
             isSafeFilterClicked,
             onSafeFilterChanged,
-            mainViewModel,
+            mapViewModel,
             onFilterStateChanged
         )
     }
@@ -78,18 +78,18 @@ fun FilterButtons(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterChip(
+fun FilterButton(
     storeType: StoreType,
     isFilterClicked: Boolean,
     onFilterChanged: (Boolean) -> Unit,
-    mainViewModel: MainViewModel,
+    mapViewModel: MapViewModel,
     onFilterStateChanged: (Boolean) -> Unit
 ) {
     val certificationName = stringResource(id = storeType.storeTypeName).replace(" ", "")
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Button(
             onClick = {
-                mainViewModel.updateFilterSet(certificationName, isFilterClicked.not())
+                mapViewModel.updateFilterSet(certificationName, isFilterClicked.not())
                 onFilterChanged(isFilterClicked.not())
                 onFilterStateChanged(true)
             },

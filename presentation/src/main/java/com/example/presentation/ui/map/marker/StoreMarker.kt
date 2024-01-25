@@ -1,4 +1,4 @@
-package com.example.presentation.ui.map
+package com.example.presentation.ui.map.marker
 
 import androidx.compose.runtime.Composable
 import com.example.presentation.model.StoreDetail

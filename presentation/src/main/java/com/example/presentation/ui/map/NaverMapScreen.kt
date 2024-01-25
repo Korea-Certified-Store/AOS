@@ -20,7 +20,9 @@ import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
-import com.example.presentation.ui.MainViewModel
+import com.example.presentation.ui.map.location.CurrentLocationComponent
+import com.example.presentation.ui.map.marker.StoreMarker
+import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.LOCATION_SIZE
@@ -36,8 +38,8 @@ import com.naver.maps.map.compose.rememberFusedLocationSource
 
 @ExperimentalNaverMapApi
 @Composable
-fun InitMap(
-    mainViewModel: MainViewModel,
+fun NaverMapScreen(
+    mapViewModel: MapViewModel,
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
@@ -76,7 +78,7 @@ fun InitMap(
             logoGravity = Gravity.BOTTOM or Gravity.END,
             logoMargin = PaddingValues(
                 end = 12.dp,
-                bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked, bottomSheetHeight)
+                bottom = setReloadButtonBottomPadding(isMarkerClicked, bottomSheetHeight)
             ),
             isCompassEnabled = false
         ),
@@ -91,7 +93,7 @@ fun InitMap(
                     initLocationSize,
                     onInitLocationChanged,
                     onNewCoordinateChanged,
-                    mainViewModel,
+                    mapViewModel,
                     selectedLocationButton,
                     screenCoordinate
                 )
@@ -114,7 +116,7 @@ fun InitMap(
     ) {
 
         val lifecycleOwner = LocalLifecycleOwner.current
-        val storeDetailData by mainViewModel.storeDetailModelData.collectAsStateWithLifecycle(
+        val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle(
             lifecycleOwner
         )
         when (val state = storeDetailData) {
@@ -123,9 +125,9 @@ fun InitMap(
             }
 
             is UiState.Success -> {
-                ShowFilteredMarkers(
+                FilteredMarkers(
                     state,
-                    mainViewModel,
+                    mapViewModel,
                     onBottomSheetChanged,
                     onStoreInfoChanged,
                     clickedMarkerId,
@@ -139,11 +141,11 @@ fun InitMap(
             onMarkerChanged(clickedMarkerId)
         }
     }
-    InitLocationButton(
+    CurrentLocationComponent(
         isMarkerClicked,
         selectedLocationButton,
         onLocationButtonChanged,
-        mainViewModel,
+        mapViewModel,
         bottomSheetHeight
     )
 }
@@ -155,19 +157,19 @@ private fun TurnOffLocationButtonIfGestured(onLocationButtonChanged: (LocationTr
 
 @ExperimentalNaverMapApi
 @Composable
-private fun ShowFilteredMarkers(
+private fun FilteredMarkers(
     state: UiState.Success<List<com.example.domain.model.map.StoreDetail>>,
-    mainViewModel: MainViewModel,
+    mapViewModel: MapViewModel,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     clickedMarkerId: Long,
     onMarkerChanged: (Long) -> Unit,
 ) {
     state.data.filter { storeInfo ->
-        mainViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet()).isNotEmpty()
+        mapViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet()).isNotEmpty()
     }.forEach { storeInfo ->
         val storeType =
-            when (mainViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet())
+            when (mapViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet())
                 .last()) {
                 KIND_STORE -> StoreType.KIND
                 GREAT_STORE -> StoreType.GREAT
@@ -191,7 +193,7 @@ fun InitializeMarker(
     initLocationSize: Int,
     onInitLocationChanged: (Int) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
-    mainViewModel: MainViewModel,
+    mainViewModel: MapViewModel,
     selectedLocationButton: LocationTrackingButton,
     screenCoordinate: ScreenCoordinate,
 ) {
