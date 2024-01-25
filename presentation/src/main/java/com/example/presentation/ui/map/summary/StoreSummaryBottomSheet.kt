@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
 import com.example.presentation.R
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
@@ -132,17 +133,9 @@ fun StoreSummaryInfo(
                 },
             constraintSet = setBottomSheetConstraints()
         ) {
-            StoreTitle(
-                storeInfo.displayName,
-                "storeTitle",
-                maxWidth
-            )
-            StorePrimaryTypeText(
-                storeInfo.primaryTypeDisplayName ?: "상점",
-                "storePrimaryType",
-                maxWidth
-            )
-            StoreTypeChips(storeInfo.certificationName, "chips", maxWidth)
+            StoreTitle(storeInfo.displayName, "storeTitle")
+            StorePrimaryTypeText(storeInfo.primaryTypeDisplayName ?: "상점", "storePrimaryType")
+            StoreTypeChips(storeInfo.certificationName, "chips")
             StoreOpeningTime(storeInfo.operatingType, storeInfo.timeDescription, "storeOpeningTime")
             if (storeInfo.phoneNumber != null) StoreCallButton(
                 onCallDialogChanged,
@@ -165,18 +158,22 @@ fun setBottomSheetConstraints(): ConstraintSet {
         constrain(storeTitle) {
             top.linkTo(parent.top)
             linkTo(start = parent.start, end = storeImage.start, endMargin = 8.dp, bias = 0F)
+            width = Dimension.fillToConstraints
         }
         constrain(storePrimaryType) {
             top.linkTo(storeTitle.bottom, 5.dp)
             linkTo(start = parent.start, end = storeImage.start, endMargin = 8.dp, bias = 0F)
+            width = Dimension.fillToConstraints
         }
         constrain(chips) {
             top.linkTo(storePrimaryType.bottom, 5.dp)
             linkTo(start = parent.start, end = storeImage.start, endMargin = 8.dp, bias = 0F)
+            width = Dimension.fillToConstraints
         }
         constrain(storeOpeningTime) {
-            start.linkTo(parent.start)
             top.linkTo(chips.bottom, 11.dp)
+            linkTo(start = parent.start, end = storeImage.start, endMargin = 8.dp, bias = 0F)
+            width = Dimension.fillToConstraints
         }
         constrain(storeCallButton) {
             start.linkTo(parent.start)
@@ -191,7 +188,7 @@ fun setBottomSheetConstraints(): ConstraintSet {
 }
 
 @Composable
-fun StoreTitle(storeName: String, id: String, maxWidth: Dp) {
+fun StoreTitle(storeName: String, id: String) {
     Text(
         text = storeName,
         color = MediumBlue,
@@ -201,12 +198,11 @@ fun StoreTitle(storeName: String, id: String, maxWidth: Dp) {
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier
             .layoutId(id)
-            .width(maxWidth - BOTTOM_SHEET_STORE_IMG_SIZE.dp - (DEFAULT_MARIN * 2).dp),
     )
 }
 
 @Composable
-fun StorePrimaryTypeText(storeType: String, id: String, maxWidth: Dp) {
+fun StorePrimaryTypeText(storeType: String, id: String) {
     Text(
         text = storeType,
         color = MediumGray,
@@ -214,7 +210,6 @@ fun StorePrimaryTypeText(storeType: String, id: String, maxWidth: Dp) {
         fontWeight = FontWeight.Normal,
         modifier = Modifier
             .layoutId(id)
-            .width(maxWidth - BOTTOM_SHEET_STORE_IMG_SIZE.dp - (DEFAULT_MARIN * 2).dp),
     )
 }
 
@@ -243,15 +238,10 @@ fun StoreTypeChip(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun StoreTypeChips(
-    elements: List<StoreType>,
-    id: String,
-    maxWidth: Dp
-) {
+fun StoreTypeChips(elements: List<StoreType>, id: String) {
     FlowRow(
         modifier = Modifier
             .layoutId(id)
-            .width(maxWidth - BOTTOM_SHEET_STORE_IMG_SIZE.dp - (DEFAULT_MARIN * 2).dp),
     ) {
         elements.forEach { item ->
             StoreTypeChip(storeType = item)
