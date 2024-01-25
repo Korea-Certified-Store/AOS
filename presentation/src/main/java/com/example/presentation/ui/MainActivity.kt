@@ -14,7 +14,8 @@ import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.presentation.R
-import com.example.presentation.ui.map.LocationPermissionRequest
+import com.example.presentation.ui.map.MapViewModel
+import com.example.presentation.ui.map.location.LocationPermissionRequest
 import com.example.presentation.ui.theme.Android_KCSTheme
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,16 +26,16 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalNaverMapApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainViewModel by viewModels<MainViewModel>()
+        val mapViewModel by viewModels<MapViewModel>()
 
         setContent {
-            LocationPermissionRequest(mainViewModel)
+            LocationPermissionRequest(mapViewModel)
 
             val (callStoreNumber, onCallStoreChanged) = remember { mutableStateOf("") }
 
             Android_KCSTheme {
                 MainScreen(
-                    mainViewModel,
+                    mapViewModel,
                     onCallStoreChanged
                 )
             }
@@ -47,7 +48,7 @@ class MainActivity : ComponentActivity() {
 
         if (isLocationPermissionGranted(this)) {
             lifecycleScope.launch {
-                mainViewModel.updateLocationPermission(true)
+                mapViewModel.updateLocationPermission(true)
             }
         }
     }

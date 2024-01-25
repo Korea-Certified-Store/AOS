@@ -1,4 +1,4 @@
-package com.example.presentation.ui.map
+package com.example.presentation.ui.map.location
 
 import android.content.Context
 import android.content.Intent

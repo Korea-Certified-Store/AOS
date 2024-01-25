@@ -1,4 +1,4 @@
-package com.example.presentation.ui.map
+package com.example.presentation.ui.map.location
 
 import android.content.Context
 import androidx.compose.foundation.Image
@@ -26,15 +26,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.LocationTrackingButton
-import com.example.presentation.ui.MainViewModel
+import com.example.presentation.ui.map.MapViewModel
+import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun InitLocationButton(
+fun CurrentLocationComponent(
     isMarkerClicked: Boolean,
     selectedLocationButton: LocationTrackingButton,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
-    mainViewModel: MainViewModel,
+    mapViewModel: MapViewModel,
     bottomSheetHeight: Dp
 ) {
     val context = LocalContext.current
@@ -45,7 +46,7 @@ fun InitLocationButton(
         modifier = Modifier
             .fillMaxHeight()
             .padding(
-                bottom = setSearchOnCurrentMapBottomPadding(isMarkerClicked, bottomSheetHeight)
+                bottom = setReloadButtonBottomPadding(isMarkerClicked, bottomSheetHeight)
             ),
         verticalArrangement = Arrangement.Bottom,
     ) {
@@ -57,11 +58,11 @@ fun InitLocationButton(
         ) { data ->
             CreateSnackBar(data)
         }
-        CreateLocationButton(
+        CurrentLocationButton(
             context,
             selectedLocationButton,
             onLocationButtonChanged,
-            mainViewModel,
+            mapViewModel,
             scope,
             snackBarHost,
         )
@@ -70,11 +71,11 @@ fun InitLocationButton(
 }
 
 @Composable
-fun CreateLocationButton(
+fun CurrentLocationButton(
     context: Context,
     selectedLocationButton: LocationTrackingButton,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
-    mainViewModel: MainViewModel,
+    mapViewModel: MapViewModel,
     scope: CoroutineScope,
     snackBarHost: SnackbarHostState,
 ) {
@@ -88,10 +89,10 @@ fun CreateLocationButton(
             containerColor = Color.Transparent
         ),
         onClick = {
-            selectedLocationButton(
+            handleLocationButtonSelection(
                 context,
                 onLocationButtonChanged,
-                mainViewModel,
+                mapViewModel,
                 scope,
                 snackBarHost,
                 selectedLocationButton
@@ -105,27 +106,27 @@ fun CreateLocationButton(
     }
 }
 
-fun selectedLocationButton(
+fun handleLocationButtonSelection(
     context: Context,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
-    mainViewModel: MainViewModel,
+    mapViewModel: MapViewModel,
     scope: CoroutineScope,
     snackBarHost: SnackbarHostState,
     selectedLocationButton: LocationTrackingButton
 ) {
-    mainViewModel.checkAndUpdatePermission(context)
-    if (!mainViewModel.isLocationPermissionGranted.value && snackBarHost.currentSnackbarData == null) {
+    mapViewModel.checkAndUpdatePermission(context)
+    if (!mapViewModel.isLocationPermissionGranted.value && snackBarHost.currentSnackbarData == null) {
         showPermissionSnackBar(context, scope, snackBarHost)
     }
-    onLocationButtonChanged(changeLocationTrackingMode(selectedLocationButton, mainViewModel))
+    onLocationButtonChanged(changeLocationTrackingMode(selectedLocationButton, mapViewModel))
 }
 
 fun changeLocationTrackingMode(
-    selectedLocationButton: LocationTrackingButton, mainViewModel: MainViewModel
+    selectedLocationButton: LocationTrackingButton, mapViewModel: MapViewModel
 ): LocationTrackingButton {
     return when (selectedLocationButton) {
         LocationTrackingButton.NONE -> {
-            mainViewModel.getInitialLocationTrackingMode()
+            mapViewModel.getInitialLocationTrackingMode()
         }
 
         LocationTrackingButton.NO_FOLLOW -> LocationTrackingButton.FOLLOW

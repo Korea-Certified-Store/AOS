@@ -1,4 +1,4 @@
-package com.example.presentation.ui.map
+package com.example.presentation.ui.map.summary
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -130,7 +130,7 @@ fun StoreSummaryInfo(
                         onHeightChanged(newHeight)
                     }
                 },
-            constraintSet = bottomSheetConstraints()
+            constraintSet = setBottomSheetConstraints()
         ) {
             StoreTitle(
                 storeInfo.displayName,
@@ -153,7 +153,7 @@ fun StoreSummaryInfo(
     }
 }
 
-fun bottomSheetConstraints(): ConstraintSet {
+fun setBottomSheetConstraints(): ConstraintSet {
     return ConstraintSet {
         val storeTitle = createRefFor("storeTitle")
         val storePrimaryType = createRefFor("storePrimaryType")
