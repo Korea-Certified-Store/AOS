@@ -1,5 +1,6 @@
 package com.example.presentation.ui.map.summary
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,15 +31,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -64,12 +66,12 @@ import com.example.presentation.ui.theme.Pink
 import com.example.presentation.ui.theme.Red
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_IMG_SIZE
 import com.example.presentation.util.MainConstants.DEFAULT_MARIN
 import com.skydoves.landscapist.coil.CoilImage
+import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StoreSummaryBottomSheet(
@@ -79,18 +81,20 @@ fun StoreSummaryBottomSheet(
     bottomSheetHeight: Dp,
     onHeightChanged: (Dp) -> Unit
 ) {
+    val scaffoldState = rememberBottomSheetScaffoldState()
+    val scope = rememberCoroutineScope()
+
     BottomSheetScaffold(
+        scaffoldState = scaffoldState,
         sheetContent = {
-            Column {
+            Row {
                 StoreSummaryInfo(
                     clickedStoreInfo,
-                    onCallDialogChanged,
-                    onHeightChanged,
-                    bottomSheetHeight
+                    onCallDialogChanged
                 )
             }
         },
-        sheetPeekHeight = if (isMarkerClicked) bottomSheetHeight + BOTTOM_SHEET_DEFAULT_PADDING.dp else BOTTOM_SHEET_HEIGHT_OFF.dp,
+        sheetPeekHeight = 0.dp,
         sheetContainerColor = White,
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
         sheetShadowElevation = 5.dp,
@@ -104,18 +108,20 @@ fun StoreSummaryBottomSheet(
                         .background(White)
                 )
             }
-        },
-        sheetSwipeEnabled = false
+        }
     ) {
+        if (isMarkerClicked) {
+            scope.launch {
+                scaffoldState.bottomSheetState.expand()
+            }
+        }
     }
 }
 
 @Composable
 fun StoreSummaryInfo(
     storeInfo: StoreDetail,
-    onCallDialogChanged: (Boolean) -> Unit,
-    onHeightChanged: (Dp) -> Unit,
-    currentHeight: Dp
+    onCallDialogChanged: (Boolean) -> Unit
 ) {
     val density = LocalDensity.current
     BoxWithConstraints {
@@ -123,14 +129,7 @@ fun StoreSummaryInfo(
             modifier = Modifier
                 .padding(horizontal = DEFAULT_MARIN.dp, vertical = 12.dp)
                 .fillMaxWidth(1f)
-                .wrapContentHeight()
-                .onSizeChanged { size ->
-                    val newHeight = with(density) { size.height.toDp() }
-
-                    if (newHeight != currentHeight) {
-                        onHeightChanged(newHeight)
-                    }
-                },
+                .wrapContentHeight(),
             constraintSet = setBottomSheetConstraints()
         ) {
             StoreTitle(storeInfo.displayName, "storeTitle")
