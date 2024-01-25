@@ -41,7 +41,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -114,6 +113,10 @@ fun StoreSummaryBottomSheet(
             scope.launch {
                 scaffoldState.bottomSheetState.expand()
             }
+        } else {
+            scope.launch {
+                scaffoldState.bottomSheetState.partialExpand()
+            }
         }
     }
 }
@@ -123,7 +126,6 @@ fun StoreSummaryInfo(
     storeInfo: StoreDetail,
     onCallDialogChanged: (Boolean) -> Unit
 ) {
-    val density = LocalDensity.current
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
