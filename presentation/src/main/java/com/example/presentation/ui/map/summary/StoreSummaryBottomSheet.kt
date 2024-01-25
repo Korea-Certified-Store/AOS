@@ -101,11 +101,11 @@ fun StoreSummaryBottomSheet(
         sheetDragHandle = {
             Column {
                 Spacer(modifier = Modifier.height(10.dp))
-                Spacer(
+                Box(
                     modifier = Modifier
-                        .width(32.dp)
-                        .height(3.dp)
-                        .background(White)
+                        .width(34.dp)
+                        .height(4.dp)
+                        .background(SemiLightGray, shape = RoundedCornerShape(100.dp))
                 )
             }
         }
