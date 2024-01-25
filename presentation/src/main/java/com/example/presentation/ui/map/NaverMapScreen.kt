@@ -23,6 +23,7 @@ import com.example.presentation.model.StoreType
 import com.example.presentation.ui.MainViewModel
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.KIND_STORE
+import com.example.presentation.util.MainConstants.LOCATION_SIZE
 import com.example.presentation.util.UiState
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
@@ -48,6 +49,10 @@ fun InitMap(
     onMarkerChanged: (Long) -> Unit,
     selectedLocationButton: LocationTrackingButton,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
+    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
+    initLocationSize: Int,
+    onInitLocationChanged: (Int) -> Unit,
+    screenCoordinate: ScreenCoordinate
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -76,8 +81,21 @@ fun InitMap(
             isCompassEnabled = false
         ),
         cameraPositionState = cameraPositionState.apply {
-            turnOffLocationButtonIfGestured(this, onLocationButtonChanged)
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
+            if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
+                TurnOffLocationButtonIfGestured(onLocationButtonChanged)
+            } else {
+                InitializeMarker(
+                    this,
+                    onSearchOnCurrentMapButtonChanged,
+                    initLocationSize,
+                    onInitLocationChanged,
+                    onNewCoordinateChanged,
+                    mainViewModel,
+                    selectedLocationButton,
+                    screenCoordinate
+                )
+            }
             GetScreenCoordinate(this, onScreenChanged)
         },
         locationSource = rememberFusedLocationSource(),
@@ -130,6 +148,11 @@ fun InitMap(
     )
 }
 
+@Composable
+private fun TurnOffLocationButtonIfGestured(onLocationButtonChanged: (LocationTrackingButton) -> Unit) {
+    onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
+}
+
 @ExperimentalNaverMapApi
 @Composable
 private fun ShowFilteredMarkers(
@@ -161,12 +184,42 @@ private fun ShowFilteredMarkers(
     }
 }
 
-fun turnOffLocationButtonIfGestured(
+@Composable
+fun InitializeMarker(
     cameraPositionState: CameraPositionState,
-    onLocationButtonChanged: (LocationTrackingButton) -> Unit
+    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
+    initLocationSize: Int,
+    onInitLocationChanged: (Int) -> Unit,
+    onNewCoordinateChanged: (Coordinate) -> Unit,
+    mainViewModel: MainViewModel,
+    selectedLocationButton: LocationTrackingButton,
+    screenCoordinate: ScreenCoordinate,
 ) {
-    if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
-        onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
+    if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.LOCATION) {
+        if (initLocationSize == LOCATION_SIZE) {
+            onNewCoordinateChanged(
+                Coordinate(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude
+                )
+            )
+            onSearchOnCurrentMapButtonChanged(true)
+            onInitLocationChanged(initLocationSize + 1)
+        } else if (initLocationSize < LOCATION_SIZE) {
+            onInitLocationChanged(initLocationSize + 1)
+        }
+        mainViewModel.ableToShowInitialMarker = false
+    } else if (
+        screenCoordinate != ScreenCoordinate(
+            Coordinate(0.0, 0.0),
+            Coordinate(0.0, 0.0),
+            Coordinate(0.0, 0.0),
+            Coordinate(0.0, 0.0)
+        )
+        && selectedLocationButton == LocationTrackingButton.NONE && mainViewModel.ableToShowInitialMarker
+    ) {
+        onSearchOnCurrentMapButtonChanged(true)
+        mainViewModel.ableToShowInitialMarker = false
     }
 }
 

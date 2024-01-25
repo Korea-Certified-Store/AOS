@@ -41,7 +41,8 @@ fun FilterButtons(
     onGreatFilterChanged: (Boolean) -> Unit,
     isSafeFilterClicked: Boolean,
     onSafeFilterChanged: (Boolean) -> Unit,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    onFilterStateChanged: (Boolean) -> Unit,
 ) {
 
     Row(
@@ -55,19 +56,22 @@ fun FilterButtons(
             storeType = StoreType.KIND,
             isKindFilterClicked,
             onKindFilterChanged,
-            mainViewModel
+            mainViewModel,
+            onFilterStateChanged
         )
         FilterChip(
             storeType = StoreType.GREAT,
             isGreatFilterClicked,
             onGreatFilterChanged,
-            mainViewModel
+            mainViewModel,
+            onFilterStateChanged
         )
         FilterChip(
             storeType = StoreType.SAFE,
             isSafeFilterClicked,
             onSafeFilterChanged,
-            mainViewModel
+            mainViewModel,
+            onFilterStateChanged
         )
     }
 }
@@ -78,7 +82,8 @@ fun FilterChip(
     storeType: StoreType,
     isFilterClicked: Boolean,
     onFilterChanged: (Boolean) -> Unit,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    onFilterStateChanged: (Boolean) -> Unit
 ) {
     val certificationName = stringResource(id = storeType.storeTypeName).replace(" ", "")
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
@@ -86,6 +91,7 @@ fun FilterChip(
             onClick = {
                 mainViewModel.updateFilterSet(certificationName, isFilterClicked.not())
                 onFilterChanged(isFilterClicked.not())
+                onFilterStateChanged(true)
             },
             modifier = Modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
