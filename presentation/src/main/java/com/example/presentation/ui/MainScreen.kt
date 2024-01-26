@@ -124,8 +124,8 @@ fun MainScreen(
         isMarkerClicked,
         clickedStoreInfo,
         onCallDialogChanged,
-        bottomSheetHeight,
-        onBottomSheetHeightChanged
+        onMarkerChanged,
+        onBottomSheetChanged
     )
 
     FilterComponent(

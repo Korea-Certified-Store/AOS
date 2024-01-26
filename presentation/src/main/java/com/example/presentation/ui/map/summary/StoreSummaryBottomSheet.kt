@@ -34,7 +34,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,7 +50,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -77,11 +80,15 @@ fun StoreSummaryBottomSheet(
     isMarkerClicked: Boolean,
     clickedStoreInfo: StoreDetail,
     onCallDialogChanged: (Boolean) -> Unit,
-    bottomSheetHeight: Dp,
-    onHeightChanged: (Dp) -> Unit
+    onMarkerChanged: (Long) -> Unit,
+    onBottomSheetChanged: (Boolean) -> Unit
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
+
+    var initOffset by remember { mutableFloatStateOf(0F) }
+    var firstOffset by remember { mutableFloatStateOf(0F) }
+    var secondOffset by remember { mutableFloatStateOf(0F) }
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -109,13 +116,29 @@ fun StoreSummaryBottomSheet(
             }
         }
     ) {
-        if (isMarkerClicked) {
-            scope.launch {
-                scaffoldState.bottomSheetState.expand()
+        scaffoldState.bottomSheetState.apply {
+            if (isMarkerClicked) {
+                scope.launch {
+                    expand()
+                }
+            } else {
+                scope.launch {
+                    partialExpand()
+                }
             }
-        } else {
-            scope.launch {
-                scaffoldState.bottomSheetState.partialExpand()
+
+            if (initOffset == 0F) {
+                initOffset = requireOffset()
+                firstOffset = requireOffset()
+                secondOffset = requireOffset()
+            }
+
+            firstOffset = secondOffset
+            secondOffset = requireOffset()
+
+            if (firstOffset < secondOffset && secondOffset == initOffset) {
+                onMarkerChanged(-1)
+                onBottomSheetChanged(false)
             }
         }
     }
