@@ -49,7 +49,7 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
         }
     }
 
-    fun getInitialLocationTrackingMode(): LocationTrackingButton {
+    fun setLocationTrackingMode(): LocationTrackingButton {
         return if (isLocationPermissionGranted.value) {
             LocationTrackingButton.FOLLOW
         } else {

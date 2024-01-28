@@ -20,19 +20,12 @@ fun LocationPermissionRequest(mapViewModel: MapViewModel) {
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
     )
-    when {
-        permissionsState.allPermissionsGranted -> {
-            mapViewModel.updateLocationPermission(true)
-        }
-
-        permissionsState.shouldShowRationale -> {
-            coroutineScope.launch {
-                permissionsState.launchMultiplePermissionRequest()
-            }
-        }
-
-        else -> {
-            mapViewModel.updateLocationPermission(false)
+    if (permissionsState.allPermissionsGranted) {
+        mapViewModel.updateLocationPermission(true)
+    } else {
+        mapViewModel.updateLocationPermission(false)
+        coroutineScope.launch {
+            permissionsState.launchMultiplePermissionRequest()
         }
     }
 }

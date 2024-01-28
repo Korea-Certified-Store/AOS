@@ -30,6 +30,7 @@ import com.example.presentation.util.UiState
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.NaverMap
@@ -84,8 +85,11 @@ fun NaverMapScreen(
         ),
         cameraPositionState = cameraPositionState.apply {
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
-            if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
-                TurnOffLocationButtonIfGestured(onLocationButtonChanged)
+            if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE
+                && selectedLocationButton.mode != LocationTrackingMode.None
+                && selectedLocationButton.mode != LocationTrackingMode.NoFollow
+            ) {
+                TurnOffLocationButton(onLocationButtonChanged)
             } else {
                 InitializeMarker(
                     this,
@@ -151,7 +155,7 @@ fun NaverMapScreen(
 }
 
 @Composable
-private fun TurnOffLocationButtonIfGestured(onLocationButtonChanged: (LocationTrackingButton) -> Unit) {
+private fun TurnOffLocationButton(onLocationButtonChanged: (LocationTrackingButton) -> Unit) {
     onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
 }
 

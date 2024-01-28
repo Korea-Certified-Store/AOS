@@ -10,10 +10,10 @@ import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
-import com.example.presentation.ui.map.filter.FilterComponent
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
+import com.example.presentation.ui.map.filter.FilterComponent
 import com.example.presentation.ui.map.reload.ReloadButton
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants
@@ -89,7 +89,7 @@ fun MainScreen(
     val (selectedLocationButton, onLocationButtonChanged) =
         remember {
             mutableStateOf(
-                mapViewModel.getInitialLocationTrackingMode()
+                mapViewModel.setLocationTrackingMode()
             )
         }
 
