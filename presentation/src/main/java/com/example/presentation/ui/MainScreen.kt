@@ -10,10 +10,10 @@ import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
-import com.example.presentation.ui.map.filter.FilterComponent
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
+import com.example.presentation.ui.map.filter.FilterComponent
 import com.example.presentation.ui.map.reload.ReloadButton
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants
@@ -94,7 +94,11 @@ fun MainScreen(
             )
         }
 
-    val (bottomSheetHeight, onBottomSheetHeightChanged) = remember { mutableStateOf(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp) }
+    val (currentSummaryInfoHeight, onCurrentSummaryInfoHeightChanged) = remember {
+        mutableStateOf(
+            MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp
+        )
+    }
 
     val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(UNMARKER) }
 
@@ -110,7 +114,7 @@ fun MainScreen(
         onOriginCoordinateChanged,
         onNewCoordinateChanged,
         onScreenChanged,
-        bottomSheetHeight,
+        currentSummaryInfoHeight,
         clickedMarkerId,
         onMarkerChanged,
         selectedLocationButton,
@@ -121,12 +125,24 @@ fun MainScreen(
         screenCoordinate
     )
 
+    if (isMapGestured) {
+        ReloadButton(
+            isMarkerClicked,
+            onReloadButtonChanged,
+            currentSummaryInfoHeight,
+            onMarkerChanged,
+            onBottomSheetChanged
+        )
+    }
+
     StoreSummaryBottomSheet(
         isMarkerClicked,
         clickedStoreInfo,
         onCallDialogChanged,
         onMarkerChanged,
-        onBottomSheetChanged
+        onBottomSheetChanged,
+        currentSummaryInfoHeight,
+        onCurrentSummaryInfoHeightChanged
     )
 
     FilterComponent(
@@ -161,16 +177,6 @@ fun MainScreen(
         onCurrentMapChanged(true)
     }
 
-    if (isMapGestured) {
-        ReloadButton(
-            isMarkerClicked,
-            onReloadButtonChanged,
-            bottomSheetHeight,
-            onMarkerChanged,
-            onBottomSheetChanged
-        )
-    }
-
     if (isReloadButtonClicked) {
         val limitScreenCoordinate = parallelTranslate(screenCoordinate)
         mapViewModel.getStoreDetail(
@@ -195,7 +201,7 @@ fun MainScreen(
         onMarkerChanged(UNMARKER)
         onFilterStateChanged(false)
         onBottomSheetChanged(false)
-        onBottomSheetHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
+        onCurrentSummaryInfoHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
     }
 }
 

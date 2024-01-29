@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.StoreDetail
@@ -45,7 +46,9 @@ fun StoreSummaryBottomSheet(
     clickedStoreInfo: StoreDetail,
     onCallDialogChanged: (Boolean) -> Unit,
     onMarkerChanged: (Long) -> Unit,
-    onBottomSheetChanged: (Boolean) -> Unit
+    onBottomSheetChanged: (Boolean) -> Unit,
+    currentSummaryInfoHeight: Dp,
+    onCurrentSummaryInfoHeightChanged: (Dp) -> Unit
 ) {
     val bottomSheetSt = rememberStandardBottomSheetState(
         skipHiddenState = true,
@@ -55,10 +58,6 @@ fun StoreSummaryBottomSheet(
     val scope = rememberCoroutineScope()
 
     var peekHeight by remember { mutableStateOf(ExpandedType.COLLAPSED) }
-
-    val (currentSummaryInfoHeight, onCurrentSummaryInfoHeightChanged) = remember {
-        mutableStateOf(0.dp)
-    }
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -87,7 +86,7 @@ fun StoreSummaryBottomSheet(
             }
 
         },
-        sheetPeekHeight = when(peekHeight) {
+        sheetPeekHeight = when (peekHeight) {
             ExpandedType.COLLAPSED -> BOTTOM_SHEET_HEIGHT_OFF.dp
             ExpandedType.FULL -> DETAIL_BOTTOM_SHEET_HEIGHT.dp
             ExpandedType.HALF -> currentSummaryInfoHeight + HANDLE_HEIGHT.dp

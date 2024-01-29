@@ -47,7 +47,7 @@ fun NaverMapScreen(
     onOriginCoordinateChanged: (Coordinate) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
     onScreenChanged: (ScreenCoordinate) -> Unit,
-    bottomSheetHeight: Dp,
+    currentSummaryInfoHeight: Dp,
     clickedMarkerId: Long,
     onMarkerChanged: (Long) -> Unit,
     selectedLocationButton: LocationTrackingButton,
@@ -79,7 +79,7 @@ fun NaverMapScreen(
             logoGravity = Gravity.BOTTOM or Gravity.END,
             logoMargin = PaddingValues(
                 end = 12.dp,
-                bottom = setReloadButtonBottomPadding(isMarkerClicked, bottomSheetHeight)
+                bottom = setReloadButtonBottomPadding(isMarkerClicked, currentSummaryInfoHeight)
             ),
             isCompassEnabled = false
         ),
@@ -147,7 +147,7 @@ fun NaverMapScreen(
         selectedLocationButton,
         onLocationButtonChanged,
         mapViewModel,
-        bottomSheetHeight
+        currentSummaryInfoHeight
     )
 }
 
