@@ -24,8 +24,8 @@ import javax.inject.Inject
 class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
     ViewModel() {
 
-    private val _splashState = MutableStateFlow(true)
-    val splashState: StateFlow<Boolean> = _splashState
+    private val _ableToShowSplashScreen = MutableStateFlow(true)
+    val ableToShowSplashScreen: StateFlow<Boolean> = _ableToShowSplashScreen
 
     var ableToShowInitialMarker = true
 
@@ -40,7 +40,7 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
     val isLocationPermissionGranted: StateFlow<Boolean> get() = _isLocationPermissionGranted
 
     fun updateSplashState() {
-        _splashState.value = false
+        _ableToShowSplashScreen.value = false
     }
 
     fun getFilterSet(): Set<String> {

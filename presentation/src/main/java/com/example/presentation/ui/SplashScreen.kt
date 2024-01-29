@@ -26,7 +26,7 @@ fun SplashScreen() {
     ) {
         Image(
             modifier = Modifier.wrapContentSize(),
-            painter = painterResource(id = R.drawable.app_logo),
+            painter = painterResource(id = R.drawable.ic_nainga_logo),
             contentDescription = "나인가 로고",
             alignment = Alignment.Center
         )

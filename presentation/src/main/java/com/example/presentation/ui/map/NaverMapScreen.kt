@@ -128,7 +128,7 @@ fun NaverMapScreen(
         )
         when (val state = storeDetailData) {
             is UiState.Loading -> {
-                if (mapViewModel.splashState.value) {
+                if (mapViewModel.ableToShowSplashScreen.value) {
                     onSplashScreenShowAble(true)
                 }
             }
