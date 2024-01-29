@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.StoreDetail
+import com.example.presentation.ui.theme.BackgroundBlack
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
@@ -48,7 +50,9 @@ fun StoreSummaryBottomSheet(
     onMarkerChanged: (Long) -> Unit,
     onBottomSheetChanged: (Boolean) -> Unit,
     currentSummaryInfoHeight: Dp,
-    onCurrentSummaryInfoHeightChanged: (Dp) -> Unit
+    onCurrentSummaryInfoHeightChanged: (Dp) -> Unit,
+    peekHeight: ExpandedType,
+    onPeekHeightChanged: (ExpandedType) -> Unit
 ) {
     val bottomSheetSt = rememberStandardBottomSheetState(
         skipHiddenState = true,
@@ -57,8 +61,6 @@ fun StoreSummaryBottomSheet(
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetSt)
     val scope = rememberCoroutineScope()
 
-    var peekHeight by remember { mutableStateOf(ExpandedType.COLLAPSED) }
-
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContent = {
@@ -66,7 +68,7 @@ fun StoreSummaryBottomSheet(
                 isMarkerClicked = isMarkerClicked,
                 onExpandTypeChanged = {
                     scope.launch {
-                        peekHeight = it
+                        onPeekHeightChanged(it)
                         bottomSheetSt.partialExpand()
                     }
                 },
@@ -176,6 +178,15 @@ fun BottomSheetGestureWrapper(
     ) {
         content()
     }
+}
+
+@Composable
+fun DimScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BackgroundBlack)
+    )
 }
 
 @Composable

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
+import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.map.MapViewModel
@@ -15,12 +16,14 @@ import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
 import com.example.presentation.ui.map.filter.FilterComponent
 import com.example.presentation.ui.map.reload.ReloadButton
+import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UNMARKER
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import kotlin.math.pow
 import kotlin.math.sqrt
+
 
 @ExperimentalNaverMapApi
 @Composable
@@ -106,6 +109,8 @@ fun MainScreen(
 
     val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
 
+    val (peekHeight, onPeekHeightChanged) = remember { mutableStateOf(ExpandedType.COLLAPSED) }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -135,16 +140,6 @@ fun MainScreen(
         )
     }
 
-    StoreSummaryBottomSheet(
-        isMarkerClicked,
-        clickedStoreInfo,
-        onCallDialogChanged,
-        onMarkerChanged,
-        onBottomSheetChanged,
-        currentSummaryInfoHeight,
-        onCurrentSummaryInfoHeightChanged
-    )
-
     FilterComponent(
         isKindFilterClicked,
         onKindFilterChanged,
@@ -154,6 +149,22 @@ fun MainScreen(
         onSafeFilterChanged,
         mapViewModel,
         onFilterStateChanged
+    )
+
+    if (peekHeight == ExpandedType.FULL) {
+        DimScreen()
+    }
+
+    StoreSummaryBottomSheet(
+        isMarkerClicked,
+        clickedStoreInfo,
+        onCallDialogChanged,
+        onMarkerChanged,
+        onBottomSheetChanged,
+        currentSummaryInfoHeight,
+        onCurrentSummaryInfoHeightChanged,
+        peekHeight,
+        onPeekHeightChanged
     )
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
