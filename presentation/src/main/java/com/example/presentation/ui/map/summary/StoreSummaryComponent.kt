@@ -77,7 +77,7 @@ fun StoreSummaryInfo(
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
-                .padding(horizontal = MainConstants.DEFAULT_MARIN.dp, vertical = 12.dp)
+                .padding(horizontal = MainConstants.DEFAULT_MARIN.dp)
                 .fillMaxWidth(1f)
                 .wrapContentHeight()
                 .onSizeChanged { size ->
@@ -112,7 +112,7 @@ fun setBottomSheetConstraints(): ConstraintSet {
         val storeImage = createRefFor("storeImage")
 
         constrain(storeTitle) {
-            top.linkTo(parent.top)
+            top.linkTo(parent.top, 12.dp)
             linkTo(start = parent.start, end = storeImage.start, endMargin = 8.dp, bias = 0F)
             width = Dimension.fillToConstraints
         }
@@ -143,7 +143,13 @@ fun setBottomSheetConstraints(): ConstraintSet {
         }
         constrain(storeImage) {
             end.linkTo(parent.end)
-            linkTo(top = parent.top, bottom = parent.bottom, bottomMargin = 13.dp, bias = 0F)
+            linkTo(
+                top = parent.top,
+                bottom = parent.bottom,
+                topMargin = 12.dp,
+                bottomMargin = 13.dp,
+                bias = 0F
+            )
         }
     }
 }
