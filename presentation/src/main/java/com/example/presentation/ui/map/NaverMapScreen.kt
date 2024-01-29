@@ -1,5 +1,6 @@
 package com.example.presentation.ui.map
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Point
 import android.graphics.PointF
@@ -37,6 +38,7 @@ import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @ExperimentalNaverMapApi
 @Composable
 fun NaverMapScreen(
@@ -55,7 +57,8 @@ fun NaverMapScreen(
     onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
     initLocationSize: Int,
     onInitLocationChanged: (Int) -> Unit,
-    screenCoordinate: ScreenCoordinate
+    screenCoordinate: ScreenCoordinate,
+    onSplashScreenShowAble: (Boolean) -> Unit
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -125,7 +128,9 @@ fun NaverMapScreen(
         )
         when (val state = storeDetailData) {
             is UiState.Loading -> {
-                // 로딩 중일 때의 UI
+                if (mapViewModel.splashState.value) {
+                    onSplashScreenShowAble(true)
+                }
             }
 
             is UiState.Success -> {
@@ -137,6 +142,8 @@ fun NaverMapScreen(
                     clickedMarkerId,
                     onMarkerChanged
                 )
+                mapViewModel.updateSplashState()
+                onSplashScreenShowAble(false)
             }
 
             else -> {}

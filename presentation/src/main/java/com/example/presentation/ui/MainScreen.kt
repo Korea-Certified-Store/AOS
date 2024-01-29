@@ -101,6 +101,10 @@ fun MainScreen(
 
     val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
 
+    val (isSplashScreenShowAble, onSplashScreenShowAble) = remember {
+        mutableStateOf(false)
+    }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -117,7 +121,8 @@ fun MainScreen(
         onReloadButtonChanged,
         initLocationSize,
         onInitLocationChanged,
-        screenCoordinate
+        screenCoordinate,
+        onSplashScreenShowAble
     )
 
     StoreSummaryBottomSheet(
@@ -138,6 +143,10 @@ fun MainScreen(
         mapViewModel,
         onFilterStateChanged
     )
+
+    if (isSplashScreenShowAble) {
+        SplashScreen()
+    }
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
         StoreCallDialog(
