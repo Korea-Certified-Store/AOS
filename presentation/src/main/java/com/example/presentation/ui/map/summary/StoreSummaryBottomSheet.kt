@@ -19,19 +19,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
+import com.example.presentation.util.MainConstants.DETAIL_BOTTOM_SHEET_HEIGHT
+import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import com.example.presentation.util.MainConstants.UNMARKER
 import kotlinx.coroutines.launch
 
@@ -52,10 +53,11 @@ fun StoreSummaryBottomSheet(
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetSt)
     val scope = rememberCoroutineScope()
 
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp
+    var peekHeight by remember { mutableStateOf(ExpandedType.COLLAPSED) }
 
-    var peekHeight by remember { mutableIntStateOf(0) }
+    val (currentSummaryInfoHeight, onCurrentSummaryInfoHeightChanged) = remember {
+        mutableStateOf(0.dp)
+    }
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -64,12 +66,8 @@ fun StoreSummaryBottomSheet(
                 isMarkerClicked = isMarkerClicked,
                 onExpandTypeChanged = {
                     scope.launch {
-                        peekHeight = when (it) {
-                            ExpandedType.COLLAPSED -> 0
-                            ExpandedType.FULL -> 544
-                            ExpandedType.HALF -> screenHeight / 2
-                        }
-                        bottomSheetSt.partialExpand() // Smooth animation to desired height
+                        peekHeight = it
+                        bottomSheetSt.partialExpand()
                     }
                 },
                 onMarkerChanged = onMarkerChanged,
@@ -77,12 +75,18 @@ fun StoreSummaryBottomSheet(
             ) {
                 StoreSummaryInfo(
                     clickedStoreInfo,
-                    onCallDialogChanged
+                    onCallDialogChanged,
+                    onCurrentSummaryInfoHeightChanged,
+                    currentSummaryInfoHeight
                 )
             }
 
         },
-        sheetPeekHeight = peekHeight.dp,
+        sheetPeekHeight = when(peekHeight) {
+            ExpandedType.COLLAPSED -> BOTTOM_SHEET_HEIGHT_OFF.dp
+            ExpandedType.FULL -> DETAIL_BOTTOM_SHEET_HEIGHT.dp
+            ExpandedType.HALF -> currentSummaryInfoHeight + HANDLE_HEIGHT.dp
+        },
         sheetContainerColor = White,
         sheetShape = RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp),
         sheetShadowElevation = 5.dp,

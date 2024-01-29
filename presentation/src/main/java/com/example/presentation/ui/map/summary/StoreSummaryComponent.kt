@@ -35,11 +35,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -65,14 +68,25 @@ import com.skydoves.landscapist.coil.CoilImage
 @Composable
 fun StoreSummaryInfo(
     storeInfo: StoreDetail,
-    onCallDialogChanged: (Boolean) -> Unit
+    onCallDialogChanged: (Boolean) -> Unit,
+    onCurrentSummaryInfoHeightChanged: (Dp) -> Unit,
+    currentSummaryInfoHeight: Dp
 ) {
+    val density = LocalDensity.current
+
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
                 .padding(horizontal = MainConstants.DEFAULT_MARIN.dp, vertical = 12.dp)
                 .fillMaxWidth(1f)
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .onSizeChanged { size ->
+                    val newHeight = with(density) { size.height.toDp() }
+
+                    if (newHeight != currentSummaryInfoHeight) {
+                        onCurrentSummaryInfoHeightChanged(newHeight)
+                    }
+                },
             constraintSet = setBottomSheetConstraints()
         ) {
             StoreTitle(storeInfo.displayName, "storeTitle")
@@ -119,12 +133,17 @@ fun setBottomSheetConstraints(): ConstraintSet {
         }
         constrain(storeCallButton) {
             start.linkTo(parent.start)
-            top.linkTo(storeOpeningTime.bottom, 21.dp)
-            bottom.linkTo(parent.bottom)
+            linkTo(
+                top = storeOpeningTime.bottom,
+                bottom = parent.bottom,
+                topMargin = 20.dp,
+                bottomMargin = 13.dp,
+                bias = 0F
+            )
         }
         constrain(storeImage) {
             end.linkTo(parent.end)
-            top.linkTo(parent.top)
+            linkTo(top = parent.top, bottom = parent.bottom, bottomMargin = 13.dp, bias = 0F)
         }
     }
 }
