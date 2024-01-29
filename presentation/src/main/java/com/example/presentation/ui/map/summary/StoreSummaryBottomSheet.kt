@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -73,12 +74,16 @@ fun StoreSummaryBottomSheet(
                 onMarkerChanged = onMarkerChanged,
                 onBottomSheetChanged = onBottomSheetChanged
             ) {
-                StoreSummaryInfo(
-                    clickedStoreInfo,
-                    onCallDialogChanged,
-                    onCurrentSummaryInfoHeightChanged,
-                    currentSummaryInfoHeight
-                )
+                if (peekHeight == ExpandedType.FULL) {
+                    TestDetail()
+                } else {
+                    StoreSummaryInfo(
+                        clickedStoreInfo,
+                        onCallDialogChanged,
+                        onCurrentSummaryInfoHeightChanged,
+                        currentSummaryInfoHeight
+                    )
+                }
             }
 
         },
@@ -172,4 +177,9 @@ fun BottomSheetGestureWrapper(
     ) {
         content()
     }
+}
+
+@Composable
+fun TestDetail() {
+    Text(text = "디테일 화면")
 }
