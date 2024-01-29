@@ -26,6 +26,7 @@ import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.LOCATION_SIZE
+import com.example.presentation.util.MainConstants.UNMARKER
 import com.example.presentation.util.UiState
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
@@ -106,7 +107,7 @@ fun NaverMapScreen(
         ),
         onMapClick = { _, _ ->
             onBottomSheetChanged(false)
-            onMarkerChanged(-1)
+            onMarkerChanged(UNMARKER)
         },
         onOptionChange = {
             cameraPositionState.locationTrackingMode?.let {
