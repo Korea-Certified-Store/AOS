@@ -263,7 +263,7 @@ fun StoreCallButton(
             modifier = Modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
                 .layoutId(id),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 0.dp),
+            contentPadding = PaddingValues(horizontal = 25.dp, vertical = 4.dp),
             colors = ButtonDefaults.buttonColors(containerColor = White),
             shape = RoundedCornerShape(3.dp),
             border = BorderStroke(1.dp, Color.LightGray)
@@ -272,7 +272,7 @@ fun StoreCallButton(
                 imageVector = ImageVector.vectorResource(id = R.drawable.call),
                 tint = DarkGray,
                 contentDescription = "Call",
-                modifier = Modifier.size(29.dp)
+                modifier = Modifier.size(21.dp)
             )
         }
     }
