@@ -126,7 +126,7 @@ fun changeLocationTrackingMode(
 ): LocationTrackingButton {
     return when (selectedLocationButton) {
         LocationTrackingButton.NONE -> {
-            mapViewModel.getInitialLocationTrackingMode()
+            mapViewModel.setLocationTrackingMode()
         }
 
         LocationTrackingButton.NO_FOLLOW -> LocationTrackingButton.FOLLOW

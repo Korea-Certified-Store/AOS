@@ -1,5 +1,6 @@
 package com.example.presentation.ui.map
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Point
 import android.graphics.PointF
@@ -31,12 +32,14 @@ import com.example.presentation.util.UiState
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @ExperimentalNaverMapApi
 @Composable
 fun NaverMapScreen(
@@ -55,7 +58,8 @@ fun NaverMapScreen(
     onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
     initLocationSize: Int,
     onInitLocationChanged: (Int) -> Unit,
-    screenCoordinate: ScreenCoordinate
+    screenCoordinate: ScreenCoordinate,
+    onSplashScreenShowAble: (Boolean) -> Unit
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -85,8 +89,11 @@ fun NaverMapScreen(
         ),
         cameraPositionState = cameraPositionState.apply {
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
-            if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
-                TurnOffLocationButtonIfGestured(onLocationButtonChanged)
+            if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE
+                && selectedLocationButton.mode != LocationTrackingMode.None
+                && selectedLocationButton.mode != LocationTrackingMode.NoFollow
+            ) {
+                TurnOffLocationButton(onLocationButtonChanged)
             } else {
                 InitializeMarker(
                     this,
@@ -122,7 +129,9 @@ fun NaverMapScreen(
         )
         when (val state = storeDetailData) {
             is UiState.Loading -> {
-                // 로딩 중일 때의 UI
+                if (mapViewModel.ableToShowSplashScreen.value) {
+                    onSplashScreenShowAble(true)
+                }
             }
 
             is UiState.Success -> {
@@ -134,6 +143,8 @@ fun NaverMapScreen(
                     clickedMarkerId,
                     onMarkerChanged
                 )
+                mapViewModel.updateSplashState()
+                onSplashScreenShowAble(false)
             }
 
             else -> {}
@@ -152,7 +163,7 @@ fun NaverMapScreen(
 }
 
 @Composable
-private fun TurnOffLocationButtonIfGestured(onLocationButtonChanged: (LocationTrackingButton) -> Unit) {
+private fun TurnOffLocationButton(onLocationButtonChanged: (LocationTrackingButton) -> Unit) {
     onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
 }
 
