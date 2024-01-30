@@ -154,8 +154,8 @@ fun MainScreen(
         onFilterStateChanged
     )
 
-    if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM) {
-        DimScreen(onBottomSheetExpandedChanged)
+    if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
+        DimScreen(bottomSheetExpandedType, onBottomSheetExpandedChanged)
     }
 
     if (isMarkerClicked) {

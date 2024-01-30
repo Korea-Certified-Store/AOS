@@ -1,5 +1,8 @@
 package com.example.presentation.ui.map.summary
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -13,16 +16,25 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.input.pointer.pointerInput
 import com.example.presentation.model.ExpandedType
 import com.example.presentation.ui.theme.BackgroundBlack
+import com.example.presentation.ui.theme.Transparent
 
 @Composable
-fun DimScreen(onBottomSheetExpandedChanged: (ExpandedType) -> Unit) {
+fun DimScreen(
+    bottomSheetExpandedType: ExpandedType,
+    onBottomSheetExpandedChanged: (ExpandedType) -> Unit
+) {
+    val animatedColor = animateColorAsState(
+        if (bottomSheetExpandedType == ExpandedType.FULL) BackgroundBlack else Transparent,
+        animationSpec = tween(200, easing = LinearEasing), label = "dimColor"
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundBlack)
+            .background(animatedColor.value)
             .pointerInput(Unit) { detectTapGestures {} }
             .noRippleClickable {
-                onBottomSheetExpandedChanged(ExpandedType.DIM)
+                onBottomSheetExpandedChanged(ExpandedType.DIM_CLICK)
             }
     )
 }

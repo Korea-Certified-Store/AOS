@@ -26,6 +26,7 @@ import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DETAIL_BOTTOM_SHEET_HEIGHT
+import com.example.presentation.util.MainConstants.DIM_MARGIN
 import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import kotlinx.coroutines.launch
 
@@ -55,9 +56,9 @@ fun StoreSummaryBottomSheet(
         scaffoldState = scaffoldState,
         sheetContent = {
             Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
-                if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM) {
+                if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
                     TestDetail()
-                } else if (bottomSheetExpandedType == ExpandedType.HALF) {
+                } else {
                     StoreSummaryInfo(
                         clickedStoreInfo,
                         onCallDialogChanged,
@@ -88,15 +89,18 @@ fun StoreSummaryBottomSheet(
             screenHeight.dp - scaffoldState.bottomSheetState.requireOffset()
                 .toDp() - HANDLE_HEIGHT.dp
         }
-        if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2) {
+
+        if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2 + DIM_MARGIN.dp) {
             onBottomSheetExpandedChanged(ExpandedType.FULL)
+        } else if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2) {
+            onBottomSheetExpandedChanged(ExpandedType.DIM)
         } else if (bottomSheetHeight >= currentSummaryInfoHeight) {
             onBottomSheetExpandedChanged(ExpandedType.HALF)
         } else {
             onBottomSheetExpandedChanged(ExpandedType.COLLAPSED)
         }
 
-        if (bottomSheetExpandedType == ExpandedType.DIM) {
+        if (bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
             scope.launch {
                 scaffoldState.bottomSheetState.partialExpand()
             }

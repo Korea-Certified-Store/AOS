@@ -12,4 +12,5 @@ object MainConstants {
     const val UNMARKER = -1L
     const val DETAIL_BOTTOM_SHEET_HEIGHT = 530
     const val HANDLE_HEIGHT = 14
+    const val DIM_MARGIN = 50
 }
