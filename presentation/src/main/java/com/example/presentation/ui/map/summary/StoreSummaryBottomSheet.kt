@@ -2,11 +2,9 @@ package com.example.presentation.ui.map.summary
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,8 +21,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.StoreDetail
-import com.example.presentation.ui.theme.BackgroundBlack
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DETAIL_BOTTOM_SHEET_HEIGHT
@@ -39,8 +37,8 @@ fun StoreSummaryBottomSheet(
     onCallDialogChanged: (Boolean) -> Unit,
     currentSummaryInfoHeight: Dp,
     onCurrentSummaryInfoHeightChanged: (Dp) -> Unit,
-    isStoreDetail: Boolean,
-    onStoreDetailChanged: (Boolean) -> Unit
+    bottomSheetExpandedType: ExpandedType,
+    onBottomSheetExpandedChanged: (ExpandedType) -> Unit
 ) {
     val bottomSheetSt = rememberStandardBottomSheetState(
         skipHiddenState = true,
@@ -57,9 +55,9 @@ fun StoreSummaryBottomSheet(
         scaffoldState = scaffoldState,
         sheetContent = {
             Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
-                if (isStoreDetail) {
+                if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM) {
                     TestDetail()
-                } else {
+                } else if (bottomSheetExpandedType == ExpandedType.HALF) {
                     StoreSummaryInfo(
                         clickedStoreInfo,
                         onCallDialogChanged,
@@ -90,24 +88,20 @@ fun StoreSummaryBottomSheet(
             screenHeight.dp - scaffoldState.bottomSheetState.requireOffset()
                 .toDp() - HANDLE_HEIGHT.dp
         }
-        onStoreDetailChanged(bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2)
+        if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2) {
+            onBottomSheetExpandedChanged(ExpandedType.FULL)
+        } else if (bottomSheetHeight >= currentSummaryInfoHeight) {
+            onBottomSheetExpandedChanged(ExpandedType.HALF)
+        } else {
+            onBottomSheetExpandedChanged(ExpandedType.COLLAPSED)
+        }
 
-        if (isStoreDetail.not()) {
+        if (bottomSheetExpandedType == ExpandedType.DIM) {
             scope.launch {
                 scaffoldState.bottomSheetState.partialExpand()
             }
         }
     }
-}
-
-@Composable
-fun DimScreen(onStoreDetailChanged: (Boolean) -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BackgroundBlack)
-            .clickable { onStoreDetailChanged(false) }
-    )
 }
 
 @Composable

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
+import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.map.MapViewModel
@@ -107,7 +108,11 @@ fun MainScreen(
 
     val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
 
-    val (isStoreDetail, onStoreDetailChanged) = remember { mutableStateOf(false) }
+    val (bottomSheetExpandedType, onBottomSheetExpandedChanged) = remember {
+        mutableStateOf(
+            ExpandedType.COLLAPSED
+        )
+    }
 
     NaverMapScreen(
         mapViewModel,
@@ -149,8 +154,8 @@ fun MainScreen(
         onFilterStateChanged
     )
 
-    if (isStoreDetail) {
-        DimScreen(onStoreDetailChanged)
+    if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM) {
+        DimScreen(onBottomSheetExpandedChanged)
     }
 
     if (isMarkerClicked) {
@@ -159,8 +164,8 @@ fun MainScreen(
             onCallDialogChanged,
             currentSummaryInfoHeight,
             onCurrentSummaryInfoHeightChanged,
-            isStoreDetail,
-            onStoreDetailChanged
+            bottomSheetExpandedType,
+            onBottomSheetExpandedChanged
         )
     }
 
