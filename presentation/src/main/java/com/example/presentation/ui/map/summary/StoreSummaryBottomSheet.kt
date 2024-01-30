@@ -2,6 +2,7 @@ package com.example.presentation.ui.map.summary
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,10 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -31,6 +29,7 @@ import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DETAIL_BOTTOM_SHEET_HEIGHT
 import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
+import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +38,9 @@ fun StoreSummaryBottomSheet(
     clickedStoreInfo: StoreDetail,
     onCallDialogChanged: (Boolean) -> Unit,
     currentSummaryInfoHeight: Dp,
-    onCurrentSummaryInfoHeightChanged: (Dp) -> Unit
+    onCurrentSummaryInfoHeightChanged: (Dp) -> Unit,
+    isStoreDetail: Boolean,
+    onStoreDetailChanged: (Boolean) -> Unit
 ) {
     val bottomSheetSt = rememberStandardBottomSheetState(
         skipHiddenState = true,
@@ -50,13 +51,13 @@ fun StoreSummaryBottomSheet(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
 
-    var isStoreDetailInfo by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContent = {
             Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
-                if (isStoreDetailInfo) {
+                if (isStoreDetail) {
                     TestDetail()
                 } else {
                     StoreSummaryInfo(
@@ -89,17 +90,23 @@ fun StoreSummaryBottomSheet(
             screenHeight.dp - scaffoldState.bottomSheetState.requireOffset()
                 .toDp() - HANDLE_HEIGHT.dp
         }
-        isStoreDetailInfo =
-            bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2
+        onStoreDetailChanged(bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2)
+
+        if (isStoreDetail.not()) {
+            scope.launch {
+                scaffoldState.bottomSheetState.partialExpand()
+            }
+        }
     }
 }
 
 @Composable
-fun DimScreen() {
+fun DimScreen(onStoreDetailChanged: (Boolean) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(BackgroundBlack)
+            .clickable { onStoreDetailChanged(false) }
     )
 }
 

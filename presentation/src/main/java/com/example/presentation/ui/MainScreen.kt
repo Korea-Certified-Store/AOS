@@ -15,6 +15,7 @@ import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
 import com.example.presentation.ui.map.filter.FilterComponent
 import com.example.presentation.ui.map.reload.ReloadButton
+import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UNMARKER
@@ -106,6 +107,8 @@ fun MainScreen(
 
     val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
 
+    val (isStoreDetail, onStoreDetailChanged) = remember { mutableStateOf(false) }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -146,12 +149,18 @@ fun MainScreen(
         onFilterStateChanged
     )
 
+    if (isStoreDetail) {
+        DimScreen(onStoreDetailChanged)
+    }
+
     if (isMarkerClicked) {
         StoreSummaryBottomSheet(
             clickedStoreInfo,
             onCallDialogChanged,
             currentSummaryInfoHeight,
-            onCurrentSummaryInfoHeightChanged
+            onCurrentSummaryInfoHeightChanged,
+            isStoreDetail,
+            onStoreDetailChanged
         )
     }
 
