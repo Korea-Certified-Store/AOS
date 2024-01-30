@@ -93,7 +93,7 @@ fun MainScreen(
     val (selectedLocationButton, onLocationButtonChanged) =
         remember {
             mutableStateOf(
-                mapViewModel.getInitialLocationTrackingMode()
+                mapViewModel.setLocationTrackingMode()
             )
         }
 
@@ -111,6 +111,10 @@ fun MainScreen(
 
     val (peekHeight, onPeekHeightChanged) = remember { mutableStateOf(ExpandedType.COLLAPSED) }
 
+    val (isSplashScreenShowAble, onSplashScreenShowAble) = remember {
+        mutableStateOf(false)
+    }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -127,7 +131,8 @@ fun MainScreen(
         onReloadButtonChanged,
         initLocationSize,
         onInitLocationChanged,
-        screenCoordinate
+        screenCoordinate,
+        onSplashScreenShowAble
     )
 
     if (isMapGestured) {
@@ -166,6 +171,10 @@ fun MainScreen(
         peekHeight,
         onPeekHeightChanged
     )
+
+    if (isSplashScreenShowAble) {
+        SplashScreen()
+    }
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
         StoreCallDialog(
