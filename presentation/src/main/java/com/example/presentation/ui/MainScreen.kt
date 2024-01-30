@@ -24,7 +24,6 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-
 @ExperimentalNaverMapApi
 @Composable
 fun MainScreen(
@@ -109,7 +108,11 @@ fun MainScreen(
 
     val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
 
-    val (peekHeight, onPeekHeightChanged) = remember { mutableStateOf(ExpandedType.COLLAPSED) }
+    val (bottomSheetExpandedType, onBottomSheetExpandedChanged) = remember {
+        mutableStateOf(
+            ExpandedType.COLLAPSED
+        )
+    }
 
     val (isSplashScreenShowAble, onSplashScreenShowAble) = remember {
         mutableStateOf(false)
@@ -156,21 +159,20 @@ fun MainScreen(
         onFilterStateChanged
     )
 
-    if (peekHeight == ExpandedType.FULL) {
-        DimScreen()
+    if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
+        DimScreen(bottomSheetExpandedType, onBottomSheetExpandedChanged)
     }
 
-    StoreSummaryBottomSheet(
-        isMarkerClicked,
-        clickedStoreInfo,
-        onCallDialogChanged,
-        onMarkerChanged,
-        onBottomSheetChanged,
-        currentSummaryInfoHeight,
-        onCurrentSummaryInfoHeightChanged,
-        peekHeight,
-        onPeekHeightChanged
-    )
+    if (isMarkerClicked) {
+        StoreSummaryBottomSheet(
+            clickedStoreInfo,
+            onCallDialogChanged,
+            currentSummaryInfoHeight,
+            onCurrentSummaryInfoHeightChanged,
+            bottomSheetExpandedType,
+            onBottomSheetExpandedChanged
+        )
+    }
 
     if (isSplashScreenShowAble) {
         SplashScreen()
