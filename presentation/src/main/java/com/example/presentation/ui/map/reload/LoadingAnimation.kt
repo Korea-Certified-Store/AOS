@@ -34,7 +34,7 @@ fun LoadingAnimation() {
         imgIdx.animateTo(
             targetValue = (loadingImgList.lastIndex + 1).toFloat(),
             animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 100, easing = LinearEasing),
+                animation = tween(durationMillis = 500, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
             )
         )
