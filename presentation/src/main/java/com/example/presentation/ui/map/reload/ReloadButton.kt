@@ -32,9 +32,9 @@ import com.example.presentation.R
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_DEFAULT_PADDING
-import com.example.presentation.util.MainConstants.BOTTOM_SHEET_HEIGHT_OFF
+import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import com.example.presentation.util.MainConstants.RELOAD_BUTTON_DEFAULT_PADDING
+import com.example.presentation.util.MainConstants.UNMARKER
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +62,7 @@ fun ReloadButton(
             Button(
                 onClick = {
                     onReloadButtonChanged(true)
-                    onMarkerChanged(-1)
+                    onMarkerChanged(UNMARKER)
                     onBottomSheetChanged(false)
                 },
                 modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
@@ -92,6 +92,6 @@ fun ReloadButton(
 }
 
 fun setReloadButtonBottomPadding(isMarkerClicked: Boolean, bottomSheetHeight: Dp): Dp {
-    return if (isMarkerClicked) bottomSheetHeight + (RELOAD_BUTTON_DEFAULT_PADDING + BOTTOM_SHEET_DEFAULT_PADDING).dp
-    else (BOTTOM_SHEET_HEIGHT_OFF + RELOAD_BUTTON_DEFAULT_PADDING).dp
+    return if (isMarkerClicked) bottomSheetHeight + (RELOAD_BUTTON_DEFAULT_PADDING + HANDLE_HEIGHT).dp
+    else RELOAD_BUTTON_DEFAULT_PADDING.dp
 }

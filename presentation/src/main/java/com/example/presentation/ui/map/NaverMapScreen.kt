@@ -27,6 +27,7 @@ import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.LOCATION_SIZE
+import com.example.presentation.util.MainConstants.UNMARKER
 import com.example.presentation.util.UiState
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
@@ -49,7 +50,7 @@ fun NaverMapScreen(
     onOriginCoordinateChanged: (Coordinate) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
     onScreenChanged: (ScreenCoordinate) -> Unit,
-    bottomSheetHeight: Dp,
+    currentSummaryInfoHeight: Dp,
     clickedMarkerId: Long,
     onMarkerChanged: (Long) -> Unit,
     selectedLocationButton: LocationTrackingButton,
@@ -82,7 +83,7 @@ fun NaverMapScreen(
             logoGravity = Gravity.BOTTOM or Gravity.END,
             logoMargin = PaddingValues(
                 end = 12.dp,
-                bottom = setReloadButtonBottomPadding(isMarkerClicked, bottomSheetHeight)
+                bottom = setReloadButtonBottomPadding(isMarkerClicked, currentSummaryInfoHeight)
             ),
             isCompassEnabled = false
         ),
@@ -113,7 +114,7 @@ fun NaverMapScreen(
         ),
         onMapClick = { _, _ ->
             onBottomSheetChanged(false)
-            onMarkerChanged(-1)
+            onMarkerChanged(UNMARKER)
         },
         onOptionChange = {
             cameraPositionState.locationTrackingMode?.let {
@@ -157,7 +158,7 @@ fun NaverMapScreen(
         selectedLocationButton,
         onLocationButtonChanged,
         mapViewModel,
-        bottomSheetHeight
+        currentSummaryInfoHeight
     )
 }
 

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
+import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.map.MapViewModel
@@ -15,11 +16,14 @@ import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
 import com.example.presentation.ui.map.filter.FilterComponent
 import com.example.presentation.ui.map.reload.ReloadButton
+import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants
+import com.example.presentation.util.MainConstants.UNMARKER
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import kotlin.math.pow
 import kotlin.math.sqrt
+
 
 @ExperimentalNaverMapApi
 @Composable
@@ -93,13 +97,19 @@ fun MainScreen(
             )
         }
 
-    val (bottomSheetHeight, onBottomSheetHeightChanged) = remember { mutableStateOf(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp) }
+    val (currentSummaryInfoHeight, onCurrentSummaryInfoHeightChanged) = remember {
+        mutableStateOf(
+            MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp
+        )
+    }
 
-    val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(-1) }
+    val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(UNMARKER) }
 
     val (initLocationSize, onInitLocationChanged) = remember { mutableIntStateOf(0) }
 
     val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
+
+    val (peekHeight, onPeekHeightChanged) = remember { mutableStateOf(ExpandedType.COLLAPSED) }
 
     val (isSplashScreenShowAble, onSplashScreenShowAble) = remember {
         mutableStateOf(false)
@@ -113,7 +123,7 @@ fun MainScreen(
         onOriginCoordinateChanged,
         onNewCoordinateChanged,
         onScreenChanged,
-        bottomSheetHeight,
+        currentSummaryInfoHeight,
         clickedMarkerId,
         onMarkerChanged,
         selectedLocationButton,
@@ -125,13 +135,15 @@ fun MainScreen(
         onSplashScreenShowAble
     )
 
-    StoreSummaryBottomSheet(
-        isMarkerClicked,
-        clickedStoreInfo,
-        onCallDialogChanged,
-        bottomSheetHeight,
-        onBottomSheetHeightChanged
-    )
+    if (isMapGestured) {
+        ReloadButton(
+            isMarkerClicked,
+            onReloadButtonChanged,
+            currentSummaryInfoHeight,
+            onMarkerChanged,
+            onBottomSheetChanged
+        )
+    }
 
     FilterComponent(
         isKindFilterClicked,
@@ -142,6 +154,22 @@ fun MainScreen(
         onSafeFilterChanged,
         mapViewModel,
         onFilterStateChanged
+    )
+
+    if (peekHeight == ExpandedType.FULL) {
+        DimScreen()
+    }
+
+    StoreSummaryBottomSheet(
+        isMarkerClicked,
+        clickedStoreInfo,
+        onCallDialogChanged,
+        onMarkerChanged,
+        onBottomSheetChanged,
+        currentSummaryInfoHeight,
+        onCurrentSummaryInfoHeightChanged,
+        peekHeight,
+        onPeekHeightChanged
     )
 
     if (isSplashScreenShowAble) {
@@ -169,16 +197,6 @@ fun MainScreen(
         onCurrentMapChanged(true)
     }
 
-    if (isMapGestured) {
-        ReloadButton(
-            isMarkerClicked,
-            onReloadButtonChanged,
-            bottomSheetHeight,
-            onMarkerChanged,
-            onBottomSheetChanged
-        )
-    }
-
     if (isReloadButtonClicked) {
         val limitScreenCoordinate = parallelTranslate(screenCoordinate)
         mapViewModel.getStoreDetail(
@@ -200,10 +218,10 @@ fun MainScreen(
     }
 
     if (isFilterStateChanged) {
-        onMarkerChanged(-1)
+        onMarkerChanged(UNMARKER)
         onFilterStateChanged(false)
         onBottomSheetChanged(false)
-        onBottomSheetHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
+        onCurrentSummaryInfoHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
     }
 }
 
