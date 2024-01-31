@@ -88,11 +88,9 @@ fun StoreSummaryBottomSheet(
                 .toDp() - HANDLE_HEIGHT.dp
         }
 
-        if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2 + DIM_MARGIN.dp) {
+        if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2 ) {
             onBottomSheetExpandedChanged(ExpandedType.FULL)
-        } else if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2) {
-            onBottomSheetExpandedChanged(ExpandedType.DIM)
-        } else if (bottomSheetHeight >= currentSummaryInfoHeight) {
+        } else if (bottomSheetHeight > currentSummaryInfoHeight) {
             onBottomSheetExpandedChanged(ExpandedType.HALF)
         } else {
             onBottomSheetExpandedChanged(ExpandedType.COLLAPSED)
@@ -116,7 +114,7 @@ private fun SetBottomSheetContent(
 ) {
     Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
         androidx.compose.animation.AnimatedVisibility(
-            visible = bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK,
+            visible = bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM_CLICK,
             enter = fadeIn(animationSpec = tween(durationMillis = 400)),
             exit = fadeOut(animationSpec = tween(durationMillis = 400)),
         ) {
@@ -125,7 +123,7 @@ private fun SetBottomSheetContent(
             )
         }
         androidx.compose.animation.AnimatedVisibility(
-            visible = !(bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK),
+            visible = !(bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM_CLICK),
             enter = fadeIn(animationSpec = tween(durationMillis = 400)),
             exit = fadeOut(animationSpec = tween(durationMillis = 400)),
         ) {

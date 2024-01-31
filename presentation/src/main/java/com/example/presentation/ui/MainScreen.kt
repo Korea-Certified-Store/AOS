@@ -173,7 +173,7 @@ fun MainScreen(
         onFilterStateChanged
     )
 
-    if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.HALF || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
+    if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.HALF || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
         DimScreen(bottomSheetExpandedType, onBottomSheetExpandedChanged)
     }
 
