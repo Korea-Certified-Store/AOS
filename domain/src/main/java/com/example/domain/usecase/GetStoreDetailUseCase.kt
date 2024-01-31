@@ -55,8 +55,8 @@ class GetStoreDetailUseCase(
                 )
             }))
         }, onFailure = { e ->
-            if (e.cause == IOException()) {
-                emit(Resource.Failure("서버와의 통신이 원활하지 않습니다."))
+            if (e is IOException) {
+                emit(Resource.Failure("서버와의 통신이 원활하지 않습니다. 인터넷 연결을 확인해주세요."))
             } else {
                 emit(Resource.Failure("데이터를 불러올 수 없습니다."))
             }
