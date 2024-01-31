@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     id(libs.plugins.hilt.plugin.get().pluginId)
     kotlin("plugin.serialization") version "1.7.20"
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -16,8 +18,8 @@ android {
         applicationId = "nainga_store.android_kcs"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -102,4 +104,10 @@ dependencies {
     implementation(libs.squareupRetrofit2)
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
+    implementation("com.google.firebase:firebase-crashlytics-ktx:18.6.1")
+
 }

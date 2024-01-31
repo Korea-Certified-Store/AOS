@@ -73,6 +73,7 @@ dependencies {
     // androidx-compose
     implementation(libs.bundles.androidx.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.play.services.measurement.api)
     testImplementation(libs.junit)
 
     // android test
