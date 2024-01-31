@@ -58,13 +58,8 @@ fun StoreSummaryBottomSheet(
         sheetContent = {
             Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
                 if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
-//                    TestDetail()
-
-
                     StoreDetailInfo(
-                        clickedStoreInfo,
-                        onCurrentSummaryInfoHeightChanged,
-                        currentSummaryInfoHeight
+                        clickedStoreInfo
                     )
 
                 } else {

@@ -43,23 +43,13 @@ import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun StoreDetailInfo(
-    storeInfo: StoreDetail,
-    onCurrentSummaryInfoHeightChanged: (Dp) -> Unit,
-    currentSummaryInfoHeight: Dp
+    storeInfo: StoreDetail
 ) {
-    val density = LocalDensity.current
-
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth(1f)
-                .wrapContentHeight()
-                .onSizeChanged { size ->
-                    val newHeight = with(density) { size.height.toDp() }
-                    if (newHeight != currentSummaryInfoHeight) {
-                        onCurrentSummaryInfoHeightChanged(newHeight)
-                    }
-                },
+                .wrapContentHeight(),
             constraintSet = setDetailBottomSheetConstraints()
         ) {
             StoreTitle(storeInfo.displayName, "storeTitle")
@@ -81,8 +71,7 @@ fun StoreDetailInfo(
 
             StoreAddressImage("addressImage")
             StoreAddressInfo(
-//                storeInfo.formattedAddress,
-                storeInfo.formattedAddress.replace(" ", "\u00A0"),
+                storeInfo.formattedAddress,
                 "addressInfo",
                 maxWidth
             )
