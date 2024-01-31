@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     id(libs.plugins.hilt.plugin.get().pluginId)
     kotlin("plugin.serialization") version "1.7.20"
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -102,4 +103,8 @@ dependencies {
     implementation(libs.squareupRetrofit2)
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
+    implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
 }

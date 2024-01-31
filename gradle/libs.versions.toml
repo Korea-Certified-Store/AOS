@@ -43,6 +43,11 @@ lifecycleViewmodelCompose = "2.7.0"
 
 landscapist-coil="1.4.7"
 
+playServicesMeasurementApi = "21.5.0"
+firebase-bom="32.7.1"
+firebase-analytics-ktx="21.5.0"
+google-services = "4.4.0"
+
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
@@ -109,6 +114,13 @@ androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "l
 # Coil
 landscapist-coil = { module = "com.github.skydoves:landscapist-coil", version.ref = "landscapist-coil" }
 
+# Firebase
+play-services-measurement-api = { group = "com.google.android.gms", name = "play-services-measurement-api", version.ref = "playServicesMeasurementApi" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom"}
+firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx", version.ref = "firebase-analytics-ktx"}
+
+google-services-dependencies = { group = "com.google.gms", name = "google-services", version.ref = "google-services"}
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
@@ -116,6 +128,8 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "org-jetbrains-kotlin-jvm" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 hilt-plugin = { id = "dagger.hilt.android.plugin", version.ref = "hilt" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt"}
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services"}
 
 [bundles]
 androidx = ["androidx-ktx", "androidx-runtime-ktx", "androidx-activity"]
