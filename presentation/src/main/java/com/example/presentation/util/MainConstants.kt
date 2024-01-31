@@ -10,6 +10,7 @@ object MainConstants {
     const val GREAT_STORE = "모범음식점"
     const val SAFE_STORE = "안심식당"
     const val UNMARKER = -1L
-    const val DETAIL_BOTTOM_SHEET_HEIGHT = 544
+    const val DETAIL_BOTTOM_SHEET_HEIGHT = 530
     const val HANDLE_HEIGHT = 14
+    const val DIM_MARGIN = 50
 }
