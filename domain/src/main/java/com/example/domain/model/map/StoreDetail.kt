@@ -10,5 +10,6 @@ data class StoreDetail(
     val operatingType: String,
     val timeDescription: String,
     val localPhotos: List<String>,
-    val certificationName: List<String>
+    val certificationName: List<String>,
+    val operationTimeOfWeek: Map<String, List<String>>
 )
