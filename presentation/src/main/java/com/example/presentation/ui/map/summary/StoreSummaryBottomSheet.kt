@@ -28,8 +28,8 @@ import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.map.detail.StoreDetailInfo
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_ANIMATION_MILLIS
 import com.example.presentation.util.MainConstants.DETAIL_BOTTOM_SHEET_HEIGHT
-import com.example.presentation.util.MainConstants.DIM_MARGIN
 import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import kotlinx.coroutines.launch
 
@@ -88,7 +88,7 @@ fun StoreSummaryBottomSheet(
                 .toDp() - HANDLE_HEIGHT.dp
         }
 
-        if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2 ) {
+        if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2) {
             onBottomSheetExpandedChanged(ExpandedType.FULL)
         } else if (bottomSheetHeight > currentSummaryInfoHeight) {
             onBottomSheetExpandedChanged(ExpandedType.HALF)
@@ -115,8 +115,8 @@ private fun SetBottomSheetContent(
     Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
         androidx.compose.animation.AnimatedVisibility(
             visible = bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM_CLICK,
-            enter = fadeIn(animationSpec = tween(durationMillis = 400)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 400)),
+            enter = fadeIn(animationSpec = tween(durationMillis = BOTTOM_SHEET_ANIMATION_MILLIS)),
+            exit = fadeOut(animationSpec = tween(durationMillis = BOTTOM_SHEET_ANIMATION_MILLIS)),
         ) {
             StoreDetailInfo(
                 clickedStoreInfo
@@ -124,8 +124,8 @@ private fun SetBottomSheetContent(
         }
         androidx.compose.animation.AnimatedVisibility(
             visible = !(bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM_CLICK),
-            enter = fadeIn(animationSpec = tween(durationMillis = 400)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 400)),
+            enter = fadeIn(animationSpec = tween(durationMillis = BOTTOM_SHEET_ANIMATION_MILLIS)),
+            exit = fadeOut(animationSpec = tween(durationMillis = BOTTOM_SHEET_ANIMATION_MILLIS)),
         ) {
 
             StoreSummaryInfo(

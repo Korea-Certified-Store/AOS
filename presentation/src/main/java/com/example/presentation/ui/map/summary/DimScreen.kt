@@ -17,6 +17,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.example.presentation.model.ExpandedType
 import com.example.presentation.ui.theme.BackgroundBlack
 import com.example.presentation.ui.theme.Transparent
+import com.example.presentation.util.MainConstants.DIM_ANIMATION_MILLIS
 
 @Composable
 fun DimScreen(
@@ -25,7 +26,7 @@ fun DimScreen(
 ) {
     val animatedColor = animateColorAsState(
         if (bottomSheetExpandedType == ExpandedType.FULL) BackgroundBlack else Transparent,
-        animationSpec = tween(200, easing = LinearEasing), label = "dimColor"
+        animationSpec = tween(DIM_ANIMATION_MILLIS, easing = LinearEasing), label = "dimColor"
     )
 
     Box(

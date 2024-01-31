@@ -22,7 +22,7 @@ import com.example.presentation.ui.map.reload.ReloadButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants
-import com.example.presentation.util.MainConstants.UNMARKER
+import com.example.presentation.util.MainConstants.UN_MARKER
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -106,7 +106,7 @@ fun MainScreen(
         )
     }
 
-    val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(UNMARKER) }
+    val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(UN_MARKER) }
 
     val (initLocationSize, onInitLocationChanged) = remember { mutableIntStateOf(0) }
 
@@ -237,7 +237,7 @@ fun MainScreen(
     }
 
     if (isFilterStateChanged) {
-        onMarkerChanged(UNMARKER)
+        onMarkerChanged(UN_MARKER)
         onFilterStateChanged(false)
         onBottomSheetChanged(false)
         onCurrentSummaryInfoHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
