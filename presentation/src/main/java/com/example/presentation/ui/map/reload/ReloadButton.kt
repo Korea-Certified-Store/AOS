@@ -43,7 +43,8 @@ fun ReloadButton(
     onReloadButtonChanged: (Boolean) -> Unit,
     bottomSheetHeight: Dp,
     onMarkerChanged: (Long) -> Unit,
-    onBottomSheetChanged: (Boolean) -> Unit
+    onBottomSheetChanged: (Boolean) -> Unit,
+    isLoading: Boolean
 ) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Column(
@@ -79,22 +80,23 @@ fun ReloadButton(
                 Row(
                     modifier = Modifier.align(Alignment.CenterVertically)
                 ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.search),
-                        tint = Blue,
-                        contentDescription = "Search",
-                        modifier = Modifier.size(13.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = stringResource(R.string.search_on_current_map),
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Normal
-                    )
+                    if (isLoading) {
+                        LoadingAnimation()
+                    } else {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.search),
+                            tint = Blue,
+                            contentDescription = "Search",
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.search_on_current_map),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
                 }
-
-                //Loading 중 일때
-                //LoadingAnimation()
             }
         }
     }
