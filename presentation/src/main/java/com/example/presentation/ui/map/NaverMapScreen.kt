@@ -154,6 +154,7 @@ fun NaverMapScreen(
                     if (mapViewModel.ableToShowSplashScreen.value) {
                         onSplashScreenShowAble(false)
                     }
+                    onLoadingChanged(false)
                 }
             }
         }
