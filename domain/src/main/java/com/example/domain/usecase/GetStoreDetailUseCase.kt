@@ -8,6 +8,10 @@ import com.example.domain.model.map.StoreDetail
 import com.example.domain.model.map.StoreDetailModel
 import com.example.domain.model.map.TimeInfoModel
 import com.example.domain.repository.StoreDetailRepository
+import com.example.domain.util.Resource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import java.io.IOException
 import java.util.Calendar
 import java.util.Date
 import kotlin.math.abs
@@ -24,8 +28,9 @@ class GetStoreDetailUseCase(
         seLat: Double,
         neLong: Double,
         neLat: Double,
-    ): Result<List<StoreDetail>> {
-        return repository.getStoreDetail(
+    ): Flow<Resource<List<StoreDetail>>> = flow {
+        emit(Resource.Loading())
+        repository.getStoreDetail(
             nwLong,
             nwLat,
             swLong,
@@ -35,7 +40,7 @@ class GetStoreDetailUseCase(
             neLong,
             neLat
         ).fold(onSuccess = {
-            Result.success(it.map { storeDetailModel ->
+            emit(Resource.Success(it.map { storeDetailModel ->
                 val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
                 val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
                 StoreDetail(
@@ -51,9 +56,13 @@ class GetStoreDetailUseCase(
                     certificationName = storeDetailModel.certificationName,
                     operationTimeOfWeek = operationTimeOfWeek
                 )
-            })
+            }))
         }, onFailure = { e ->
-            Result.failure(e)
+            if (e is IOException) {
+                emit(Resource.Failure("서버와의 통신이 원활하지 않습니다."))
+            } else {
+                emit(Resource.Failure("데이터를 불러올 수 없습니다."))
+            }
         })
     }
 

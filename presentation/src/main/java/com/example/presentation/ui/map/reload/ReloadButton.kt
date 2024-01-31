@@ -3,8 +3,8 @@ package com.example.presentation.ui.map.reload
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -43,7 +43,8 @@ fun ReloadButton(
     onReloadButtonChanged: (Boolean) -> Unit,
     bottomSheetHeight: Dp,
     onMarkerChanged: (Long) -> Unit,
-    onBottomSheetChanged: (Boolean) -> Unit
+    onBottomSheetChanged: (Boolean) -> Unit,
+    isLoading: Boolean
 ) {
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Column(
@@ -65,8 +66,10 @@ fun ReloadButton(
                     onMarkerChanged(UNMARKER)
                     onBottomSheetChanged(false)
                 },
-                modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 12.dp),
+                modifier = Modifier
+                    .size(width = 110.dp, height = 35.dp)
+                    .align(Alignment.CenterHorizontally),
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = White,
                     contentColor = Black
@@ -74,18 +77,26 @@ fun ReloadButton(
                 shape = RoundedCornerShape(30.dp),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
             ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.search),
-                    tint = Blue,
-                    contentDescription = "Search",
-                    modifier = Modifier.size(13.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = stringResource(R.string.search_on_current_map),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal
-                )
+                Row(
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                ) {
+                    if (isLoading) {
+                        LoadingAnimation()
+                    } else {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.search),
+                            tint = Blue,
+                            contentDescription = "Search",
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.search_on_current_map),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                }
             }
         }
     }

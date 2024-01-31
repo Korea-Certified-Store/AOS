@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.map.StoreDetail
 import com.example.domain.usecase.GetStoreDetailUseCase
+import com.example.domain.util.Resource
 import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.KIND_STORE
@@ -18,6 +19,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -96,12 +98,18 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
             seLat,
             neLong,
             neLat,
-        ).fold(
-            onSuccess = {
-                _storeDetailModelData.value = UiState.Success(it)
-            }, onFailure = { e ->
-                _storeDetailModelData.value = UiState.Failure(e.toString())
+        ).collectLatest {result ->
+            when (result) {
+                is Resource.Success -> {
+                    _storeDetailModelData.value = UiState.Success(result.data ?: emptyList())
+                }
+                is Resource.Failure -> {
+                    _storeDetailModelData.value = UiState.Failure(result.message ?: "데이터를 불러올 수 없습니다")
+                }
+                is Resource.Loading -> {
+                    _storeDetailModelData.value = UiState.Loading
+                }
             }
-        )
+        }
     }
 }
