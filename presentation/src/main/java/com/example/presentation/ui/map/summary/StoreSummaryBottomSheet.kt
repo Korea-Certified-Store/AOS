@@ -1,6 +1,9 @@
 package com.example.presentation.ui.map.summary
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -26,8 +28,8 @@ import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.map.detail.StoreDetailInfo
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_ANIMATION_MILLIS
 import com.example.presentation.util.MainConstants.DETAIL_BOTTOM_SHEET_HEIGHT
-import com.example.presentation.util.MainConstants.DIM_MARGIN
 import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import kotlinx.coroutines.launch
 
@@ -56,21 +58,13 @@ fun StoreSummaryBottomSheet(
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContent = {
-            Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
-                if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
-                    StoreDetailInfo(
-                        clickedStoreInfo
-                    )
-
-                } else {
-                    StoreSummaryInfo(
-                        clickedStoreInfo,
-                        onCallDialogChanged,
-                        onCurrentSummaryInfoHeightChanged,
-                        currentSummaryInfoHeight
-                    )
-                }
-            }
+            SetBottomSheetContent(
+                bottomSheetExpandedType,
+                clickedStoreInfo,
+                onCallDialogChanged,
+                onCurrentSummaryInfoHeightChanged,
+                currentSummaryInfoHeight
+            )
         },
         sheetPeekHeight = currentSummaryInfoHeight + HANDLE_HEIGHT.dp,
         sheetContainerColor = White,
@@ -94,11 +88,9 @@ fun StoreSummaryBottomSheet(
                 .toDp() - HANDLE_HEIGHT.dp
         }
 
-        if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2 + DIM_MARGIN.dp) {
+        if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2) {
             onBottomSheetExpandedChanged(ExpandedType.FULL)
-        } else if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2) {
-            onBottomSheetExpandedChanged(ExpandedType.DIM)
-        } else if (bottomSheetHeight >= currentSummaryInfoHeight) {
+        } else if (bottomSheetHeight > currentSummaryInfoHeight) {
             onBottomSheetExpandedChanged(ExpandedType.HALF)
         } else {
             onBottomSheetExpandedChanged(ExpandedType.COLLAPSED)
@@ -113,6 +105,36 @@ fun StoreSummaryBottomSheet(
 }
 
 @Composable
-fun TestDetail() {
-    Text(text = "디테일 화면")
+private fun SetBottomSheetContent(
+    bottomSheetExpandedType: ExpandedType,
+    clickedStoreInfo: StoreDetail,
+    onCallDialogChanged: (Boolean) -> Unit,
+    onCurrentSummaryInfoHeightChanged: (Dp) -> Unit,
+    currentSummaryInfoHeight: Dp
+) {
+    Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
+        androidx.compose.animation.AnimatedVisibility(
+            visible = bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM_CLICK,
+            enter = fadeIn(animationSpec = tween(durationMillis = BOTTOM_SHEET_ANIMATION_MILLIS)),
+            exit = fadeOut(animationSpec = tween(durationMillis = BOTTOM_SHEET_ANIMATION_MILLIS)),
+        ) {
+            StoreDetailInfo(
+                clickedStoreInfo
+            )
+        }
+        androidx.compose.animation.AnimatedVisibility(
+            visible = !(bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM_CLICK),
+            enter = fadeIn(animationSpec = tween(durationMillis = BOTTOM_SHEET_ANIMATION_MILLIS)),
+            exit = fadeOut(animationSpec = tween(durationMillis = BOTTOM_SHEET_ANIMATION_MILLIS)),
+        ) {
+
+            StoreSummaryInfo(
+                clickedStoreInfo,
+                onCallDialogChanged,
+                onCurrentSummaryInfoHeightChanged,
+                currentSummaryInfoHeight
+            )
+
+        }
+    }
 }

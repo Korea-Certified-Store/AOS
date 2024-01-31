@@ -34,7 +34,7 @@ import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import com.example.presentation.util.MainConstants.RELOAD_BUTTON_DEFAULT_PADDING
-import com.example.presentation.util.MainConstants.UNMARKER
+import com.example.presentation.util.MainConstants.UN_MARKER
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +63,7 @@ fun ReloadButton(
             Button(
                 onClick = {
                     onReloadButtonChanged(true)
-                    onMarkerChanged(UNMARKER)
+                    onMarkerChanged(UN_MARKER)
                     onBottomSheetChanged(false)
                 },
                 modifier = Modifier
