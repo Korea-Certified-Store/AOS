@@ -7,6 +7,7 @@ plugins {
     id(libs.plugins.hilt.plugin.get().pluginId)
     kotlin("plugin.serialization") version "1.7.20"
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -107,4 +108,6 @@ dependencies {
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
+    implementation("com.google.firebase:firebase-crashlytics-ktx:18.6.1")
+
 }
