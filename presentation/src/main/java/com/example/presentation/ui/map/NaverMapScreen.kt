@@ -136,24 +136,25 @@ fun NaverMapScreen(
         LaunchedEffect(key1 = storeDetailData) {
             when (val state = storeDetailData) {
                 is UiState.Loading -> {
-                    if (mapViewModel.ableToShowSplashScreen.value) {
-                        onSplashScreenShowAble(true)
-                    } else {
+                    if (mapViewModel.ableToShowSplashScreen.value.not()) {
                         onLoadingChanged(true)
                     }
                 }
 
                 is UiState.Success -> {
+                    if (mapViewModel.ableToShowSplashScreen.value) {
+                        onSplashScreenShowAble(false)
+                    }
                     onFilteredMarkerChanged(true)
-                    mapViewModel.updateSplashState()
-                    onSplashScreenShowAble(false)
                     onLoadingChanged(false)
                     onCurrentMapChanged(false)
                 }
 
                 is UiState.Failure -> {
+                    if (mapViewModel.ableToShowSplashScreen.value) {
+                        onSplashScreenShowAble(false)
+                    }
                 }
-
             }
         }
 
@@ -171,6 +172,7 @@ fun NaverMapScreen(
                 onMarkerChanged
             )
         }
+
     }
 
     CurrentLocationComponent(

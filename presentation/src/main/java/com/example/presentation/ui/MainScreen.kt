@@ -111,9 +111,7 @@ fun MainScreen(
 
     val (peekHeight, onPeekHeightChanged) = remember { mutableStateOf(ExpandedType.COLLAPSED) }
 
-    val (isSplashScreenShowAble, onSplashScreenShowAble) = remember {
-        mutableStateOf(false)
-    }
+    val (isSplashScreenShowAble, onSplashScreenShowAble) = remember { mutableStateOf(true) }
 
     val (isLoading, onLoadingChanged) = remember { mutableStateOf(false) }
 
@@ -183,6 +181,8 @@ fun MainScreen(
 
     if (isSplashScreenShowAble) {
         SplashScreen()
+    } else {
+        mapViewModel.updateSplashState()
     }
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {
