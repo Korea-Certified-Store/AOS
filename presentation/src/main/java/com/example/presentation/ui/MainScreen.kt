@@ -115,6 +115,10 @@ fun MainScreen(
         mutableStateOf(false)
     }
 
+    val (isLoading, onLoadingChanged) = remember { mutableStateOf(false) }
+
+    val (isFilteredMarker, onFilteredMarkerChanged) = remember { mutableStateOf(false) }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -132,7 +136,11 @@ fun MainScreen(
         initLocationSize,
         onInitLocationChanged,
         screenCoordinate,
-        onSplashScreenShowAble
+        onSplashScreenShowAble,
+        onLoadingChanged,
+        onCurrentMapChanged,
+        isFilteredMarker,
+        onFilteredMarkerChanged
     )
 
     if (isMapGestured) {
@@ -141,7 +149,8 @@ fun MainScreen(
             onReloadButtonChanged,
             currentSummaryInfoHeight,
             onMarkerChanged,
-            onBottomSheetChanged
+            onBottomSheetChanged,
+            isLoading
         )
     }
 
@@ -199,6 +208,7 @@ fun MainScreen(
 
     if (isReloadButtonClicked) {
         val limitScreenCoordinate = parallelTranslate(screenCoordinate)
+        onFilteredMarkerChanged(false)
         mapViewModel.getStoreDetail(
             nwLong = limitScreenCoordinate.northWest.longitude,
             nwLat = limitScreenCoordinate.northWest.latitude,
@@ -212,7 +222,6 @@ fun MainScreen(
             neLong = limitScreenCoordinate.northEast.longitude,
             neLat = limitScreenCoordinate.northEast.latitude
         )
-        onCurrentMapChanged(false)
         onReloadButtonChanged(false)
         onOriginCoordinateChanged(newCoordinate)
     }

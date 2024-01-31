@@ -26,6 +26,7 @@ material = "1.11.0"
 org-jetbrains-kotlin-jvm = "1.8.10"
 
 hilt = "2.47"
+hilt-navigation-compose = "1.0.0-alpha03"
 
 timber = "5.0.1"
 compose-bom = "2023.08.00"
@@ -73,7 +74,7 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compile", version.ref = "hilt" }
 hilt-android-gradle-plugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
-#hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
 
 # Timer
 material-v140 = { module = "com.google.android.material:material", version.ref = "google-material" }

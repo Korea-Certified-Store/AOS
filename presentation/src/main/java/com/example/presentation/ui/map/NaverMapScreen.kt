@@ -8,6 +8,7 @@ import android.view.Gravity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -55,11 +56,15 @@ fun NaverMapScreen(
     onMarkerChanged: (Long) -> Unit,
     selectedLocationButton: LocationTrackingButton,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
-    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
+    onReloadButtonChanged: (Boolean) -> Unit,
     initLocationSize: Int,
     onInitLocationChanged: (Int) -> Unit,
     screenCoordinate: ScreenCoordinate,
-    onSplashScreenShowAble: (Boolean) -> Unit
+    onSplashScreenShowAble: (Boolean) -> Unit,
+    onLoadingChanged: (Boolean) -> Unit,
+    onCurrentMapChanged: (Boolean) -> Unit,
+    isFilteredMarker: Boolean,
+    onFilteredMarkerChanged: (Boolean) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -97,7 +102,7 @@ fun NaverMapScreen(
             } else {
                 InitializeMarker(
                     this,
-                    onSearchOnCurrentMapButtonChanged,
+                    onReloadButtonChanged,
                     initLocationSize,
                     onInitLocationChanged,
                     onNewCoordinateChanged,
@@ -127,32 +132,47 @@ fun NaverMapScreen(
         val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle(
             lifecycleOwner
         )
-        when (val state = storeDetailData) {
-            is UiState.Loading -> {
-                if (mapViewModel.ableToShowSplashScreen.value) {
-                    onSplashScreenShowAble(true)
+
+        LaunchedEffect(key1 = storeDetailData) {
+            when (val state = storeDetailData) {
+                is UiState.Loading -> {
+                    if (mapViewModel.ableToShowSplashScreen.value) {
+                        onSplashScreenShowAble(true)
+                    } else {
+                        onLoadingChanged(true)
+                    }
                 }
-            }
 
-            is UiState.Success -> {
-                FilteredMarkers(
-                    state,
-                    mapViewModel,
-                    onBottomSheetChanged,
-                    onStoreInfoChanged,
-                    clickedMarkerId,
-                    onMarkerChanged
-                )
-                mapViewModel.updateSplashState()
-                onSplashScreenShowAble(false)
-            }
+                is UiState.Success -> {
+                    onFilteredMarkerChanged(true)
+                    mapViewModel.updateSplashState()
+                    onSplashScreenShowAble(false)
+                    onLoadingChanged(false)
+                    onCurrentMapChanged(false)
+                }
 
-            else -> {}
+                is UiState.Failure -> {
+                }
+
+            }
         }
+
         if (isMarkerClicked) {
             onMarkerChanged(clickedMarkerId)
         }
+
+        if (isFilteredMarker) {
+            FilteredMarkers(
+                (storeDetailData as UiState.Success).data,
+                mapViewModel,
+                onBottomSheetChanged,
+                onStoreInfoChanged,
+                clickedMarkerId,
+                onMarkerChanged
+            )
+        }
     }
+
     CurrentLocationComponent(
         isMarkerClicked,
         selectedLocationButton,
@@ -169,19 +189,19 @@ private fun TurnOffLocationButton(onLocationButtonChanged: (LocationTrackingButt
 
 @ExperimentalNaverMapApi
 @Composable
-private fun FilteredMarkers(
-    state: UiState.Success<List<com.example.domain.model.map.StoreDetail>>,
+fun FilteredMarkers(
+    storeInfo: List<com.example.domain.model.map.StoreDetail>,
     mapViewModel: MapViewModel,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     clickedMarkerId: Long,
     onMarkerChanged: (Long) -> Unit,
 ) {
-    state.data.filter { storeInfo ->
-        mapViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet()).isNotEmpty()
-    }.forEach { storeInfo ->
+    storeInfo.filter { info ->
+        mapViewModel.getFilterSet().intersect(info.certificationName.toSet()).isNotEmpty()
+    }.forEach { info ->
         val storeType =
-            when (mapViewModel.getFilterSet().intersect(storeInfo.certificationName.toSet())
+            when (mapViewModel.getFilterSet().intersect(info.certificationName.toSet())
                 .last()) {
                 KIND_STORE -> StoreType.KIND
                 GREAT_STORE -> StoreType.GREAT
@@ -189,7 +209,7 @@ private fun FilteredMarkers(
             }
         StoreMarker(
             onBottomSheetChanged,
-            storeInfo.toUiModel(),
+            info.toUiModel(),
             onStoreInfoChanged,
             clickedMarkerId,
             onMarkerChanged,
@@ -201,7 +221,7 @@ private fun FilteredMarkers(
 @Composable
 fun InitializeMarker(
     cameraPositionState: CameraPositionState,
-    onSearchOnCurrentMapButtonChanged: (Boolean) -> Unit,
+    onReloadButtonChanged: (Boolean) -> Unit,
     initLocationSize: Int,
     onInitLocationChanged: (Int) -> Unit,
     onNewCoordinateChanged: (Coordinate) -> Unit,
@@ -217,7 +237,7 @@ fun InitializeMarker(
                     cameraPositionState.position.target.longitude
                 )
             )
-            onSearchOnCurrentMapButtonChanged(true)
+            onReloadButtonChanged(true)
             onInitLocationChanged(initLocationSize + 1)
         } else if (initLocationSize < LOCATION_SIZE) {
             onInitLocationChanged(initLocationSize + 1)
@@ -232,7 +252,7 @@ fun InitializeMarker(
         )
         && selectedLocationButton == LocationTrackingButton.NONE && mainViewModel.ableToShowInitialMarker
     ) {
-        onSearchOnCurrentMapButtonChanged(true)
+        onReloadButtonChanged(true)
         mainViewModel.ableToShowInitialMarker = false
     }
 }
@@ -291,3 +311,4 @@ fun GetScreenCoordinate(
         )
     }
 }
+
