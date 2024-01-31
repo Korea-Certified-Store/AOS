@@ -1,10 +1,13 @@
 package com.example.presentation.ui
 
+import android.app.Activity
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
@@ -117,6 +120,8 @@ fun MainScreen(
 
     val (isFilteredMarker, onFilteredMarkerChanged) = remember { mutableStateOf(false) }
 
+    val (errorSnackBarMsg, onErrorSnackBarChanged) = remember { mutableStateOf("") }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -138,7 +143,8 @@ fun MainScreen(
         onLoadingChanged,
         onCurrentMapChanged,
         isFilteredMarker,
-        onFilteredMarkerChanged
+        onFilteredMarkerChanged,
+        onErrorSnackBarChanged
     )
 
     if (isMapGestured) {
@@ -209,6 +215,7 @@ fun MainScreen(
     if (isReloadButtonClicked) {
         val limitScreenCoordinate = parallelTranslate(screenCoordinate)
         onFilteredMarkerChanged(false)
+        onErrorSnackBarChanged("")
         mapViewModel.getStoreDetail(
             nwLong = limitScreenCoordinate.northWest.longitude,
             nwLat = limitScreenCoordinate.northWest.latitude,
@@ -231,6 +238,12 @@ fun MainScreen(
         onFilterStateChanged(false)
         onBottomSheetChanged(false)
         onCurrentSummaryInfoHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
+    }
+
+    if (errorSnackBarMsg.isNotEmpty()) {
+        val context = LocalContext.current as Activity
+        Toast.makeText(context, errorSnackBarMsg, Toast.LENGTH_SHORT).show()
+        onErrorSnackBarChanged("")
     }
 }
 

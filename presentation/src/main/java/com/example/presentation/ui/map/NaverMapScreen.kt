@@ -65,6 +65,7 @@ fun NaverMapScreen(
     onCurrentMapChanged: (Boolean) -> Unit,
     isFilteredMarker: Boolean,
     onFilteredMarkerChanged: (Boolean) -> Unit,
+    onErrorSnackBarChanged: (String) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -155,6 +156,7 @@ fun NaverMapScreen(
                         onSplashScreenShowAble(false)
                     }
                     onLoadingChanged(false)
+                    onErrorSnackBarChanged(state.msg)
                 }
             }
         }
@@ -173,7 +175,6 @@ fun NaverMapScreen(
                 onMarkerChanged
             )
         }
-
     }
 
     CurrentLocationComponent(
