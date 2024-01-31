@@ -25,7 +25,7 @@ fun DimScreen(
 ) {
     val animatedColor = animateColorAsState(
         if (bottomSheetExpandedType == ExpandedType.FULL) BackgroundBlack else Transparent,
-        animationSpec = tween(200, easing = LinearEasing), label = "dimColor"
+        animationSpec = tween(400, easing = LinearEasing), label = "dimColor"
     )
 
     Box(

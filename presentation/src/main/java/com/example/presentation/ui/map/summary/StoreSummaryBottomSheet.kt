@@ -1,6 +1,9 @@
 package com.example.presentation.ui.map.summary
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
@@ -56,21 +58,13 @@ fun StoreSummaryBottomSheet(
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContent = {
-            Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
-                if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
-                    StoreDetailInfo(
-                        clickedStoreInfo
-                    )
-
-                } else {
-                    StoreSummaryInfo(
-                        clickedStoreInfo,
-                        onCallDialogChanged,
-                        onCurrentSummaryInfoHeightChanged,
-                        currentSummaryInfoHeight
-                    )
-                }
-            }
+            SetBottomSheetContent(
+                bottomSheetExpandedType,
+                clickedStoreInfo,
+                onCallDialogChanged,
+                onCurrentSummaryInfoHeightChanged,
+                currentSummaryInfoHeight
+            )
         },
         sheetPeekHeight = currentSummaryInfoHeight + HANDLE_HEIGHT.dp,
         sheetContainerColor = White,
@@ -113,6 +107,36 @@ fun StoreSummaryBottomSheet(
 }
 
 @Composable
-fun TestDetail() {
-    Text(text = "디테일 화면")
+private fun SetBottomSheetContent(
+    bottomSheetExpandedType: ExpandedType,
+    clickedStoreInfo: StoreDetail,
+    onCallDialogChanged: (Boolean) -> Unit,
+    onCurrentSummaryInfoHeightChanged: (Dp) -> Unit,
+    currentSummaryInfoHeight: Dp
+) {
+    Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
+        androidx.compose.animation.AnimatedVisibility(
+            visible = bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK,
+            enter = fadeIn(animationSpec = tween(durationMillis = 400)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 400)),
+        ) {
+            StoreDetailInfo(
+                clickedStoreInfo
+            )
+        }
+        androidx.compose.animation.AnimatedVisibility(
+            visible = !(bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK),
+            enter = fadeIn(animationSpec = tween(durationMillis = 400)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 400)),
+        ) {
+
+            StoreSummaryInfo(
+                clickedStoreInfo,
+                onCallDialogChanged,
+                onCurrentSummaryInfoHeightChanged,
+                currentSummaryInfoHeight
+            )
+
+        }
+    }
 }
