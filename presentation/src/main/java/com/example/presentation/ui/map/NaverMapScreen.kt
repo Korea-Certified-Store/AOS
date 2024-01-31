@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Point
 import android.graphics.PointF
+import android.util.Log
 import android.view.Gravity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -133,7 +134,6 @@ fun NaverMapScreen(
                     onSplashScreenShowAble(true)
                 }
             }
-
             is UiState.Success -> {
                 FilteredMarkers(
                     state,

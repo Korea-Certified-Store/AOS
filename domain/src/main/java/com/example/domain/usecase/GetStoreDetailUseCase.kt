@@ -36,6 +36,8 @@ class GetStoreDetailUseCase(
         ).fold(onSuccess = {
             Result.success(it.map { storeDetailModel ->
                 val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
+                val operationTimeOfWeek =
+                    getOperatingTimeOfWeek(storeDetailModel.regularOpeningHours)
                 StoreDetail(
                     id = storeDetailModel.id,
                     displayName = storeDetailModel.displayName,
@@ -46,7 +48,8 @@ class GetStoreDetailUseCase(
                     operatingType = operatingType.operatingType.description,
                     timeDescription = operatingType.timeDescription,
                     localPhotos = storeDetailModel.localPhotos,
-                    certificationName = storeDetailModel.certificationName
+                    certificationName = storeDetailModel.certificationName,
+                    operationTimeOfWeek = operationTimeOfWeek
                 )
             })
         }, onFailure = { e ->
@@ -155,5 +158,31 @@ class GetStoreDetailUseCase(
 
     private fun getCloseHour(hour: Int) = if (hour == 0) 24 else hour
 
-}
+    private fun getOperatingTimeOfWeek(data: List<OpeningHoursModel>): Map<String, List<String>> {
+        val days = listOf("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN")
+        val daysKorean = listOf("월", "화", "수", "목", "금", "토", "일")
+        val result = mutableMapOf<String, List<String>>()
 
+        for ((index, day) in days.withIndex()) {
+            val dayData = data.filter { it.open.day == day }
+
+            if (dayData.isEmpty()) {
+                result[daysKorean[index]] = (listOf("휴무일"))
+            }
+            else if (dayData.size == 1) {
+                val openTime = String.format("%02d:%02d", dayData[0].open.hour, dayData[0].open.minute)
+                val closeTime = String.format("%02d:%02d", dayData[0].close.hour, dayData[0].close.minute)
+                result[daysKorean[index]] = listOf("$openTime - $closeTime")
+            }
+            else {
+                val openTime1 = String.format("%02d:%02d", dayData[0].open.hour, dayData[0].open.minute)
+                val closeTime1 = String.format("%02d:%02d", dayData[0].close.hour, dayData[0].close.minute)
+                val openTime2 = String.format("%02d:%02d", dayData[1].open.hour, dayData[1].open.minute)
+                val closeTime2 = String.format("%02d:%02d", dayData[1].close.hour, dayData[1].close.minute)
+                result[daysKorean[index]] = listOf("$openTime1 - $closeTime2", "$closeTime1 - $openTime2 브레이크타임")
+            }
+        }
+        return result
+    }
+
+}
