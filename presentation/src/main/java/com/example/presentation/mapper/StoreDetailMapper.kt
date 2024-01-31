@@ -18,7 +18,8 @@ fun com.example.domain.model.map.StoreDetail.toUiModel(): StoreDetail =
         operatingType,
         timeDescription,
         localPhotos,
-        certificationName.toUiModel()
+        certificationName.toUiModel(),
+        operationTimeOfWeek
     )
 
 fun CoordinateModel.toUiModel(): Coordinate =

@@ -77,7 +77,7 @@ fun StoreSummaryInfo(
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
-                .padding(horizontal = MainConstants.DEFAULT_MARIN.dp)
+                .padding(horizontal = MainConstants.DEFAULT_MARGIN.dp)
                 .fillMaxWidth(1f)
                 .wrapContentHeight()
                 .onSizeChanged { size ->

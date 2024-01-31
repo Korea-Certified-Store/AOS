@@ -45,7 +45,8 @@ fun MainScreen(
                 location = Coordinate(0.0, 0.0),
                 phoneNumber = "",
                 certificationName = listOf(),
-                localPhotos = listOf("")
+                localPhotos = listOf(""),
+                operationTimeOfWeek = emptyMap(),
             )
         )
     }

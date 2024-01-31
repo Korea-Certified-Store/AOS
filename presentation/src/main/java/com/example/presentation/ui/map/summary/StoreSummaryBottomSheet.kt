@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.StoreDetail
+import com.example.presentation.ui.map.detail.StoreDetailInfo
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DETAIL_BOTTOM_SHEET_HEIGHT
@@ -57,7 +58,10 @@ fun StoreSummaryBottomSheet(
         sheetContent = {
             Box(modifier = Modifier.height(DETAIL_BOTTOM_SHEET_HEIGHT.dp)) {
                 if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.DIM || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
-                    TestDetail()
+                    StoreDetailInfo(
+                        clickedStoreInfo
+                    )
+
                 } else {
                     StoreSummaryInfo(
                         clickedStoreInfo,
