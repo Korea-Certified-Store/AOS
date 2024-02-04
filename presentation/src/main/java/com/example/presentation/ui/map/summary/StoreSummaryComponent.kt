@@ -4,8 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +20,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -33,7 +30,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -44,16 +40,13 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import com.example.presentation.R
 import com.example.presentation.model.StoreDetail
-import com.example.presentation.model.StoreType
 import com.example.presentation.ui.component.StoreImageCard
 import com.example.presentation.ui.component.StorePrimaryTypeText
 import com.example.presentation.ui.component.StoreTitleText
+import com.example.presentation.ui.component.StoreTypeChips
 import com.example.presentation.ui.theme.DarkGray
-import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightGray
-import com.example.presentation.ui.theme.LightYellow
 import com.example.presentation.ui.theme.MediumGray
-import com.example.presentation.ui.theme.Pink
 import com.example.presentation.ui.theme.Red
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_IMG_SIZE
@@ -144,42 +137,6 @@ fun setBottomSheetConstraints(): ConstraintSet {
                 bottomMargin = 13.dp,
                 bias = 0F
             )
-        }
-    }
-}
-
-@Composable
-fun StoreTypeChip(
-    storeType: StoreType
-) {
-    Surface(
-        color = when (storeType) {
-            StoreType.KIND -> Pink
-            StoreType.GREAT -> LightYellow
-            StoreType.SAFE -> LightBlue
-        },
-        shape = RoundedCornerShape(30.dp),
-        modifier = Modifier.padding(end = 4.dp)
-    ) {
-        Text(
-            text = stringResource(storeType.storeTypeName),
-            color = MediumGray,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)
-        )
-    }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun StoreTypeChips(elements: List<StoreType>, id: String) {
-    FlowRow(
-        modifier = Modifier
-            .layoutId(id)
-    ) {
-        elements.forEach { item ->
-            StoreTypeChip(storeType = item)
         }
     }
 }

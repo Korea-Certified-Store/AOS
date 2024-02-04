@@ -29,8 +29,8 @@ import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.component.StoreImageCard
 import com.example.presentation.ui.component.StorePrimaryTypeText
 import com.example.presentation.ui.component.StoreTitleText
+import com.example.presentation.ui.component.StoreTypeChips
 import com.example.presentation.ui.map.summary.StoreOpeningTime
-import com.example.presentation.ui.map.summary.StoreTypeChips
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_DETAIL_IMG_SIZE
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN

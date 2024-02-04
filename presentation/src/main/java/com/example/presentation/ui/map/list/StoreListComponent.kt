@@ -17,7 +17,7 @@ import com.example.presentation.model.StoreType
 import com.example.presentation.ui.component.StoreImageCard
 import com.example.presentation.ui.component.StoreTitleText
 import com.example.presentation.ui.component.StorePrimaryTypeText
-import com.example.presentation.ui.map.summary.StoreTypeChips
+import com.example.presentation.ui.component.StoreTypeChips
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_LIST_IMG_SIZE
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 
