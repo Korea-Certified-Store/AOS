@@ -1,36 +1,25 @@
 package com.example.presentation.ui.map.list
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
-import com.example.presentation.R
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
+import com.example.presentation.ui.component.StoreImageCard
 import com.example.presentation.ui.component.StoreTitleText
 import com.example.presentation.ui.component.StorePrimaryTypeText
 import com.example.presentation.ui.map.summary.StoreTypeChips
-import com.example.presentation.ui.theme.SemiLightGray
-import com.example.presentation.util.MainConstants
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_LIST_IMG_SIZE
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
-import com.skydoves.landscapist.coil.CoilImage
 
 @Preview
 @Composable
@@ -67,7 +56,7 @@ fun StoreListItem(
             StoreTitleText(storeInfo.displayName, 18, "storeTitle")
             StorePrimaryTypeText(storeInfo.primaryTypeDisplayName ?: "상점", 9, "storePrimaryType")
             StoreTypeChips(storeInfo.certificationName, "chips")
-            StoreImageCard("storeImage", storeInfo.localPhotos)
+            StoreImageCard(storeInfo.localPhotos, BOTTOM_SHEET_STORE_LIST_IMG_SIZE, "storeImage", )
         }
     }
 }
@@ -98,37 +87,5 @@ fun setBottomSheetConstraints(): ConstraintSet {
             end.linkTo(parent.end)
             linkTo(top = parent.top, bottom = parent.bottom, bias = 0F)
         }
-    }
-}
-
-@Composable
-fun StoreImageCard(id: String, localPhotos: List<String>) {
-    Card(
-        modifier = Modifier
-            .size(MainConstants.BOTTOM_SHEET_STORE_LIST_IMG_SIZE.dp)
-            .layoutId(id),
-        shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(0.3.dp, SemiLightGray)
-    ) {
-        StoreImage(localPhotos = localPhotos)
-    }
-}
-
-@Composable
-fun StoreImage(localPhotos: List<String>) {
-    if (localPhotos.isNotEmpty()) {
-        CoilImage(
-            imageModel = localPhotos.first(),
-            contentScale = ContentScale.Crop,
-            placeHolder = painterResource(R.drawable.empty_store_img),
-            error = painterResource(R.drawable.empty_store_img)
-        )
-    } else {
-        Image(
-            painter = painterResource(R.drawable.empty_store_img),
-            contentDescription = "Store Image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(1f)
-        )
     }
 }

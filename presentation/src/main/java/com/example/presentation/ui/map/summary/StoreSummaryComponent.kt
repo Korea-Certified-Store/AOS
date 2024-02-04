@@ -1,7 +1,6 @@
 package com.example.presentation.ui.map.summary
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
@@ -33,11 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +45,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.example.presentation.R
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
+import com.example.presentation.ui.component.StoreImageCard
 import com.example.presentation.ui.component.StorePrimaryTypeText
 import com.example.presentation.ui.component.StoreTitleText
 import com.example.presentation.ui.theme.DarkGray
@@ -59,11 +55,9 @@ import com.example.presentation.ui.theme.LightYellow
 import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Pink
 import com.example.presentation.ui.theme.Red
-import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
-import com.example.presentation.util.MainConstants
-import com.skydoves.landscapist.coil.CoilImage
-
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_IMG_SIZE
+import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 
 @Composable
 fun StoreSummaryInfo(
@@ -77,7 +71,7 @@ fun StoreSummaryInfo(
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
-                .padding(horizontal = MainConstants.DEFAULT_MARGIN.dp)
+                .padding(horizontal = DEFAULT_MARGIN.dp)
                 .fillMaxWidth(1f)
                 .wrapContentHeight()
                 .onSizeChanged { size ->
@@ -97,7 +91,7 @@ fun StoreSummaryInfo(
                 onCallDialogChanged,
                 "storeCallButton"
             )
-            StoreImageCard("storeImage", storeInfo.localPhotos)
+            StoreImageCard(storeInfo.localPhotos, BOTTOM_SHEET_STORE_IMG_SIZE, "storeImage")
         }
     }
 }
@@ -255,37 +249,5 @@ fun StoreCallButton(
                 modifier = Modifier.size(21.dp)
             )
         }
-    }
-}
-
-@Composable
-fun StoreImageCard(id: String, localPhotos: List<String>) {
-    Card(
-        modifier = Modifier
-            .size(MainConstants.BOTTOM_SHEET_STORE_IMG_SIZE.dp)
-            .layoutId(id),
-        shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(0.3.dp, SemiLightGray)
-    ) {
-        StoreImage(localPhotos = localPhotos)
-    }
-}
-
-@Composable
-fun StoreImage(localPhotos: List<String>) {
-    if (localPhotos.isNotEmpty()) {
-        CoilImage(
-            imageModel = localPhotos.first(),
-            contentScale = ContentScale.Crop,
-            placeHolder = painterResource(R.drawable.empty_store_img),
-            error = painterResource(R.drawable.empty_store_img)
-        )
-    } else {
-        Image(
-            painter = painterResource(R.drawable.empty_store_img),
-            contentDescription = "Store Image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(1f)
-        )
     }
 }
