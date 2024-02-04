@@ -41,7 +41,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,11 +50,12 @@ import androidx.constraintlayout.compose.Dimension
 import com.example.presentation.R
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
+import com.example.presentation.ui.component.StorePrimaryTypeText
+import com.example.presentation.ui.component.StoreTitleText
 import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.LightYellow
-import com.example.presentation.ui.theme.MediumBlue
 import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Pink
 import com.example.presentation.ui.theme.Red
@@ -89,8 +89,8 @@ fun StoreSummaryInfo(
                 },
             constraintSet = setBottomSheetConstraints()
         ) {
-            StoreTitle(storeInfo.displayName, "storeTitle")
-            StorePrimaryTypeText(storeInfo.primaryTypeDisplayName ?: "상점", "storePrimaryType")
+            StoreTitleText(storeInfo.displayName, 20, "storeTitle")
+            StorePrimaryTypeText(storeInfo.primaryTypeDisplayName ?: "상점", 11, "storePrimaryType")
             StoreTypeChips(storeInfo.certificationName, "chips")
             StoreOpeningTime(storeInfo.operatingType, storeInfo.timeDescription, "storeOpeningTime")
             if (storeInfo.phoneNumber != null) StoreCallButton(
@@ -152,32 +152,6 @@ fun setBottomSheetConstraints(): ConstraintSet {
             )
         }
     }
-}
-
-@Composable
-fun StoreTitle(storeName: String, id: String) {
-    Text(
-        text = storeName,
-        color = MediumBlue,
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier
-            .layoutId(id)
-    )
-}
-
-@Composable
-fun StorePrimaryTypeText(storeType: String, id: String) {
-    Text(
-        text = storeType,
-        color = MediumGray,
-        fontSize = 11.sp,
-        fontWeight = FontWeight.Normal,
-        modifier = Modifier
-            .layoutId(id)
-    )
 }
 
 @Composable

@@ -30,9 +30,9 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import com.example.presentation.R
 import com.example.presentation.model.StoreDetail
+import com.example.presentation.ui.component.StorePrimaryTypeText
+import com.example.presentation.ui.component.StoreTitleText
 import com.example.presentation.ui.map.summary.StoreOpeningTime
-import com.example.presentation.ui.map.summary.StorePrimaryTypeText
-import com.example.presentation.ui.map.summary.StoreTitle
 import com.example.presentation.ui.map.summary.StoreTypeChips
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.SemiLightGray
@@ -50,10 +50,8 @@ fun StoreDetailInfo(
                 .wrapContentHeight(),
             constraintSet = setDetailBottomSheetConstraints()
         ) {
-            StoreTitle(storeInfo.displayName, "storeTitle")
-            StorePrimaryTypeText(
-                storeInfo.primaryTypeDisplayName ?: "상점", "storePrimaryType"
-            )
+            StoreTitleText(storeInfo.displayName, 20, "storeTitle")
+            StorePrimaryTypeText(storeInfo.primaryTypeDisplayName ?: "상점", 11, "storePrimaryType")
             StoreTypeChips(storeInfo.certificationName, "chips")
             StoreDivider("divider")
 
