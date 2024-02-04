@@ -28,7 +28,7 @@ class GetStoreDetailUseCase(
         seLat: Double,
         neLong: Double,
         neLat: Double,
-    ): Flow<Resource<List<StoreDetail>>> = flow {
+    ): Flow<Resource<List<List<StoreDetail>>>> = flow {
         emit(Resource.Loading())
         repository.getStoreDetail(
             nwLong,
@@ -39,23 +39,25 @@ class GetStoreDetailUseCase(
             seLat,
             neLong,
             neLat
-        ).fold(onSuccess = {
-            emit(Resource.Success(it.map { storeDetailModel ->
-                val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
-                val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
-                StoreDetail(
-                    id = storeDetailModel.id,
-                    displayName = storeDetailModel.displayName,
-                    primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
-                    formattedAddress = storeDetailModel.formattedAddress,
-                    phoneNumber = storeDetailModel.phoneNumber,
-                    location = storeDetailModel.location,
-                    operatingType = operatingType.operatingType.description,
-                    timeDescription = operatingType.timeDescription,
-                    localPhotos = storeDetailModel.localPhotos,
-                    certificationName = storeDetailModel.certificationName,
-                    operationTimeOfWeek = operationTimeOfWeek
-                )
+        ).fold(onSuccess = { items ->
+            emit(Resource.Success(items.map {
+                it.map { storeDetailModel ->
+                    val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
+                    val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
+                    StoreDetail(
+                        id = storeDetailModel.id,
+                        displayName = storeDetailModel.displayName,
+                        primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
+                        formattedAddress = storeDetailModel.formattedAddress,
+                        phoneNumber = storeDetailModel.phoneNumber,
+                        location = storeDetailModel.location,
+                        operatingType = operatingType.operatingType.description,
+                        timeDescription = operatingType.timeDescription,
+                        localPhotos = storeDetailModel.localPhotos,
+                        certificationName = storeDetailModel.certificationName,
+                        operationTimeOfWeek = operationTimeOfWeek
+                    )
+                }
             }))
         }, onFailure = { e ->
             if (e is IOException) {

@@ -167,7 +167,7 @@ fun NaverMapScreen(
 
         if (isFilteredMarker) {
             FilteredMarkers(
-                (storeDetailData as UiState.Success).data,
+                (storeDetailData as UiState.Success).data.first(),
                 mapViewModel,
                 onBottomSheetChanged,
                 onStoreInfoChanged,

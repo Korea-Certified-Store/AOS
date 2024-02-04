@@ -11,5 +11,6 @@ interface StoreDetailRepository {
         seLong: Double,
         seLat: Double,
         neLong: Double,
-        neLat: Double,): Result<List<StoreDetailModel>>
+        neLat: Double,
+    ): Result<List<List<StoreDetailModel>>>
 }
