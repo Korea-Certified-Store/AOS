@@ -3,7 +3,6 @@ package com.example.presentation.ui.map
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,8 +34,8 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
     private val filterSet = mutableSetOf<String>()
 
     private val _storeDetailModelData =
-        MutableStateFlow<UiState<List<StoreDetail>>>(UiState.Loading)
-    val storeDetailModelData: StateFlow<UiState<List<StoreDetail>>> =
+        MutableStateFlow<UiState<List<List<StoreDetail>>>>(UiState.Loading)
+    val storeDetailModelData: StateFlow<UiState<List<List<StoreDetail>>>> =
         _storeDetailModelData.asStateFlow()
 
     private val _isLocationPermissionGranted = MutableStateFlow<Boolean>(false)
@@ -98,14 +97,17 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
             seLat,
             neLong,
             neLat,
-        ).collectLatest {result ->
+        ).collectLatest { result ->
             when (result) {
                 is Resource.Success -> {
                     _storeDetailModelData.value = UiState.Success(result.data ?: emptyList())
                 }
+
                 is Resource.Failure -> {
-                    _storeDetailModelData.value = UiState.Failure(result.message ?: "데이터를 불러올 수 없습니다")
+                    _storeDetailModelData.value =
+                        UiState.Failure(result.message ?: "데이터를 불러올 수 없습니다")
                 }
+
                 is Resource.Loading -> {
                     _storeDetailModelData.value = UiState.Loading
                 }

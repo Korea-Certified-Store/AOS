@@ -5,7 +5,7 @@ import com.example.data.dto.response.ResponseStoreDetailDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface StoreDetailApiService {
+interface  StoreDetailApiService {
 
     @GET("/api/v1/storecertification/byLocation")
     suspend fun getStoreDetailsByLocation(
@@ -17,7 +17,7 @@ interface StoreDetailApiService {
         @Query(SOUTH_EAST_LAT) seLat: Double,
         @Query(NORTH_EAST_LONG) neLong: Double,
         @Query(NORTH_EAST_LAT) neLat: Double
-    ): BaseResponse<List<ResponseStoreDetailDto>>
+    ): BaseResponse<List<List<ResponseStoreDetailDto>>>
 
     companion object {
         const val NORTH_WEST_LONG = "nwLong"

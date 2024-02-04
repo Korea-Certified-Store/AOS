@@ -18,7 +18,7 @@ class StoreDetailRepositoryImpl @Inject constructor(
         seLat: Double,
         neLong: Double,
         neLat: Double,
-    ): Result<List<StoreDetailModel>> {
+    ): Result<List<List<StoreDetailModel>>> {
         return dataSource.getStoreDetail(
             nwLong,
             nwLat,

@@ -12,5 +12,5 @@ interface StoreDetailDataSource {
         seLat: Double,
         neLong: Double,
         neLat: Double,
-    ): Result<List<StoreDetailModel>>
+    ): Result<List<List<StoreDetailModel>>>
 }
