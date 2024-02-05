@@ -26,7 +26,8 @@ fun StoreListItem(
     storeInfo: StoreDetail,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
-    onMarkerChanged: (Long) -> Unit
+    onMarkerChanged: (Long) -> Unit,
+    onListItemChanged: (Boolean) -> Unit
 ) {
     BoxWithConstraints {
         ConstraintLayout(
@@ -38,6 +39,7 @@ fun StoreListItem(
                     onBottomSheetChanged(true)
                     onStoreInfoChanged(storeInfo)
                     onMarkerChanged(storeInfo.id)
+                    onListItemChanged(true)
                 },
             constraintSet = setBottomSheetConstraints()
         ) {

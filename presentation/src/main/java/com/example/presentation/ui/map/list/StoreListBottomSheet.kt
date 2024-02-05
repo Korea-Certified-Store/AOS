@@ -49,7 +49,8 @@ fun StoreListBottomSheet(
     onBottomSheetExpandedChanged: (ExpandedType) -> Unit,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
-    onMarkerChanged: (Long) -> Unit
+    onMarkerChanged: (Long) -> Unit,
+    onListItemChanged: (Boolean) -> Unit
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -62,7 +63,12 @@ fun StoreListBottomSheet(
         scaffoldState = scaffoldState,
         sheetContent = {
             StoreListHeader()
-            StoreListContent(onBottomSheetChanged, onStoreInfoChanged, onMarkerChanged)
+            StoreListContent(
+                onBottomSheetChanged,
+                onStoreInfoChanged,
+                onMarkerChanged,
+                onListItemChanged
+            )
         },
         sheetPeekHeight = (LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT + HANDLE_HEIGHT).dp,
         sheetContainerColor = White,
@@ -118,6 +124,7 @@ fun StoreListContent(
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onMarkerChanged: (Long) -> Unit,
+    onListItemChanged: (Boolean) -> Unit,
     viewModel: MapViewModel = hiltViewModel()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -137,7 +144,13 @@ fun StoreListContent(
                 }
             }
         ) { _, item ->
-            StoreListItem(item, onBottomSheetChanged, onStoreInfoChanged, onMarkerChanged)
+            StoreListItem(
+                item,
+                onBottomSheetChanged,
+                onStoreInfoChanged,
+                onMarkerChanged,
+                onListItemChanged
+            )
             StoreListDivider()
         }
     }

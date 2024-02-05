@@ -127,6 +127,8 @@ fun MainScreen(
 
     val (errorSnackBarMsg, onErrorSnackBarChanged) = remember { mutableStateOf("") }
 
+    val (isListItemClicked, onListItemChanged) = remember { mutableStateOf(false) }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -149,7 +151,10 @@ fun MainScreen(
         onCurrentMapChanged,
         isFilteredMarker,
         onFilteredMarkerChanged,
-        onErrorSnackBarChanged
+        onErrorSnackBarChanged,
+        isListItemClicked,
+        onListItemChanged,
+        clickedStoreInfo.location
     )
 
     if (isMapGestured) {
@@ -193,7 +198,8 @@ fun MainScreen(
             onBottomSheetExpandedChanged,
             onBottomSheetChanged,
             onStoreInfoChanged,
-            onMarkerChanged
+            onMarkerChanged,
+            onListItemChanged
         )
     }
 

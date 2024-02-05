@@ -30,6 +30,8 @@ import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.LOCATION_SIZE
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.example.presentation.util.UiState
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -66,6 +68,9 @@ fun NaverMapScreen(
     isFilteredMarker: Boolean,
     onFilteredMarkerChanged: (Boolean) -> Unit,
     onErrorSnackBarChanged: (String) -> Unit,
+    isListItemClicked: Boolean,
+    onListItemChanged: (Boolean) -> Unit,
+    clickedStoreLocation: Coordinate,
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -170,6 +175,17 @@ fun NaverMapScreen(
                 clickedMarkerId,
                 onMarkerChanged
             )
+        }
+
+        if (isListItemClicked) {
+            val zoom = cameraPositionState.position.zoom
+            cameraPositionState.position = CameraPosition(
+                LatLng(
+                    clickedStoreLocation.latitude,
+                    clickedStoreLocation.longitude
+                ), zoom
+            )
+            onListItemChanged(false)
         }
     }
 
