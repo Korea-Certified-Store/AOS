@@ -18,6 +18,7 @@ import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
 import com.example.presentation.ui.map.filter.FilterComponent
+import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
@@ -176,6 +177,8 @@ fun MainScreen(
     if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.HALF || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
         DimScreen(bottomSheetExpandedType, onBottomSheetExpandedChanged)
     }
+
+    StoreListBottomSheet()
 
     if (isMarkerClicked) {
         StoreSummaryBottomSheet(
