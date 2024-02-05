@@ -161,10 +161,6 @@ fun NaverMapScreen(
             }
         }
 
-        if (isMarkerClicked) {
-            onMarkerChanged(clickedMarkerId)
-        }
-
         if (isFilteredMarker) {
             FilteredMarkers(
                 (storeDetailData as UiState.Success).data.first(),
