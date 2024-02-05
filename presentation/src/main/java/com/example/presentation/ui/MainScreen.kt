@@ -188,7 +188,13 @@ fun MainScreen(
             onBottomSheetExpandedChanged
         )
     } else {
-        StoreListBottomSheet(bottomSheetExpandedType, onBottomSheetExpandedChanged)
+        StoreListBottomSheet(
+            bottomSheetExpandedType,
+            onBottomSheetExpandedChanged,
+            onBottomSheetChanged,
+            onStoreInfoChanged,
+            onMarkerChanged
+        )
     }
 
     if (isSplashScreenShowAble) {

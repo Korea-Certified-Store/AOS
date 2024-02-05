@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.ExpandedType
+import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.component.BottomSheetDragHandle
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
@@ -45,7 +46,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun StoreListBottomSheet(
     bottomSheetExpandedType: ExpandedType,
-    onBottomSheetExpandedChanged: (ExpandedType) -> Unit
+    onBottomSheetExpandedChanged: (ExpandedType) -> Unit,
+    onBottomSheetChanged: (Boolean) -> Unit,
+    onStoreInfoChanged: (StoreDetail) -> Unit,
+    onMarkerChanged: (Long) -> Unit
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -58,7 +62,7 @@ fun StoreListBottomSheet(
         scaffoldState = scaffoldState,
         sheetContent = {
             StoreListHeader()
-            StoreListContent()
+            StoreListContent(onBottomSheetChanged, onStoreInfoChanged, onMarkerChanged)
         },
         sheetPeekHeight = (LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT + HANDLE_HEIGHT).dp,
         sheetContainerColor = White,
@@ -110,7 +114,12 @@ fun StoreListHeader() {
 }
 
 @Composable
-fun StoreListContent(viewModel: MapViewModel = hiltViewModel()) {
+fun StoreListContent(
+    onBottomSheetChanged: (Boolean) -> Unit,
+    onStoreInfoChanged: (StoreDetail) -> Unit,
+    onMarkerChanged: (Long) -> Unit,
+    viewModel: MapViewModel = hiltViewModel()
+) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val storeDetailData by viewModel.storeDetailModelData.collectAsStateWithLifecycle(
         lifecycleOwner
@@ -128,7 +137,7 @@ fun StoreListContent(viewModel: MapViewModel = hiltViewModel()) {
                 }
             }
         ) { _, item ->
-            StoreListItem(storeInfo = item)
+            StoreListItem(item, onBottomSheetChanged, onStoreInfoChanged, onMarkerChanged)
             StoreListDivider()
         }
     }

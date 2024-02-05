@@ -1,5 +1,6 @@
 package com.example.presentation.ui.map.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,14 +23,22 @@ import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 
 @Composable
 fun StoreListItem(
-    storeInfo: StoreDetail
+    storeInfo: StoreDetail,
+    onBottomSheetChanged: (Boolean) -> Unit,
+    onStoreInfoChanged: (StoreDetail) -> Unit,
+    onMarkerChanged: (Long) -> Unit
 ) {
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
                 .padding(horizontal = DEFAULT_MARGIN.dp, vertical = DEFAULT_MARGIN.dp)
                 .fillMaxWidth(1f)
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .clickable {
+                    onBottomSheetChanged(true)
+                    onStoreInfoChanged(storeInfo)
+                    onMarkerChanged(storeInfo.id)
+                },
             constraintSet = setBottomSheetConstraints()
         ) {
             StoreTitleText(storeInfo.displayName, 18, "storeTitle")
