@@ -136,7 +136,10 @@ fun StoreListContent(
         itemsIndexed(
             when (val state = storeDetailData) {
                 is UiState.Success -> {
-                    state.data.first().map { it.toUiModel() }
+                    state.data.first().filter {
+                        viewModel.getFilterSet().intersect(it.certificationName.toSet())
+                            .isNotEmpty()
+                    }
                 }
 
                 else -> {
@@ -145,7 +148,7 @@ fun StoreListContent(
             }
         ) { _, item ->
             StoreListItem(
-                item,
+                item.toUiModel(),
                 onBottomSheetChanged,
                 onStoreInfoChanged,
                 onMarkerChanged,
