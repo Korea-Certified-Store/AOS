@@ -38,6 +38,7 @@ import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_EXPAND_HEIGHT
+import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_FULL_PADDING
 import com.example.presentation.util.UiState
 import kotlinx.coroutines.launch
 
@@ -87,8 +88,10 @@ fun StoreListBottomSheet(
             }
         }
 
-        if (bottomSheetHeight > (LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT + HANDLE_HEIGHT).dp) {
+        if (bottomSheetHeight > (LIST_BOTTOM_SHEET_FULL_PADDING + LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT + HANDLE_HEIGHT).dp) {
             onBottomSheetExpandedChanged(ExpandedType.FULL)
+        } else if (bottomSheetHeight > (LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT + HANDLE_HEIGHT).dp) {
+            onBottomSheetExpandedChanged(ExpandedType.HALF)
         } else {
             onBottomSheetExpandedChanged(ExpandedType.COLLAPSED)
         }

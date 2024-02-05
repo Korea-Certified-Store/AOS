@@ -12,6 +12,7 @@ object MainConstants {
     const val DETAIL_BOTTOM_SHEET_HEIGHT = 530
     const val LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT = 38
     const val LIST_BOTTOM_SHEET_EXPAND_HEIGHT = 586
+    const val LIST_BOTTOM_SHEET_FULL_PADDING = 50
     const val HANDLE_HEIGHT = 14
     const val DIM_ANIMATION_MILLIS = 200
     const val BOTTOM_SHEET_ANIMATION_MILLIS = 200
