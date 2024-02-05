@@ -87,7 +87,7 @@ fun StoreListBottomSheet(
             }
         }
 
-        if (bottomSheetHeight >= (LIST_BOTTOM_SHEET_EXPAND_HEIGHT + LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT).dp / 2) {
+        if (bottomSheetHeight > (LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT + HANDLE_HEIGHT).dp) {
             onBottomSheetExpandedChanged(ExpandedType.FULL)
         } else {
             onBottomSheetExpandedChanged(ExpandedType.COLLAPSED)
