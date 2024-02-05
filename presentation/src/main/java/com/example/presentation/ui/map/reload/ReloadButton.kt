@@ -33,6 +33,7 @@ import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
+import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT
 import com.example.presentation.util.MainConstants.RELOAD_BUTTON_DEFAULT_PADDING
 import com.example.presentation.util.MainConstants.UN_MARKER
 
@@ -104,5 +105,5 @@ fun ReloadButton(
 
 fun setReloadButtonBottomPadding(isMarkerClicked: Boolean, bottomSheetHeight: Dp): Dp {
     return if (isMarkerClicked) bottomSheetHeight + (RELOAD_BUTTON_DEFAULT_PADDING + HANDLE_HEIGHT).dp
-    else RELOAD_BUTTON_DEFAULT_PADDING.dp
+    else (RELOAD_BUTTON_DEFAULT_PADDING + HANDLE_HEIGHT + LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT).dp
 }
