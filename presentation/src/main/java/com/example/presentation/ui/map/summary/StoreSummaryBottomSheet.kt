@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -40,11 +38,7 @@ fun StoreSummaryBottomSheet(
     bottomSheetExpandedType: ExpandedType,
     onBottomSheetExpandedChanged: (ExpandedType) -> Unit
 ) {
-    val bottomSheetSt = rememberStandardBottomSheetState(
-        skipHiddenState = true,
-        initialValue = SheetValue.PartiallyExpanded
-    )
-    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetSt)
+    val scaffoldState = rememberBottomSheetScaffoldState()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp

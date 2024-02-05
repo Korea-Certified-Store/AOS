@@ -178,8 +178,6 @@ fun MainScreen(
         DimScreen(bottomSheetExpandedType, onBottomSheetExpandedChanged)
     }
 
-    StoreListBottomSheet()
-
     if (isMarkerClicked) {
         StoreSummaryBottomSheet(
             clickedStoreInfo,
@@ -189,6 +187,8 @@ fun MainScreen(
             bottomSheetExpandedType,
             onBottomSheetExpandedChanged
         )
+    } else {
+        StoreListBottomSheet(bottomSheetExpandedType, onBottomSheetExpandedChanged)
     }
 
     if (isSplashScreenShowAble) {

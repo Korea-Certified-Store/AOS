@@ -1,5 +1,6 @@
 package com.example.presentation.ui.map.list
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -10,10 +11,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.mapper.toUiModel
+import com.example.presentation.model.ExpandedType
 import com.example.presentation.ui.component.BottomSheetDragHandle
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
@@ -32,12 +38,24 @@ import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_EXPAND_HEIGHT
 import com.example.presentation.util.UiState
+import kotlinx.coroutines.launch
 
-@Preview
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StoreListBottomSheet() {
+fun StoreListBottomSheet(
+    bottomSheetExpandedType: ExpandedType,
+    onBottomSheetExpandedChanged: (ExpandedType) -> Unit
+) {
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+
+    val scope = rememberCoroutineScope()
+
     BottomSheetScaffold(
+        scaffoldState = scaffoldState,
         sheetContent = {
             StoreListHeader()
             StoreListContent()
@@ -48,6 +66,28 @@ fun StoreListBottomSheet() {
         sheetShadowElevation = 5.dp,
         sheetDragHandle = { BottomSheetDragHandle() }
     ) {
+
+        val density = LocalDensity.current
+        var bottomSheetHeight = (LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT + HANDLE_HEIGHT).dp
+
+        runCatching {
+            bottomSheetHeight = with(density) {
+                screenHeight.dp - scaffoldState.bottomSheetState.requireOffset()
+                    .toDp() - HANDLE_HEIGHT.dp
+            }
+        }
+
+        if (bottomSheetHeight >= (LIST_BOTTOM_SHEET_EXPAND_HEIGHT + LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT).dp / 2) {
+            onBottomSheetExpandedChanged(ExpandedType.FULL)
+        } else {
+            onBottomSheetExpandedChanged(ExpandedType.COLLAPSED)
+        }
+
+        if (bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
+            scope.launch {
+                scaffoldState.bottomSheetState.partialExpand()
+            }
+        }
     }
 }
 
@@ -82,6 +122,7 @@ fun StoreListContent(viewModel: MapViewModel = hiltViewModel()) {
                 is UiState.Success -> {
                     state.data.first().map { it.toUiModel() }
                 }
+
                 else -> {
                     emptyList()
                 }
