@@ -18,6 +18,7 @@ import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
 import com.example.presentation.ui.map.filter.FilterComponent
+import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
@@ -126,6 +127,8 @@ fun MainScreen(
 
     val (errorSnackBarMsg, onErrorSnackBarChanged) = remember { mutableStateOf("") }
 
+    val (isListItemClicked, onListItemChanged) = remember { mutableStateOf(false) }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -148,7 +151,10 @@ fun MainScreen(
         onCurrentMapChanged,
         isFilteredMarker,
         onFilteredMarkerChanged,
-        onErrorSnackBarChanged
+        onErrorSnackBarChanged,
+        isListItemClicked,
+        onListItemChanged,
+        clickedStoreInfo.location
     )
 
     if (isMapGestured) {
@@ -185,6 +191,15 @@ fun MainScreen(
             onCurrentSummaryInfoHeightChanged,
             bottomSheetExpandedType,
             onBottomSheetExpandedChanged
+        )
+    } else {
+        StoreListBottomSheet(
+            bottomSheetExpandedType,
+            onBottomSheetExpandedChanged,
+            onBottomSheetChanged,
+            onStoreInfoChanged,
+            onMarkerChanged,
+            onListItemChanged
         )
     }
 

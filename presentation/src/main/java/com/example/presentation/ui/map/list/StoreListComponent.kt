@@ -1,97 +1,46 @@
 package com.example.presentation.ui.map.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
-import com.example.presentation.model.Coordinate
 import com.example.presentation.model.StoreDetail
-import com.example.presentation.model.StoreType
 import com.example.presentation.ui.component.StoreImageCard
-import com.example.presentation.ui.component.StoreTitleText
 import com.example.presentation.ui.component.StorePrimaryTypeText
+import com.example.presentation.ui.component.StoreTitleText
 import com.example.presentation.ui.component.StoreTypeChips
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_LIST_IMG_SIZE
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 
-@Preview
-@Composable
-fun test() {
-    LazyColumn {
-        itemsIndexed(
-            listOf(
-                StoreDetail(
-                    id = 0,
-                    displayName = "성산일출봉 청운식당Cheongwon",
-                    primaryTypeDisplayName = "일본 음식점",
-                    formattedAddress = "주소",
-                    phoneNumber = "전화",
-                    location = Coordinate(latitude = 0.0, longitude = 0.0),
-                    operatingType = "타입",
-                    timeDescription = "타임",
-                    localPhotos = listOf(),
-                    certificationName = listOf(StoreType.GREAT, StoreType.KIND, StoreType.SAFE),
-                    operationTimeOfWeek = mapOf()
-
-                ),
-                StoreDetail(
-                    id = 0,
-                    displayName = "성산일출봉 청운식당Cheongwon",
-                    primaryTypeDisplayName = "일본 음식점",
-                    formattedAddress = "주소",
-                    phoneNumber = "전화",
-                    location = Coordinate(latitude = 0.0, longitude = 0.0),
-                    operatingType = "타입",
-                    timeDescription = "타임",
-                    localPhotos = listOf(),
-                    certificationName = listOf(StoreType.GREAT, StoreType.KIND, StoreType.SAFE),
-                    operationTimeOfWeek = mapOf()
-
-                ),
-                StoreDetail(
-                    id = 0,
-                    displayName = "성산일출봉 청운식당Cheongwon",
-                    primaryTypeDisplayName = "일본 음식점",
-                    formattedAddress = "주소",
-                    phoneNumber = "전화",
-                    location = Coordinate(latitude = 0.0, longitude = 0.0),
-                    operatingType = "타입",
-                    timeDescription = "타임",
-                    localPhotos = listOf(),
-                    certificationName = listOf(StoreType.GREAT, StoreType.KIND, StoreType.SAFE),
-                    operationTimeOfWeek = mapOf()
-                )
-
-            )
-        ) { idx, item ->
-            StoreListItem(storeInfo = item)
-            StoreListDivider()
-        }
-    }
-}
-
-
 @Composable
 fun StoreListItem(
-    storeInfo: StoreDetail
+    storeInfo: StoreDetail,
+    onBottomSheetChanged: (Boolean) -> Unit,
+    onStoreInfoChanged: (StoreDetail) -> Unit,
+    onMarkerChanged: (Long) -> Unit,
+    onListItemChanged: (Boolean) -> Unit
 ) {
     BoxWithConstraints {
         ConstraintLayout(
             modifier = Modifier
                 .padding(horizontal = DEFAULT_MARGIN.dp, vertical = DEFAULT_MARGIN.dp)
                 .fillMaxWidth(1f)
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .clickable {
+                    onBottomSheetChanged(true)
+                    onStoreInfoChanged(storeInfo)
+                    onMarkerChanged(storeInfo.id)
+                    onListItemChanged(true)
+                },
             constraintSet = setBottomSheetConstraints()
         ) {
             StoreTitleText(storeInfo.displayName, 18, "storeTitle")
