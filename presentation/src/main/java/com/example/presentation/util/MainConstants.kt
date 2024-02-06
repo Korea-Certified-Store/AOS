@@ -5,6 +5,7 @@ object MainConstants {
     const val RELOAD_BUTTON_DEFAULT_PADDING = 16
     const val BOTTOM_SHEET_STORE_IMG_SIZE = 122
     const val BOTTOM_SHEET_STORE_DETAIL_IMG_SIZE = 133
+    const val BOTTOM_SHEET_STORE_LIST_IMG_SIZE = 69
     const val DEFAULT_MARGIN = 16
     const val LOCATION_SIZE = 8
     const val UN_MARKER = -1L

@@ -1,19 +1,15 @@
 package com.example.presentation.ui.map.detail
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,14 +26,14 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import com.example.presentation.R
 import com.example.presentation.model.StoreDetail
+import com.example.presentation.ui.component.StoreImageCard
+import com.example.presentation.ui.component.StorePrimaryTypeText
+import com.example.presentation.ui.component.StoreTitleText
+import com.example.presentation.ui.component.StoreTypeChips
 import com.example.presentation.ui.map.summary.StoreOpeningTime
-import com.example.presentation.ui.map.summary.StorePrimaryTypeText
-import com.example.presentation.ui.map.summary.StoreTitle
-import com.example.presentation.ui.map.summary.StoreTypeChips
 import com.example.presentation.ui.theme.LightGray
-import com.example.presentation.ui.theme.SemiLightGray
-import com.example.presentation.util.MainConstants
-import com.skydoves.landscapist.coil.CoilImage
+import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_DETAIL_IMG_SIZE
+import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 
 @Composable
 fun StoreDetailInfo(
@@ -50,10 +46,8 @@ fun StoreDetailInfo(
                 .wrapContentHeight(),
             constraintSet = setDetailBottomSheetConstraints()
         ) {
-            StoreTitle(storeInfo.displayName, "storeTitle")
-            StorePrimaryTypeText(
-                storeInfo.primaryTypeDisplayName ?: "상점", "storePrimaryType"
-            )
+            StoreTitleText(storeInfo.displayName, 20, "storeTitle")
+            StorePrimaryTypeText(storeInfo.primaryTypeDisplayName ?: "상점", 11, "storePrimaryType")
             StoreTypeChips(storeInfo.certificationName, "chips")
             StoreDivider("divider")
 
@@ -78,7 +72,7 @@ fun StoreDetailInfo(
                 maxWidth
             )
 
-            StoreDetailImageCard("storeImage", storeInfo.localPhotos)
+            StoreImageCard(storeInfo.localPhotos, BOTTOM_SHEET_STORE_DETAIL_IMG_SIZE , "storeImage")
         }
     }
 }
@@ -285,41 +279,9 @@ fun StoreAddressInfo(addressInfo: String, id: String, maxWidth: Dp) {
         text = addressInfo,
         modifier = Modifier
             .wrapContentHeight()
-            .width(maxWidth - MainConstants.BOTTOM_SHEET_STORE_DETAIL_IMG_SIZE.dp - (MainConstants.DEFAULT_MARGIN * 2).dp - 38.dp)
+            .width(maxWidth - BOTTOM_SHEET_STORE_DETAIL_IMG_SIZE.dp - (DEFAULT_MARGIN * 2).dp - 38.dp)
             .layoutId(id),
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp
     )
-}
-
-@Composable
-fun StoreDetailImageCard(id: String, localPhotos: List<String>) {
-    Card(
-        modifier = Modifier
-            .size(MainConstants.BOTTOM_SHEET_STORE_DETAIL_IMG_SIZE.dp)
-            .layoutId(id),
-        shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(0.3.dp, SemiLightGray)
-    ) {
-        StoreDetailImage(localPhotos = localPhotos)
-    }
-}
-
-@Composable
-fun StoreDetailImage(localPhotos: List<String>) {
-    if (localPhotos.isNotEmpty()) {
-        CoilImage(
-            imageModel = localPhotos.first(),
-            contentScale = ContentScale.Crop,
-            placeHolder = painterResource(R.drawable.empty_store_img),
-            error = painterResource(R.drawable.empty_store_img)
-        )
-    } else {
-        Image(
-            painter = painterResource(R.drawable.empty_store_img),
-            contentDescription = "Store Image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(1f)
-        )
-    }
 }
