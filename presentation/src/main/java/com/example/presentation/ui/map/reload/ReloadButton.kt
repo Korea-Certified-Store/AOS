@@ -58,14 +58,14 @@ fun ReloadButton(
             if (isLoading) {
                 LoadingAnimation()
             } else {
-                reloadInCurrentLocation()
+                ReloadInCurrentLocation()
             }
         }
     }
 }
 
 @Composable
-private fun reloadInCurrentLocation() {
+private fun ReloadInCurrentLocation() {
     Icon(
         imageVector = ImageVector.vectorResource(id = R.drawable.search),
         tint = Blue,
