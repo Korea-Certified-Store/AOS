@@ -74,6 +74,7 @@ fun NaverMapScreen(
     isListItemClicked: Boolean,
     onListItemChanged: (Boolean) -> Unit,
     clickedStoreLocation: Coordinate,
+    onShowMoreCountChanged: (Pair<Int, Int>) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -159,6 +160,7 @@ fun NaverMapScreen(
                     onFilteredMarkerChanged(true)
                     onLoadingChanged(false)
                     onCurrentMapChanged(false)
+                    onShowMoreCountChanged(Pair(0, state.data.size))
                 }
 
                 is UiState.Failure -> {
@@ -173,7 +175,7 @@ fun NaverMapScreen(
 
         if (isFilteredMarker) {
             FilteredMarkers(
-                (storeDetailData as UiState.Success).data.first(),
+                mapViewModel.flattenedStoreDetailList.value,
                 mapViewModel,
                 onBottomSheetChanged,
                 onStoreInfoChanged,
