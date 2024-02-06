@@ -6,7 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.mutableStateOf
@@ -23,10 +25,15 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private var backPressedTime: Long = 0
+
     @OptIn(ExperimentalNaverMapApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mapViewModel by viewModels<MapViewModel>()
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         setContent {
             LocationPermissionRequest(mapViewModel)
@@ -53,6 +60,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (System.currentTimeMillis() - backPressedTime <= 2000) {
+                finish()
+            } else {
+                backPressedTime = System.currentTimeMillis()
+                Toast.makeText(this@MainActivity, "한 번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     private fun callStore(storeNumber: String) {
         startActivity(
             Intent(
@@ -68,5 +86,4 @@ class MainActivity : ComponentActivity() {
         ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_COARSE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED)
-
 }
