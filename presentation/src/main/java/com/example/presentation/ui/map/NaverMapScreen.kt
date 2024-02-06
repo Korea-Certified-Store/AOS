@@ -194,6 +194,9 @@ fun NaverMapScreen(
                 )
             }
             onListItemChanged(false)
+            if (selectedLocationButton == LocationTrackingButton.FOLLOW || selectedLocationButton == LocationTrackingButton.FACE) {
+                onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
+            }
         }
     }
 
