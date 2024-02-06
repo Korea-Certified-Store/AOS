@@ -41,6 +41,19 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
     private val _isLocationPermissionGranted = MutableStateFlow<Boolean>(false)
     val isLocationPermissionGranted: StateFlow<Boolean> get() = _isLocationPermissionGranted
 
+    val flattenedStoreDetailList: MutableStateFlow<List<StoreDetail>> =
+        MutableStateFlow(emptyList())
+
+    fun showMoreStore(count: Int) {
+        val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
+            is UiState.Success -> uiState.data.getOrNull(count) ?: emptyList()
+            else -> emptyList()
+        }
+        val currentList = flattenedStoreDetailList.value.toMutableList()
+        newItem.forEach { currentList.add(it) }
+        flattenedStoreDetailList.value = currentList.toList()
+    }
+
     fun updateSplashState() {
         _ableToShowSplashScreen.value = false
     }
@@ -112,6 +125,8 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
                     _storeDetailModelData.value = UiState.Loading
                 }
             }
+            flattenedStoreDetailList.value = emptyList()
+            showMoreStore(0)
         }
     }
 }
