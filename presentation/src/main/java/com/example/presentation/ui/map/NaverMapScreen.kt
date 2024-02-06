@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -31,7 +32,8 @@ import com.example.presentation.util.MainConstants.LOCATION_SIZE
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.example.presentation.util.UiState
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -41,8 +43,9 @@ import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
+import kotlinx.coroutines.launch
 
-@SuppressLint("StateFlowValueCalledInComposition")
+@SuppressLint("StateFlowValueCalledInComposition", "CoroutineCreationDuringComposition")
 @ExperimentalNaverMapApi
 @Composable
 fun NaverMapScreen(
@@ -86,6 +89,8 @@ fun NaverMapScreen(
             )
         )
     }
+
+    val scope = rememberCoroutineScope()
 
     NaverMap(
         modifier = Modifier.fillMaxSize(),
@@ -178,13 +183,16 @@ fun NaverMapScreen(
         }
 
         if (isListItemClicked) {
-            val zoom = cameraPositionState.position.zoom
-            cameraPositionState.position = CameraPosition(
-                LatLng(
-                    clickedStoreLocation.latitude,
-                    clickedStoreLocation.longitude
-                ), zoom
-            )
+            scope.launch {
+                cameraPositionState.animate(
+                    CameraUpdate.scrollTo(
+                        LatLng(
+                            clickedStoreLocation.latitude,
+                            clickedStoreLocation.longitude
+                        )
+                    ), CameraAnimation.Easing, 1000
+                )
+            }
             onListItemChanged(false)
         }
     }
