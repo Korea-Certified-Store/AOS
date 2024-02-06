@@ -31,7 +31,8 @@ import kotlin.math.sqrt
 @Composable
 fun MainScreen(
     mapViewModel: MapViewModel,
-    onCallStoreChanged: (String) -> Unit
+    onCallStoreChanged: (String) -> Unit,
+    onSplashScreenShowAble: (Boolean) -> Unit
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
@@ -118,8 +119,6 @@ fun MainScreen(
         )
     }
 
-    val (isSplashScreenShowAble, onSplashScreenShowAble) = remember { mutableStateOf(true) }
-
     val (isLoading, onLoadingChanged) = remember { mutableStateOf(false) }
 
     val (isFilteredMarker, onFilteredMarkerChanged) = remember { mutableStateOf(false) }
@@ -186,12 +185,6 @@ fun MainScreen(
             bottomSheetExpandedType,
             onBottomSheetExpandedChanged
         )
-    }
-
-    if (isSplashScreenShowAble) {
-        SplashScreen()
-    } else {
-        mapViewModel.updateSplashState()
     }
 
     if (isCallClicked && isCallDialogCancelClicked.not() && clickedStoreInfo.phoneNumber != null) {

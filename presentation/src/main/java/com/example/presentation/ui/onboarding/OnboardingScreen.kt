@@ -1,5 +1,6 @@
 package com.example.presentation.ui.onboarding
 
+import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,16 +42,15 @@ import com.example.presentation.ui.theme.White
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnboardingScreen() {
+fun OnboardingScreen(onOnboardingScreenShowAble: (Boolean) -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         val pageCount = 5
         val pagerState = rememberPagerState(pageCount = { pageCount })
         HorizontalPager(
-            beyondBoundsPageCount = 2,
             state = pagerState
         ) {
             val pageContent = getContentByPageNumber(it)
-            PagerItem(pageContent, page = it)
+            PagerItem(pageContent, page = it, onOnboardingScreenShowAble)
         }
         Row(
             Modifier
@@ -105,8 +106,13 @@ private fun getContentByPageNumber(it: Int) = when (it) {
 @Composable
 fun PagerItem(
     pageContent: OnboardingPageContent,
-    page: Int
+    page: Int,
+    onOnboardingScreenShowAble: (Boolean) -> Unit
 ) {
+
+    val context = LocalContext.current
+    val preferences = context.getSharedPreferences("KCS_Onboarding", Context.MODE_PRIVATE)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -150,6 +156,11 @@ fun PagerItem(
                     .padding(horizontal = 16.dp, vertical = 15.dp),
                 shape = RoundedCornerShape(6.dp),
                 onClick = {
+                    onOnboardingScreenShowAble(false)
+                    with(preferences.edit()) {
+                        putBoolean("isFirstRun", false)
+                        apply()
+                    }
                 }
             ) {
                 Text(
