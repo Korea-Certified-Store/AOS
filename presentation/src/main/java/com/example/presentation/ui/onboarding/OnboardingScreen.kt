@@ -35,7 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.R
-import com.example.presentation.ui.theme.MediumBlue
+import com.example.presentation.ui.theme.SemiDarkBlue
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 
@@ -74,30 +74,30 @@ private fun getContentByPageNumber(it: Int) = when (it) {
 
     1 ->
         OnboardingPageContent(
-            "착한 가격 업소란?\n",
+            "착한 가격 업소란?",
             R.drawable.onboarding_second,
-            "\n\n2011년부터 물가안정을 위해\n가격이 저렴하지만 양질의 서비스를\n제공하는 곳을 정부가 지정한\n우리 동네의 좋은 업소입니다."
+            "\n2011년부터 물가안정을 위해\n가격이 저렴하지만 양질의 서비스를\n제공하는 곳을 정부가 지정한\n우리 동네의 좋은 업소입니다."
         )
 
     2 ->
         OnboardingPageContent(
-            "모범 음식점이란?\n",
+            "모범 음식점이란?",
             R.drawable.onboarding_third,
-            "\n식품위생법에 근거하여\n위생관리 상태 등이 우수한 업소를\n모범업소로 지정합니다.\n서비스 수준 향상과 위생적 개선을 도모하기\n위해 운영되고 있습니다."
+            "식품위생법에 근거하여\n위생관리 상태 등이 우수한 업소를\n모범업소로 지정합니다.\n서비스 수준 향상과 위생적 개선을 도모하기\n위해 운영되고 있습니다."
         )
 
     3 ->
         OnboardingPageContent(
-            "안심식당이란?\n",
+            "안심식당이란?",
             R.drawable.onboarding_fourth,
-            "\n\n감염병에 취약한 식사문화 개선을 위해\n덜어 먹기, 위생적 수저관리, 종사자 마스크\n착용 및 생활 방역을 준수하는 곳으로\n소재지 지자체의 인증을\n받은 음식점을 의미합니다."
+            "\n감염병에 취약한 식사문화 개선을 위해\n덜어 먹기, 위생적 수저관리, 종사자 마스크\n착용 및 생활 방역을 준수하는 곳으로\n소재지 지자체의 인증을\n받은 음식점을 의미합니다."
         )
 
     4 ->
         OnboardingPageContent(
-            "나인가 시작하기\n",
+            "나인가 시작하기",
             R.drawable.onboarding_fifth,
-            "\n이젠 정말 나인가와 함께 할 시간이에요!"
+            "이젠 정말 나인가와 함께 할 시간이에요!"
         )
 
     else -> OnboardingPageContent("", 0, "")
@@ -123,6 +123,7 @@ fun PagerItem(
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 70.dp),
             text = pageContent.title,
+            color = SemiDarkBlue,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -131,7 +132,7 @@ fun PagerItem(
             painter = painterResource(pageContent.image),
             contentDescription = "Onboarding Image",
             modifier = Modifier
-                .width(224.dp)
+                .width(210.dp)
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 60.dp),
             contentScale = ContentScale.FillWidth,
@@ -149,7 +150,7 @@ fun PagerItem(
         if (page == 4) {
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                colors = ButtonDefaults.buttonColors(MediumBlue),
+                colors = ButtonDefaults.buttonColors(SemiDarkBlue),
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
@@ -184,7 +185,7 @@ private fun Indicator(
 ) {
     repeat(pageCount) { iteration ->
         val color =
-            if (pagerState.currentPage == iteration) MediumBlue else SemiLightGray
+            if (pagerState.currentPage == iteration) SemiDarkBlue else SemiLightGray
         Box(
             modifier = Modifier
                 .padding(3.dp)
