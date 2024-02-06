@@ -45,6 +45,7 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import kotlinx.coroutines.launch
 
+
 @SuppressLint("StateFlowValueCalledInComposition", "CoroutineCreationDuringComposition")
 @ExperimentalNaverMapApi
 @Composable
@@ -101,7 +102,7 @@ fun NaverMapScreen(
                 end = 12.dp,
                 bottom = setReloadButtonBottomPadding(isMarkerClicked, currentSummaryInfoHeight)
             ),
-            isCompassEnabled = false
+            isScaleBarEnabled = false
         ),
         cameraPositionState = cameraPositionState.apply {
             setNewCoordinateIfGestured(this, onNewCoordinateChanged)
