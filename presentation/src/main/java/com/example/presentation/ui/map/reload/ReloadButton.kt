@@ -42,7 +42,7 @@ fun ReloadButton(
     Button(
         onClick = {
             if (viewModel.isInitialize.value) {
-                viewModel.isInitialize.value = false
+                viewModel.updateIsInitialize()
             }
             onReloadButtonChanged(true)
             onMarkerChanged(UN_MARKER)

@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.MediumGray
@@ -19,15 +20,20 @@ import com.example.presentation.ui.theme.White
 
 @Composable
 fun ShowMoreButton(
-    showMoreCount: Pair<Int, Int>,
-    onShowMoreCountChanged: (Pair<Int, Int>) -> Unit,
+    showMoreCount: ShowMoreCount,
+    onShowMoreCountChanged: (ShowMoreCount) -> Unit,
     viewModel: MapViewModel = hiltViewModel()
 ) {
     Button(
         onClick = {
-            if (showMoreCount.first + 1 < showMoreCount.second) {
-                viewModel.showMoreStore(showMoreCount.first + 1)
-                onShowMoreCountChanged(Pair(showMoreCount.first + 1, showMoreCount.second))
+            if (showMoreCount.clickCount + 1 < showMoreCount.maxCount) {
+                viewModel.showMoreStore(showMoreCount.clickCount + 1)
+                onShowMoreCountChanged(
+                    ShowMoreCount(
+                        showMoreCount.clickCount + 1,
+                        showMoreCount.maxCount
+                    )
+                )
             }
         },
         modifier = Modifier
@@ -41,10 +47,10 @@ fun ShowMoreButton(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
     ) {
         Text(
-            text = "결과 더보기 ${showMoreCount.first + 1}/${showMoreCount.second}",
+            text = "결과 더보기 ${showMoreCount.clickCount + 1}/${showMoreCount.maxCount}",
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color = if (showMoreCount.first == showMoreCount.second - 1) MediumGray else Black
+            color = if (showMoreCount.clickCount == showMoreCount.maxCount - 1) MediumGray else Black
         )
     }
 }
