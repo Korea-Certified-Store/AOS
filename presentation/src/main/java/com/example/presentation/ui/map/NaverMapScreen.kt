@@ -74,6 +74,8 @@ fun NaverMapScreen(
     isListItemClicked: Boolean,
     onListItemChanged: (Boolean) -> Unit,
     clickedStoreLocation: Coordinate,
+    onShowMoreCountChanged: (Pair<Int, Int>) -> Unit,
+    onReloadOrShowMoreChanged: (Boolean) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState {
         onOriginCoordinateChanged(
@@ -104,7 +106,7 @@ fun NaverMapScreen(
             isCompassEnabled = false
         ),
         cameraPositionState = cameraPositionState.apply {
-            setNewCoordinateIfGestured(this, onNewCoordinateChanged)
+            setNewCoordinateAndShowReloadButtonIfGestured(this, onNewCoordinateChanged, onReloadOrShowMoreChanged)
             if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE
                 && selectedLocationButton.mode != LocationTrackingMode.None
                 && selectedLocationButton.mode != LocationTrackingMode.NoFollow
@@ -153,12 +155,13 @@ fun NaverMapScreen(
                 }
 
                 is UiState.Success -> {
-                    if (mapViewModel.ableToShowSplashScreen.value) {
+                    if (mapViewModel.ableToShowSplashScreen.value && state.data.isNotEmpty()) {
                         onSplashScreenShowAble(false)
                     }
                     onFilteredMarkerChanged(true)
                     onLoadingChanged(false)
                     onCurrentMapChanged(false)
+                    onShowMoreCountChanged(Pair(0, state.data.size))
                 }
 
                 is UiState.Failure -> {
@@ -173,7 +176,7 @@ fun NaverMapScreen(
 
         if (isFilteredMarker) {
             FilteredMarkers(
-                (storeDetailData as UiState.Success).data.first(),
+                mapViewModel.flattenedStoreDetailList.value,
                 mapViewModel,
                 onBottomSheetChanged,
                 onStoreInfoChanged,
@@ -284,11 +287,13 @@ fun InitializeMarker(
     }
 }
 
-fun setNewCoordinateIfGestured(
+fun setNewCoordinateAndShowReloadButtonIfGestured(
     cameraPositionState: CameraPositionState,
-    onNewCoordinateChanged: (Coordinate) -> Unit
+    onNewCoordinateChanged: (Coordinate) -> Unit,
+    onReloadOrShowMoreChanged: (Boolean) -> Unit
 ) {
     if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
+        onReloadOrShowMoreChanged(true)
         onNewCoordinateChanged(
             Coordinate(
                 cameraPositionState.position.target.latitude,

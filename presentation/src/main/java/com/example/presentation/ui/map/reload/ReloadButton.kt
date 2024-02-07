@@ -1,24 +1,16 @@
 package com.example.presentation.ui.map.reload
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -28,7 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.presentation.R
+import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
@@ -37,70 +31,59 @@ import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_COLLAPSE_HE
 import com.example.presentation.util.MainConstants.RELOAD_BUTTON_DEFAULT_PADDING
 import com.example.presentation.util.MainConstants.UN_MARKER
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReloadButton(
-    isMarkerClicked: Boolean,
     onReloadButtonChanged: (Boolean) -> Unit,
-    bottomSheetHeight: Dp,
     onMarkerChanged: (Long) -> Unit,
     onBottomSheetChanged: (Boolean) -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    viewModel: MapViewModel = hiltViewModel()
 ) {
-    CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .padding(
-                    bottom = setReloadButtonBottomPadding(
-                        isMarkerClicked,
-                        bottomSheetHeight
-                    )
-                ),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+    Button(
+        onClick = {
+            if (viewModel.isInitialize.value) {
+                viewModel.isInitialize.value = false
+            }
+            onReloadButtonChanged(true)
+            onMarkerChanged(UN_MARKER)
+            onBottomSheetChanged(false)
+        },
+        modifier = Modifier
+            .size(width = 125.dp, height = 35.dp),
+        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = White,
+            contentColor = Black
+        ),
+        shape = RoundedCornerShape(30.dp),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier.align(Alignment.CenterVertically)
         ) {
-            Button(
-                onClick = {
-                    onReloadButtonChanged(true)
-                    onMarkerChanged(UN_MARKER)
-                    onBottomSheetChanged(false)
-                },
-                modifier = Modifier
-                    .size(width = 110.dp, height = 35.dp)
-                    .align(Alignment.CenterHorizontally),
-                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = White,
-                    contentColor = Black
-                ),
-                shape = RoundedCornerShape(30.dp),
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-            ) {
-                Row(
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                ) {
-                    if (isLoading) {
-                        LoadingAnimation()
-                    } else {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.search),
-                            tint = Blue,
-                            contentDescription = "Search",
-                            modifier = Modifier.size(13.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = stringResource(R.string.search_on_current_map),
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                }
+            if (isLoading) {
+                LoadingAnimation()
+            } else {
+                ReloadInCurrentLocation()
             }
         }
     }
+}
+
+@Composable
+private fun ReloadInCurrentLocation() {
+    Icon(
+        imageVector = ImageVector.vectorResource(id = R.drawable.search),
+        tint = Blue,
+        contentDescription = "Search",
+        modifier = Modifier.size(13.dp)
+    )
+    Spacer(modifier = Modifier.width(6.dp))
+    Text(
+        text = stringResource(R.string.search_on_current_map),
+        fontSize = 11.sp,
+        fontWeight = FontWeight.Medium
+    )
 }
 
 fun setReloadButtonBottomPadding(isMarkerClicked: Boolean, bottomSheetHeight: Dp): Dp {

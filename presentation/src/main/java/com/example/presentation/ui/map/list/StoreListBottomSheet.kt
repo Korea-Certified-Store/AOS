@@ -39,7 +39,6 @@ import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_EXPAND_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_FULL_PADDING
-import com.example.presentation.util.UiState
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -131,23 +130,15 @@ fun StoreListContent(
     viewModel: MapViewModel = hiltViewModel()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val storeDetailData by viewModel.storeDetailModelData.collectAsStateWithLifecycle(
+    val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle(
         lifecycleOwner
     )
 
     LazyColumn(modifier = Modifier.heightIn(max = LIST_BOTTOM_SHEET_EXPAND_HEIGHT.dp)) {
         itemsIndexed(
-            when (val state = storeDetailData) {
-                is UiState.Success -> {
-                    state.data.first().filter {
-                        viewModel.getFilterSet().intersect(it.certificationName.toSet())
-                            .isNotEmpty()
-                    }
-                }
-
-                else -> {
-                    emptyList()
-                }
+            storeDetailData.filter {
+                viewModel.getFilterSet().intersect(it.certificationName.toSet())
+                    .isNotEmpty()
             }
         ) { _, item ->
             StoreListItem(

@@ -19,7 +19,7 @@ import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
 import com.example.presentation.ui.map.filter.FilterComponent
 import com.example.presentation.ui.map.list.StoreListBottomSheet
-import com.example.presentation.ui.map.reload.ReloadButton
+import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
 import com.example.presentation.util.MainConstants
@@ -128,6 +128,10 @@ fun MainScreen(
 
     val (isListItemClicked, onListItemChanged) = remember { mutableStateOf(false) }
 
+    val (showMoreCount, onShowMoreCountChanged) = remember { mutableStateOf(Pair(-1, 5)) }
+
+    val (isReloadOrShowMoreShowAble, onReloadOrShowMoreChanged) = remember { mutableStateOf(false) }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -153,17 +157,22 @@ fun MainScreen(
         onErrorSnackBarChanged,
         isListItemClicked,
         onListItemChanged,
-        clickedStoreInfo.location
+        clickedStoreInfo.location,
+        onShowMoreCountChanged,
+        onReloadOrShowMoreChanged
     )
 
-    if (isMapGestured) {
-        ReloadButton(
+    if (isReloadOrShowMoreShowAble) {
+        ReloadOrShowMoreButton(
             isMarkerClicked,
-            onReloadButtonChanged,
             currentSummaryInfoHeight,
+            isMapGestured,
+            onShowMoreCountChanged,
+            onReloadButtonChanged,
             onMarkerChanged,
             onBottomSheetChanged,
-            isLoading
+            isLoading,
+            showMoreCount
         )
     }
 

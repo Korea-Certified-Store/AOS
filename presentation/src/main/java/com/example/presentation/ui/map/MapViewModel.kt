@@ -10,6 +10,7 @@ import com.example.domain.model.map.StoreDetail
 import com.example.domain.usecase.GetStoreDetailUseCase
 import com.example.domain.util.Resource
 import com.example.presentation.model.LocationTrackingButton
+import com.example.presentation.util.MainConstants.FAIL_TO_LOAD_DATA
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.SAFE_STORE
@@ -38,8 +39,23 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
     val storeDetailModelData: StateFlow<UiState<List<List<StoreDetail>>>> =
         _storeDetailModelData.asStateFlow()
 
-    private val _isLocationPermissionGranted = MutableStateFlow<Boolean>(false)
+    private val _isLocationPermissionGranted = MutableStateFlow(false)
     val isLocationPermissionGranted: StateFlow<Boolean> get() = _isLocationPermissionGranted
+
+    val flattenedStoreDetailList: MutableStateFlow<List<StoreDetail>> =
+        MutableStateFlow(emptyList())
+
+    val isInitialize = MutableStateFlow(true)
+
+    fun showMoreStore(count: Int) {
+        val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
+            is UiState.Success -> uiState.data.getOrNull(count) ?: emptyList()
+            else -> emptyList()
+        }
+        val currentList = flattenedStoreDetailList.value.toMutableList()
+        newItem.forEach { currentList.add(it) }
+        flattenedStoreDetailList.value = currentList.toList()
+    }
 
     fun updateSplashState() {
         _ableToShowSplashScreen.value = false
@@ -105,12 +121,18 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
 
                 is Resource.Failure -> {
                     _storeDetailModelData.value =
-                        UiState.Failure(result.message ?: "데이터를 불러올 수 없습니다")
+                        UiState.Failure(result.message ?: FAIL_TO_LOAD_DATA)
                 }
 
                 is Resource.Loading -> {
                     _storeDetailModelData.value = UiState.Loading
                 }
+            }
+            flattenedStoreDetailList.value = emptyList()
+            if (isInitialize.value) {
+                flattenedStoreDetailList.value = result.data?.flatten() ?: emptyList()
+            } else {
+                showMoreStore(0)
             }
         }
     }
