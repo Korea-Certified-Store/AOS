@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,16 +39,6 @@ import com.example.presentation.R
 import com.example.presentation.ui.theme.SemiDarkBlue
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
-import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_1
-import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_2
-import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_3
-import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_4
-import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_5
-import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_1
-import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_2
-import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_3
-import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_4
-import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_5
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -77,37 +68,37 @@ fun OnboardingScreen(onOnboardingScreenShowAble: (Boolean) -> Unit) {
 @Composable
 private fun getContentByPageNumber(it: Int) = when (it) {
     0 -> OnboardingPageContent(
-        ONBOARDING_TITLE_1,
+        stringResource(R.string.ONBOARDING_TITLE_1),
         R.drawable.onboarding_first,
-        ONBOARDING_EXPLANATION_1
+        stringResource(R.string.ONBOARDING_EXPLANATION_1)
     )
 
     1 ->
         OnboardingPageContent(
-            ONBOARDING_TITLE_2,
+            stringResource(R.string.ONBOARDING_TITLE_2),
             R.drawable.onboarding_second,
-            ONBOARDING_EXPLANATION_2
+            stringResource(R.string.ONBOARDING_EXPLANATION_2)
         )
 
     2 ->
         OnboardingPageContent(
-            ONBOARDING_TITLE_3,
+            stringResource(R.string.ONBOARDING_TITLE_3),
             R.drawable.onboarding_third,
-            ONBOARDING_EXPLANATION_3
+            stringResource(R.string.ONBOARDING_EXPLANATION_3)
         )
 
     3 ->
         OnboardingPageContent(
-            ONBOARDING_TITLE_4,
+            stringResource(R.string.ONBOARDING_TITLE_4),
             R.drawable.onboarding_fourth,
-            ONBOARDING_EXPLANATION_4
+            stringResource(R.string.ONBOARDING_EXPLANATION_4)
         )
 
     4 ->
         OnboardingPageContent(
-            ONBOARDING_TITLE_5,
+            stringResource(R.string.ONBOARDING_TITLE_5),
             R.drawable.onboarding_fifth,
-            ONBOARDING_EXPLANATION_5
+            stringResource(R.string.ONBOARDING_EXPLANATION_5)
         )
 
     else -> OnboardingPageContent("", 0, "")
