@@ -63,8 +63,8 @@ class MainActivity : ComponentActivity() {
                         mapViewModel.updateSplashState()
                     }
                     LaunchedEffect(Unit) {
-                        delay(3000L) // 3초 대기
-                        onSplashScreenShowAble(false) // OnboardingScreen 표시 상태 변경
+                        delay(3000L)
+                        onSplashScreenShowAble(false)
                     }
                 } else {
                     if (isSplashScreenShowAble) {

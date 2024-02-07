@@ -38,6 +38,16 @@ import com.example.presentation.R
 import com.example.presentation.ui.theme.SemiDarkBlue
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
+import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_1
+import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_2
+import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_3
+import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_4
+import com.example.presentation.util.MainConstants.ONBOARDING_EXPLANATION_5
+import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_1
+import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_2
+import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_3
+import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_4
+import com.example.presentation.util.MainConstants.ONBOARDING_TITLE_5
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -67,37 +77,37 @@ fun OnboardingScreen(onOnboardingScreenShowAble: (Boolean) -> Unit) {
 @Composable
 private fun getContentByPageNumber(it: Int) = when (it) {
     0 -> OnboardingPageContent(
-        "인증제 별 가게 위치를\n지도로 한눈에 알아봐요!",
+        ONBOARDING_TITLE_1,
         R.drawable.onboarding_first,
-        "여기서 잠깐,\n인증제에 대해 설명해 드릴게요!"
+        ONBOARDING_EXPLANATION_1
     )
 
     1 ->
         OnboardingPageContent(
-            "착한 가격 업소란?",
+            ONBOARDING_TITLE_2,
             R.drawable.onboarding_second,
-            "\n2011년부터 물가안정을 위해\n가격이 저렴하지만 양질의 서비스를\n제공하는 곳을 정부가 지정한\n우리 동네의 좋은 업소입니다."
+            ONBOARDING_EXPLANATION_2
         )
 
     2 ->
         OnboardingPageContent(
-            "모범 음식점이란?",
+            ONBOARDING_TITLE_3,
             R.drawable.onboarding_third,
-            "식품위생법에 근거하여\n위생관리 상태 등이 우수한 업소를\n모범업소로 지정합니다.\n서비스 수준 향상과 위생적 개선을 도모하기\n위해 운영되고 있습니다."
+            ONBOARDING_EXPLANATION_3
         )
 
     3 ->
         OnboardingPageContent(
-            "안심식당이란?",
+            ONBOARDING_TITLE_4,
             R.drawable.onboarding_fourth,
-            "\n감염병에 취약한 식사문화 개선을 위해\n덜어 먹기, 위생적 수저관리, 종사자 마스크\n착용 및 생활 방역을 준수하는 곳으로\n소재지 지자체의 인증을\n받은 음식점을 의미합니다."
+            ONBOARDING_EXPLANATION_4
         )
 
     4 ->
         OnboardingPageContent(
-            "나인가 시작하기",
+            ONBOARDING_TITLE_5,
             R.drawable.onboarding_fifth,
-            "이젠 정말 나인가와 함께 할 시간이에요!"
+            ONBOARDING_EXPLANATION_5
         )
 
     else -> OnboardingPageContent("", 0, "")

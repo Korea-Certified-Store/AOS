@@ -10,6 +10,7 @@ import com.example.domain.model.map.StoreDetail
 import com.example.domain.usecase.GetStoreDetailUseCase
 import com.example.domain.util.Resource
 import com.example.presentation.model.LocationTrackingButton
+import com.example.presentation.util.MainConstants.FAIL_TO_LOAD_DATA
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.SAFE_STORE
@@ -120,7 +121,7 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
 
                 is Resource.Failure -> {
                     _storeDetailModelData.value =
-                        UiState.Failure(result.message ?: "데이터를 불러올 수 없습니다")
+                        UiState.Failure(result.message ?: FAIL_TO_LOAD_DATA)
                 }
 
                 is Resource.Loading -> {
