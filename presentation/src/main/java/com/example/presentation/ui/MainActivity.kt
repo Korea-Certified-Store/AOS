@@ -21,6 +21,7 @@ import com.example.presentation.R
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.location.LocationPermissionRequest
 import com.example.presentation.ui.onboarding.OnboardingScreen
+import com.example.presentation.ui.splash.SplashScreen
 import com.example.presentation.ui.theme.Android_KCSTheme
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import dagger.hilt.android.AndroidEntryPoint
