@@ -38,11 +38,13 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
     val storeDetailModelData: StateFlow<UiState<List<List<StoreDetail>>>> =
         _storeDetailModelData.asStateFlow()
 
-    private val _isLocationPermissionGranted = MutableStateFlow<Boolean>(false)
+    private val _isLocationPermissionGranted = MutableStateFlow(false)
     val isLocationPermissionGranted: StateFlow<Boolean> get() = _isLocationPermissionGranted
 
     val flattenedStoreDetailList: MutableStateFlow<List<StoreDetail>> =
         MutableStateFlow(emptyList())
+
+    val isInitialize = MutableStateFlow(true)
 
     fun showMoreStore(count: Int) {
         val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
@@ -126,7 +128,11 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
                 }
             }
             flattenedStoreDetailList.value = emptyList()
-            showMoreStore(0)
+            if (isInitialize.value) {
+                flattenedStoreDetailList.value = result.data?.flatten() ?: emptyList()
+            } else {
+                showMoreStore(0)
+            }
         }
     }
 }

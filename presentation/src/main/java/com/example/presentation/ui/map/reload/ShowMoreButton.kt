@@ -8,13 +8,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
+import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.White
 
 @Composable
@@ -44,7 +44,7 @@ fun ShowMoreButton(
             text = "결과 더보기 ${showMoreCount.first + 1}/${showMoreCount.second}",
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color = if (showMoreCount.first == showMoreCount.second - 1) Gray else Black
+            color = if (showMoreCount.first == showMoreCount.second - 1) MediumGray else Black
         )
     }
 }

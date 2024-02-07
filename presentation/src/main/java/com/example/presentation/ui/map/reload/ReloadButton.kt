@@ -20,7 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.presentation.R
+import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
@@ -34,10 +36,14 @@ fun ReloadButton(
     onReloadButtonChanged: (Boolean) -> Unit,
     onMarkerChanged: (Long) -> Unit,
     onBottomSheetChanged: (Boolean) -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    viewModel: MapViewModel = hiltViewModel()
 ) {
     Button(
         onClick = {
+            if (viewModel.isInitialize.value) {
+                viewModel.isInitialize.value = false
+            }
             onReloadButtonChanged(true)
             onMarkerChanged(UN_MARKER)
             onBottomSheetChanged(false)
