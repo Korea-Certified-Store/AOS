@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.LocationTrackingButton
@@ -75,7 +76,7 @@ fun NaverMapScreen(
     isListItemClicked: Boolean,
     onListItemChanged: (Boolean) -> Unit,
     clickedStoreLocation: Coordinate,
-    onShowMoreCountChanged: (Pair<Int, Int>) -> Unit,
+    onShowMoreCountChanged: (ShowMoreCount) -> Unit,
     onReloadOrShowMoreChanged: (Boolean) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState {
@@ -107,7 +108,11 @@ fun NaverMapScreen(
             isScaleBarEnabled = false
         ),
         cameraPositionState = cameraPositionState.apply {
-            setNewCoordinateAndShowReloadButtonIfGestured(this, onNewCoordinateChanged, onReloadOrShowMoreChanged)
+            setNewCoordinateAndShowReloadButtonIfGestured(
+                this,
+                onNewCoordinateChanged,
+                onReloadOrShowMoreChanged
+            )
             if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE
                 && selectedLocationButton.mode != LocationTrackingMode.None
                 && selectedLocationButton.mode != LocationTrackingMode.NoFollow
@@ -162,7 +167,7 @@ fun NaverMapScreen(
                     onFilteredMarkerChanged(true)
                     onLoadingChanged(false)
                     onCurrentMapChanged(false)
-                    onShowMoreCountChanged(Pair(0, state.data.size))
+                    onShowMoreCountChanged(ShowMoreCount(0, state.data.size))
                 }
 
                 is UiState.Failure -> {
@@ -268,7 +273,9 @@ fun InitializeMarker(
                     cameraPositionState.position.target.longitude
                 )
             )
-            onReloadButtonChanged(true)
+            LaunchedEffect(Unit) {
+                onReloadButtonChanged(true)
+            }
             onInitLocationChanged(initLocationSize + 1)
         } else if (initLocationSize < LOCATION_SIZE) {
             onInitLocationChanged(initLocationSize + 1)

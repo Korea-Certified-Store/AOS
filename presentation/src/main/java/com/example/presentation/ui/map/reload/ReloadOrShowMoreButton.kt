@@ -9,18 +9,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import com.example.domain.model.map.ShowMoreCount
 
 @Composable
 fun ReloadOrShowMoreButton(
     isMarkerClicked: Boolean,
     currentSummaryInfoHeight: Dp,
     isMapGestured: Boolean,
-    onShowMoreCountChanged: (Pair<Int, Int>) -> Unit,
+    onShowMoreCountChanged: (ShowMoreCount) -> Unit,
     onReloadButtonChanged: (Boolean) -> Unit,
     onMarkerChanged: (Long) -> Unit,
     onBottomSheetChanged: (Boolean) -> Unit,
     isLoading: Boolean,
-    showMoreCount: Pair<Int, Int>
+    showMoreCount: ShowMoreCount
 ) {
     Column(
         modifier = Modifier
