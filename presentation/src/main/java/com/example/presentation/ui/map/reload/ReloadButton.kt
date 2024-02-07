@@ -49,7 +49,7 @@ fun ReloadButton(
             onBottomSheetChanged(false)
         },
         modifier = Modifier
-            .size(width = 110.dp, height = 35.dp),
+            .size(width = 125.dp, height = 35.dp),
         contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = White,
