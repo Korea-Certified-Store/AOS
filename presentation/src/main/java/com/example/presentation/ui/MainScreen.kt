@@ -3,16 +3,12 @@ package com.example.presentation.ui
 import android.app.Activity
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.ExpandedType
@@ -165,14 +161,6 @@ fun MainScreen(
         onShowMoreCountChanged,
         onReloadOrShowMoreChanged
     )
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val isInitialize by mapViewModel.isInitialize.collectAsStateWithLifecycle(
-        lifecycleOwner
-    )
-    LaunchedEffect(key1 = isInitialize) {
-        onReloadButtonChanged(true)
-    }
 
     if (isReloadOrShowMoreShowAble) {
         ReloadOrShowMoreButton(
