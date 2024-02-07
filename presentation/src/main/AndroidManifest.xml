@@ -12,7 +12,8 @@
             android:name=".ui.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
-            android:theme="@style/Theme.Android_KCS" />
+            android:theme="@style/Theme.Android_KCS"
+            android:screenOrientation="portrait"/>
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="${naverMapClientId}" />

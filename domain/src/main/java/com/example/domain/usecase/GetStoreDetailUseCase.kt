@@ -163,7 +163,11 @@ class GetStoreDetailUseCase(
         ) {
             return OperatingTime(
                 OperatingType.OPERATING,
-                "${operatingTimes.last().close.hour}:${getOperatingMinute(operatingTimes.last().close.minute)}에 영업 종료"
+                "${getCloseHour(operatingTimes.last().close.hour)}:${
+                    getOperatingMinute(
+                        operatingTimes.last().close.minute
+                    )
+                }에 영업 종료"
             )
         } else if (nowTime.hour * 60 + nowTime.minute < operatingTimes.last().open.hour * 60 + operatingTimes.last().open.minute) {
             return OperatingTime(
@@ -185,28 +189,36 @@ class GetStoreDetailUseCase(
         for ((index, day) in days.withIndex()) {
             val dayData = data.filter { it.open.day == day }
 
-            if (dayData.isEmpty()) {
-                result[daysKorean[index]] = (listOf("휴무일"))
-            } else if (dayData.size == 1) {
-                val openTime =
-                    String.format("%02d:%02d", dayData[0].open.hour, dayData[0].open.minute)
-                val closeTime =
-                    String.format("%02d:%02d", dayData[0].close.hour, dayData[0].close.minute)
-                result[daysKorean[index]] = listOf("$openTime - $closeTime")
-            } else {
-                val openTime1 =
-                    String.format("%02d:%02d", dayData[0].open.hour, dayData[0].open.minute)
-                val closeTime1 =
-                    String.format("%02d:%02d", dayData[0].close.hour, dayData[0].close.minute)
-                val openTime2 =
-                    String.format("%02d:%02d", dayData[1].open.hour, dayData[1].open.minute)
-                val closeTime2 =
-                    String.format("%02d:%02d", dayData[1].close.hour, dayData[1].close.minute)
-                result[daysKorean[index]] =
-                    listOf("$openTime1 - $closeTime2", "$closeTime1 - $openTime2 브레이크타임")
+            result[daysKorean[index]] = when {
+                dayData.isEmpty() -> listOf("휴무일")
+                dayData.size == 1 -> getOperatingTime(dayData)
+                else -> getOperatingAndBreakTime(dayData)
             }
         }
         return result
     }
 
+    private fun getOperatingTime(dayData: List<OpeningHoursModel>) =
+        if (dayData[0].open.hour == 0 && dayData[0].open.minute == 0 && dayData[0].close.hour == 0 && dayData[0].close.minute == 0) {
+            listOf("24시간 영업")
+        } else {
+            val openTime = formatTime(dayData[0].open.hour, dayData[0].open.minute)
+            val closeTime =
+                formatTime(getCloseHour(dayData[0].close.hour), dayData[0].close.minute)
+            listOf("$openTime - $closeTime")
+        }
+
+    private fun getOperatingAndBreakTime(dayData: List<OpeningHoursModel>): List<String> {
+        val openTime1 = formatTime(dayData[0].open.hour, dayData[0].open.minute)
+        val closeTime1 =
+            formatTime(getCloseHour(dayData[0].close.hour), dayData[0].close.minute)
+        val openTime2 = formatTime(dayData[1].open.hour, dayData[1].open.minute)
+        val closeTime2 =
+            formatTime(getCloseHour(dayData[1].close.hour), dayData[1].close.minute)
+        return listOf("$openTime1 - $closeTime2", "$closeTime1 - $openTime2 브레이크타임")
+    }
+
+    private fun formatTime(hour: Int, minute: Int): String {
+        return String.format("%02d:%02d", hour, minute)
+    }
 }
