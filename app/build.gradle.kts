@@ -18,8 +18,8 @@ android {
         applicationId = "nainga_store.android_kcs"
         minSdk = 26
         targetSdk = 34
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 3
+        versionName = "3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -34,6 +34,7 @@ android {
             }["dev.base.url"].toString())
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-DEV"
+            manifestPlaceholders["appName"] = "@string/app_name_dev"
         }
         release {
             isMinifyEnabled = false
@@ -44,6 +45,7 @@ android {
             buildConfigField("String", "BASE_URL", Properties().apply {
                 load(project.rootProject.file("local.properties").inputStream())
             }["prod.base.url"].toString())
+            manifestPlaceholders["appName"] = "@string/app_name"
         }
     }
     compileOptions {
