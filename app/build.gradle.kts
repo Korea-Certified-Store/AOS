@@ -32,6 +32,8 @@ android {
             buildConfigField("String", "BASE_URL", Properties().apply {
                 load(project.rootProject.file("local.properties").inputStream())
             }["dev.base.url"].toString())
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEV"
         }
         release {
             isMinifyEnabled = false
