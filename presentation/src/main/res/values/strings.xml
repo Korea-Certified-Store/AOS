@@ -1,0 +1,30 @@
+<resources>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="cancel">취소</string>
+    <string name="call_number">전화 걸기</string>
+    <string name="save_number">전화번호에 저장하기</string>
+    <string name="copy_to_clipboard">클립보드에 복사하기</string>
+    <string name="kind_price_store">착한 가격 업소</string>
+    <string name="great_store">모범 음식점</string>
+    <string name="safe_store">안심 식당</string>
+    <string name="store_number">store_number</string>
+    <string name="copy_to_clipboard_description">클립보드에 복사되었어요.</string>
+    <string name="tel">tel:%s</string>
+    <string name="search_on_current_map">현 지도에서 검색</string>
+    <string name="operating">영업 중</string>
+    <string name="closed">영업 종료</string>
+    <string name="day_off">휴무일</string>
+    <string name="break_time">브레이크 타임</string>
+    <string name="gather_the_stores">가게 모아보기</string>
+
+    <string name="ONBOARDING_TITLE_1">인증제 별 가게 위치를\n지도로 한눈에 알아봐요!</string>
+    <string name="ONBOARDING_EXPLANATION_1">여기서 잠깐,\n인증제에 대해 설명해 드릴게요!</string>
+    <string name="ONBOARDING_TITLE_2">착한 가격 업소란?</string>
+    <string name="ONBOARDING_EXPLANATION_2">\n2011년부터 물가안정을 위해\n가격이 저렴하지만 양질의 서비스를\n제공하는 곳을 정부가 지정한\n우리 동네의 좋은 업소입니다.</string>
+    <string name="ONBOARDING_TITLE_3">모범 음식점이란?</string>
+    <string name="ONBOARDING_EXPLANATION_3">식품위생법에 근거하여\n위생관리 상태 등이 우수한 업소를\n모범업소로 지정합니다.\n서비스 수준 향상과 위생적 개선을 도모하기\n위해 운영되고 있습니다.</string>
+    <string name="ONBOARDING_TITLE_4">안심식당이란?</string>
+    <string name="ONBOARDING_EXPLANATION_4">감염병에 취약한 식사문화 개선을 위해\n덜어 먹기, 위생적 수저관리, 종사자 마스크\n착용 및 생활 방역을 준수하는 곳으로\n소재지 지자체의 인증을\n받은 음식점을 의미합니다.</string>
+    <string name="ONBOARDING_TITLE_5">나인가 시작하기</string>
+    <string name="ONBOARDING_EXPLANATION_5">이젠 정말 나인가와 함께 할 시간이에요!</string>
+</resources>
