@@ -31,7 +31,10 @@ android {
         debug {
             buildConfigField("String", "BASE_URL", Properties().apply {
                 load(project.rootProject.file("local.properties").inputStream())
-            }["base.url"].toString())
+            }["dev.base.url"].toString())
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEV"
+            manifestPlaceholders["appName"] = "@string/app_name_dev"
         }
         release {
             isMinifyEnabled = false
@@ -41,7 +44,8 @@ android {
             )
             buildConfigField("String", "BASE_URL", Properties().apply {
                 load(project.rootProject.file("local.properties").inputStream())
-            }["base.url"].toString())
+            }["prod.base.url"].toString())
+            manifestPlaceholders["appName"] = "@string/app_name"
         }
     }
     compileOptions {
