@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.mapper.toUiModel
@@ -28,8 +31,11 @@ import com.example.presentation.ui.map.location.CurrentLocationComponent
 import com.example.presentation.ui.map.marker.StoreMarker
 import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
 import com.example.presentation.util.MainConstants.GREAT_STORE
+import com.example.presentation.util.MainConstants.INITIALIZE_ABLE
+import com.example.presentation.util.MainConstants.INITIALIZE_DEFAULT_DONE
+import com.example.presentation.util.MainConstants.INITIALIZE_DONE
+import com.example.presentation.util.MainConstants.INITIALIZE_MOVE_ONCE
 import com.example.presentation.util.MainConstants.KIND_STORE
-import com.example.presentation.util.MainConstants.LOCATION_SIZE
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.example.presentation.util.UiState
 import com.naver.maps.geometry.LatLng
@@ -64,9 +70,6 @@ fun NaverMapScreen(
     selectedLocationButton: LocationTrackingButton,
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
     onReloadButtonChanged: (Boolean) -> Unit,
-    initLocationSize: Int,
-    onInitLocationChanged: (Int) -> Unit,
-    screenCoordinate: ScreenCoordinate,
     onSplashScreenShowAble: (Boolean) -> Unit,
     onLoadingChanged: (Boolean) -> Unit,
     onCurrentMapChanged: (Boolean) -> Unit,
@@ -122,12 +125,7 @@ fun NaverMapScreen(
                 InitializeMarker(
                     this,
                     onReloadButtonChanged,
-                    initLocationSize,
-                    onInitLocationChanged,
-                    onNewCoordinateChanged,
-                    mapViewModel,
-                    selectedLocationButton,
-                    screenCoordinate
+                    onScreenChanged,
                 )
             }
             GetScreenCoordinate(this, onScreenChanged)
@@ -161,7 +159,10 @@ fun NaverMapScreen(
                 }
 
                 is UiState.Success -> {
-                    if (mapViewModel.ableToShowSplashScreen.value && state.data.isNotEmpty()) {
+                    val isInitializationLocation =
+                        mapViewModel.isLocationPermissionGranted.value.not()
+                                || (mapViewModel.storeInitializeState == INITIALIZE_DONE)
+                    if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value && state.data.isNotEmpty()) {
                         onSplashScreenShowAble(false)
                     }
                     onFilteredMarkerChanged(true)
@@ -258,41 +259,71 @@ fun FilteredMarkers(
 fun InitializeMarker(
     cameraPositionState: CameraPositionState,
     onReloadButtonChanged: (Boolean) -> Unit,
-    initLocationSize: Int,
-    onInitLocationChanged: (Int) -> Unit,
-    onNewCoordinateChanged: (Coordinate) -> Unit,
-    mainViewModel: MapViewModel,
-    selectedLocationButton: LocationTrackingButton,
-    screenCoordinate: ScreenCoordinate,
+    onScreenChanged: (ScreenCoordinate) -> Unit,
+    mainViewModel: MapViewModel = hiltViewModel()
 ) {
-    if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.LOCATION) {
-        if (initLocationSize == LOCATION_SIZE) {
-            onNewCoordinateChanged(
-                Coordinate(
-                    cameraPositionState.position.target.latitude,
-                    cameraPositionState.position.target.longitude
-                )
+    val (initialLocationSetting, onInitialLocationSetting) = remember { mutableStateOf(false) }
+    LaunchedEffect(cameraPositionState.isMoving) {
+        if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState == INITIALIZE_ABLE
+            && cameraPositionState.position.target == LatLng(37.5666102, 126.9783881)
+        ) {
+            initializeStoreInDefaultLocation(
+                onScreenChanged, mainViewModel, onInitialLocationSetting
             )
-            LaunchedEffect(Unit) {
-                onReloadButtonChanged(true)
-            }
-            onInitLocationChanged(initLocationSize + 1)
-        } else if (initLocationSize < LOCATION_SIZE) {
-            onInitLocationChanged(initLocationSize + 1)
         }
-        mainViewModel.ableToShowInitialMarker = false
-    } else if (
-        screenCoordinate != ScreenCoordinate(
-            Coordinate(0.0, 0.0),
-            Coordinate(0.0, 0.0),
-            Coordinate(0.0, 0.0),
-            Coordinate(0.0, 0.0)
-        )
-        && selectedLocationButton == LocationTrackingButton.NONE && mainViewModel.ableToShowInitialMarker
-    ) {
-        onReloadButtonChanged(true)
-        mainViewModel.ableToShowInitialMarker = false
+        if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.LOCATION && cameraPositionState.isMoving && mainViewModel.storeInitializeState == INITIALIZE_DEFAULT_DONE) {
+            checkInitialMoveByLocation(mainViewModel)
+        }
+        if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState == INITIALIZE_MOVE_ONCE) {
+            initializeStoreInCurrentLocation(mainViewModel, onInitialLocationSetting)
+        }
     }
+    if (initialLocationSetting) {
+        GetScreenCoordinate(cameraPositionState, onScreenChanged)
+        onInitialLocationSetting(false)
+        onReloadButtonChanged(true)
+    }
+}
+
+private fun initializeStoreInDefaultLocation(
+    onScreenChanged: (ScreenCoordinate) -> Unit,
+    mainViewModel: MapViewModel,
+    onInitialLocationSetting: (Boolean) -> Unit
+) {
+    onScreenChanged(
+        ScreenCoordinate(
+            northWest = Coordinate(
+                37.57985850148559,
+                126.97014835366224
+            ),
+            southWest = Coordinate(
+                37.550844553375555,
+                126.97014835366224
+            ),
+            southEast = Coordinate(
+                37.550844553375555,
+                126.98662784633694
+            ),
+            northEast = Coordinate(
+                37.57985850148559,
+                126.98662784633694
+            ),
+        )
+    )
+    mainViewModel.storeInitializeState = INITIALIZE_DEFAULT_DONE
+    onInitialLocationSetting(true)
+}
+
+private fun checkInitialMoveByLocation(mainViewModel: MapViewModel) {
+    mainViewModel.storeInitializeState = INITIALIZE_MOVE_ONCE
+}
+
+private fun initializeStoreInCurrentLocation(
+    mainViewModel: MapViewModel,
+    onInitialLocationSetting: (Boolean) -> Unit
+) {
+    mainViewModel.storeInitializeState = INITIALIZE_DONE
+    onInitialLocationSetting(true)
 }
 
 fun setNewCoordinateAndShowReloadButtonIfGestured(

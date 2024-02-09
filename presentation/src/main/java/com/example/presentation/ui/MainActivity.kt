@@ -63,6 +63,7 @@ class MainActivity : ComponentActivity() {
                     if (isOnboardingScreenShowAble) {
                         OnboardingScreen(onOnboardingScreenShowAble)
                     } else {
+                        mapViewModel.updateLocationPermission(false)
                         LocationPermissionRequest(mapViewModel)
                     }
                     if (isSplashScreenShowAble) {

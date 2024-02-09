@@ -12,6 +12,7 @@ import com.example.domain.util.Resource
 import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.util.MainConstants.FAIL_TO_LOAD_DATA
 import com.example.presentation.util.MainConstants.GREAT_STORE
+import com.example.presentation.util.MainConstants.INITIALIZE_ABLE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.SAFE_STORE
 import com.example.presentation.util.UiState
@@ -30,7 +31,7 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
     private val _ableToShowSplashScreen = MutableStateFlow(true)
     val ableToShowSplashScreen: StateFlow<Boolean> = _ableToShowSplashScreen
 
-    var ableToShowInitialMarker = true
+    var storeInitializeState = INITIALIZE_ABLE
 
     private val filterSet = mutableSetOf<String>()
 
