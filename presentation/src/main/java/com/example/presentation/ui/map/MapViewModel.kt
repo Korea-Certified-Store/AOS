@@ -31,8 +31,6 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
     private val _ableToShowSplashScreen = MutableStateFlow(true)
     val ableToShowSplashScreen: StateFlow<Boolean> = _ableToShowSplashScreen
 
-    var storeInitializeState = INITIALIZE_ABLE
-
     private val filterSet = mutableSetOf<String>()
 
     private val _storeDetailModelData =
@@ -45,6 +43,9 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
 
     val flattenedStoreDetailList: MutableStateFlow<List<StoreDetail>> =
         MutableStateFlow(emptyList())
+
+    private val _storeInitializeState = MutableStateFlow(INITIALIZE_ABLE)
+    val storeInitializeState: StateFlow<Int> get() = _storeInitializeState
 
     private val _isInitialize = MutableStateFlow(true)
     val isInitialize get() = _isInitialize
@@ -137,6 +138,10 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
                 showMoreStore(0)
             }
         }
+    }
+
+    fun updateStoreInitializeState(state: Int) {
+        _storeInitializeState.value = state
     }
 
     fun updateIsInitialize() {

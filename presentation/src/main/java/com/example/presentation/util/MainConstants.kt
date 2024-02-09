@@ -16,9 +16,9 @@ object MainConstants {
     const val DIM_ANIMATION_MILLIS = 200
     const val BOTTOM_SHEET_ANIMATION_MILLIS = 200
     const val INITIALIZE_ABLE = -1
-    const val INITIALIZE_MOVE_ONCE = 0
-    const val INITIALIZE_DONE = 1
-    const val INITIALIZE_DEFAULT_DONE = 2
+    const val INITIALIZE_DEFAULT_DONE = 0
+    const val INITIALIZE_MOVE_ONCE = 1
+    const val INITIALIZE_DONE = 2
 
     const val KIND_STORE = "착한가격업소"
     const val GREAT_STORE = "모범음식점"

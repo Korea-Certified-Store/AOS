@@ -161,7 +161,7 @@ fun NaverMapScreen(
                 is UiState.Success -> {
                     val isInitializationLocation =
                         mapViewModel.isLocationPermissionGranted.value.not()
-                                || (mapViewModel.storeInitializeState == INITIALIZE_DONE)
+                                || (mapViewModel.storeInitializeState.value == INITIALIZE_DONE)
                     if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value && state.data.isNotEmpty()) {
                         onSplashScreenShowAble(false)
                     }
@@ -264,17 +264,19 @@ fun InitializeMarker(
 ) {
     val (initialLocationSetting, onInitialLocationSetting) = remember { mutableStateOf(false) }
     LaunchedEffect(cameraPositionState.isMoving) {
-        if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState == INITIALIZE_ABLE
+        if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState.value == INITIALIZE_ABLE
             && cameraPositionState.position.target == LatLng(37.5666102, 126.9783881)
         ) {
             initializeStoreInDefaultLocation(
                 onScreenChanged, mainViewModel, onInitialLocationSetting
             )
         }
-        if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.LOCATION && cameraPositionState.isMoving && mainViewModel.storeInitializeState == INITIALIZE_DEFAULT_DONE) {
+        if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.LOCATION && cameraPositionState.isMoving
+            && mainViewModel.storeInitializeState.value == INITIALIZE_DEFAULT_DONE
+        ) {
             checkInitialMoveByLocation(mainViewModel)
         }
-        if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState == INITIALIZE_MOVE_ONCE) {
+        if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState.value == INITIALIZE_MOVE_ONCE) {
             initializeStoreInCurrentLocation(mainViewModel, onInitialLocationSetting)
         }
     }
@@ -310,19 +312,19 @@ private fun initializeStoreInDefaultLocation(
             ),
         )
     )
-    mainViewModel.storeInitializeState = INITIALIZE_DEFAULT_DONE
+    mainViewModel.updateStoreInitializeState(INITIALIZE_DEFAULT_DONE)
     onInitialLocationSetting(true)
 }
 
 private fun checkInitialMoveByLocation(mainViewModel: MapViewModel) {
-    mainViewModel.storeInitializeState = INITIALIZE_MOVE_ONCE
+    mainViewModel.updateStoreInitializeState(INITIALIZE_MOVE_ONCE)
 }
 
 private fun initializeStoreInCurrentLocation(
     mainViewModel: MapViewModel,
     onInitialLocationSetting: (Boolean) -> Unit
 ) {
-    mainViewModel.storeInitializeState = INITIALIZE_DONE
+    mainViewModel.updateStoreInitializeState(INITIALIZE_DONE)
     onInitialLocationSetting(true)
 }
 
