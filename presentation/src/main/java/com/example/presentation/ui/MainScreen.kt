@@ -56,23 +56,6 @@ fun MainScreen(
     val (isCallClicked, onCallDialogChanged) = remember { mutableStateOf(false) }
     val (isCallDialogCancelClicked, onCallDialogCanceled) = remember { mutableStateOf(false) }
 
-    val (originCoordinate, onOriginCoordinateChanged) = remember {
-        mutableStateOf(
-            Coordinate(
-                0.0,
-                0.0
-            )
-        )
-    }
-    val (newCoordinate, onNewCoordinateChanged) = remember {
-        mutableStateOf(
-            Coordinate(
-                0.0,
-                0.0
-            )
-        )
-    }
-
     val (isMapGestured, onCurrentMapChanged) = remember { mutableStateOf(false) }
     val (isReloadButtonClicked, onReloadButtonChanged) = remember {
         mutableStateOf(false)
@@ -133,8 +116,6 @@ fun MainScreen(
         isMarkerClicked,
         onBottomSheetChanged,
         onStoreInfoChanged,
-        onOriginCoordinateChanged,
-        onNewCoordinateChanged,
         onScreenChanged,
         currentSummaryInfoHeight,
         clickedMarkerId,
@@ -221,10 +202,6 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
-    if (originCoordinate != newCoordinate) {
-        onCurrentMapChanged(true)
-    }
-
     if (isReloadButtonClicked) {
         onFilteredMarkerChanged(false)
         onErrorSnackBarChanged("")
@@ -242,7 +219,6 @@ fun MainScreen(
             neLat = screenCoordinate.northEast.latitude
         )
         onReloadButtonChanged(false)
-        onOriginCoordinateChanged(newCoordinate)
     }
 
     if (isFilterStateChanged) {
