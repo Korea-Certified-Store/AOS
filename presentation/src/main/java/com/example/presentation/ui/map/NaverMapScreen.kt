@@ -30,6 +30,8 @@ import com.example.presentation.model.StoreType
 import com.example.presentation.ui.map.location.CurrentLocationComponent
 import com.example.presentation.ui.map.marker.StoreMarker
 import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
+import com.example.presentation.util.MainConstants.DEFAULT_LATITUDE
+import com.example.presentation.util.MainConstants.DEFAULT_LONGITUDE
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.INITIALIZE_ABLE
 import com.example.presentation.util.MainConstants.INITIALIZE_DEFAULT_DONE
@@ -139,7 +141,7 @@ fun NaverMapScreen(
                     val isInitializationLocation =
                         mapViewModel.isLocationPermissionGranted.value.not()
                                 || (mapViewModel.storeInitializeState.value == INITIALIZE_DONE)
-                    if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value && state.data.isNotEmpty()) {
+                    if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value) {
                         onSplashScreenShowAble(false)
                     }
                     onFilteredMarkerChanged(true)
@@ -248,15 +250,15 @@ fun InitializeMarker(
     onCurrentMapChanged: (Boolean) -> Unit,
     mainViewModel: MapViewModel = hiltViewModel()
 ) {
-    val (initialLocationSetting, onInitialLocationSetting) = remember { mutableStateOf(false) }
+    val (isInitialLocationSet, onInitialLocationSetChanged) = remember { mutableStateOf(false) }
     val (isMapGestured, onMapGestureChanged) = remember { mutableStateOf(false) }
 
     LaunchedEffect(cameraPositionState.isMoving) {
         if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState.value == INITIALIZE_ABLE
-            && cameraPositionState.position.target == LatLng(37.5666102, 126.9783881)
+            && cameraPositionState.position.target == LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
         ) {
             initializeStoreInDefaultLocation(
-                onScreenChanged, mainViewModel, onInitialLocationSetting
+                onScreenChanged, mainViewModel, onInitialLocationSetChanged
             )
         }
         if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.LOCATION && cameraPositionState.isMoving
@@ -265,7 +267,7 @@ fun InitializeMarker(
             checkInitialMoveByLocation(mainViewModel)
         }
         if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState.value == INITIALIZE_MOVE_ONCE) {
-            initializeStoreInCurrentLocation(mainViewModel, onInitialLocationSetting)
+            initializeStoreInCurrentLocation(mainViewModel, onInitialLocationSetChanged)
         }
 
         if (mainViewModel.storeInitializeState.value == INITIALIZE_DONE && cameraPositionState.isMoving
@@ -274,9 +276,9 @@ fun InitializeMarker(
             checkMapGestured(onReloadOrShowMoreChanged, onCurrentMapChanged, onMapGestureChanged)
         }
     }
-    if (initialLocationSetting) {
+    if (isInitialLocationSet) {
         GetScreenCoordinate(cameraPositionState, onScreenChanged)
-        onInitialLocationSetting(false)
+        onInitialLocationSetChanged(false)
         onReloadButtonChanged(true)
     }
 
@@ -291,7 +293,7 @@ fun InitializeMarker(
 private fun initializeStoreInDefaultLocation(
     onScreenChanged: (ScreenCoordinate) -> Unit,
     mainViewModel: MapViewModel,
-    onInitialLocationSetting: (Boolean) -> Unit
+    onInitialLocationSetChanged: (Boolean) -> Unit
 ) {
     onScreenChanged(
         ScreenCoordinate(
@@ -314,7 +316,7 @@ private fun initializeStoreInDefaultLocation(
         )
     )
     mainViewModel.updateStoreInitializeState(INITIALIZE_DEFAULT_DONE)
-    onInitialLocationSetting(true)
+    onInitialLocationSetChanged(true)
 }
 
 private fun checkInitialMoveByLocation(mainViewModel: MapViewModel) {
@@ -323,10 +325,10 @@ private fun checkInitialMoveByLocation(mainViewModel: MapViewModel) {
 
 private fun initializeStoreInCurrentLocation(
     mainViewModel: MapViewModel,
-    onInitialLocationSetting: (Boolean) -> Unit
+    onInitialLocationSetChanged: (Boolean) -> Unit
 ) {
     mainViewModel.updateStoreInitializeState(INITIALIZE_DONE)
-    onInitialLocationSetting(true)
+    onInitialLocationSetChanged(true)
 }
 
 private fun checkMapGestured(
