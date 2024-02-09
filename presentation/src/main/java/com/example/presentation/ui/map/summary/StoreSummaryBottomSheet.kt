@@ -70,7 +70,7 @@ fun StoreSummaryBottomSheet(
 
         if (bottomSheetHeight >= (DETAIL_BOTTOM_SHEET_HEIGHT.dp + currentSummaryInfoHeight) / 2) {
             onBottomSheetExpandedChanged(ExpandedType.FULL)
-        } else if (bottomSheetHeight > currentSummaryInfoHeight) {
+        } else if (bottomSheetHeight > currentSummaryInfoHeight + 10.dp) {
             onBottomSheetExpandedChanged(ExpandedType.HALF)
         } else {
             onBottomSheetExpandedChanged(ExpandedType.COLLAPSED)
