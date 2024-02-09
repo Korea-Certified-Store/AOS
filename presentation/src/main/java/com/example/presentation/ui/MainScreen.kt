@@ -3,7 +3,6 @@ package com.example.presentation.ui
 import android.app.Activity
 import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +22,6 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
-import com.example.presentation.ui.splash.SplashScreen
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -110,8 +108,6 @@ fun MainScreen(
 
     val (clickedMarkerId, onMarkerChanged) = remember { mutableLongStateOf(UN_MARKER) }
 
-    val (initLocationSize, onInitLocationChanged) = remember { mutableIntStateOf(0) }
-
     val (isFilterStateChanged, onFilterStateChanged) = remember { mutableStateOf(false) }
 
     val (bottomSheetExpandedType, onBottomSheetExpandedChanged) = remember {
@@ -146,9 +142,6 @@ fun MainScreen(
         selectedLocationButton,
         onLocationButtonChanged,
         onReloadButtonChanged,
-        initLocationSize,
-        onInitLocationChanged,
-        screenCoordinate,
         onSplashScreenShowAble,
         onLoadingChanged,
         onCurrentMapChanged,
