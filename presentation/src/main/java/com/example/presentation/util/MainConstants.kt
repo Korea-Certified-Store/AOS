@@ -19,6 +19,8 @@ object MainConstants {
     const val INITIALIZE_DEFAULT_DONE = 0
     const val INITIALIZE_MOVE_ONCE = 1
     const val INITIALIZE_DONE = 2
+    const val DEFAULT_LATITUDE = 37.5666102
+    const val DEFAULT_LONGITUDE = 126.9783881
 
     const val KIND_STORE = "착한가격업소"
     const val GREAT_STORE = "모범음식점"
