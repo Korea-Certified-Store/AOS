@@ -56,23 +56,6 @@ fun MainScreen(
     val (isCallClicked, onCallDialogChanged) = remember { mutableStateOf(false) }
     val (isCallDialogCancelClicked, onCallDialogCanceled) = remember { mutableStateOf(false) }
 
-    val (originCoordinate, onOriginCoordinateChanged) = remember {
-        mutableStateOf(
-            Coordinate(
-                0.0,
-                0.0
-            )
-        )
-    }
-    val (newCoordinate, onNewCoordinateChanged) = remember {
-        mutableStateOf(
-            Coordinate(
-                0.0,
-                0.0
-            )
-        )
-    }
-
     val (isMapGestured, onCurrentMapChanged) = remember { mutableStateOf(false) }
     val (isReloadButtonClicked, onReloadButtonChanged) = remember {
         mutableStateOf(false)
@@ -128,13 +111,17 @@ fun MainScreen(
 
     val (isReloadOrShowMoreShowAble, onReloadOrShowMoreChanged) = remember { mutableStateOf(false) }
 
+    val (isScreenCoordinateChanged, onGetNewScreenCoordinateChanged) = remember {
+        mutableStateOf(
+            false
+        )
+    }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
         onBottomSheetChanged,
         onStoreInfoChanged,
-        onOriginCoordinateChanged,
-        onNewCoordinateChanged,
         onScreenChanged,
         currentSummaryInfoHeight,
         clickedMarkerId,
@@ -152,7 +139,9 @@ fun MainScreen(
         onListItemChanged,
         clickedStoreInfo.location,
         onShowMoreCountChanged,
-        onReloadOrShowMoreChanged
+        onReloadOrShowMoreChanged,
+        isReloadButtonClicked,
+        onGetNewScreenCoordinateChanged
     )
 
     if (isReloadOrShowMoreShowAble) {
@@ -221,11 +210,7 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
-    if (originCoordinate != newCoordinate) {
-        onCurrentMapChanged(true)
-    }
-
-    if (isReloadButtonClicked) {
+    if (isReloadButtonClicked && isScreenCoordinateChanged) {
         onFilteredMarkerChanged(false)
         onErrorSnackBarChanged("")
         mapViewModel.getStoreDetail(
@@ -242,7 +227,7 @@ fun MainScreen(
             neLat = screenCoordinate.northEast.latitude
         )
         onReloadButtonChanged(false)
-        onOriginCoordinateChanged(newCoordinate)
+        onGetNewScreenCoordinateChanged(false)
     }
 
     if (isFilterStateChanged) {

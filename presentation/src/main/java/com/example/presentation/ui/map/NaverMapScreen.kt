@@ -54,7 +54,6 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import kotlinx.coroutines.launch
 
-
 @SuppressLint("StateFlowValueCalledInComposition", "CoroutineCreationDuringComposition")
 @ExperimentalNaverMapApi
 @Composable
@@ -63,8 +62,6 @@ fun NaverMapScreen(
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
-    onOriginCoordinateChanged: (Coordinate) -> Unit,
-    onNewCoordinateChanged: (Coordinate) -> Unit,
     onScreenChanged: (ScreenCoordinate) -> Unit,
     currentSummaryInfoHeight: Dp,
     clickedMarkerId: Long,
@@ -83,21 +80,10 @@ fun NaverMapScreen(
     clickedStoreLocation: Coordinate,
     onShowMoreCountChanged: (ShowMoreCount) -> Unit,
     onReloadOrShowMoreChanged: (Boolean) -> Unit,
+    isReloadButtonClicked: Boolean,
+    onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
 ) {
-    val cameraPositionState = rememberCameraPositionState {
-        onOriginCoordinateChanged(
-            Coordinate(
-                position.target.latitude,
-                position.target.longitude
-            )
-        )
-        onNewCoordinateChanged(
-            Coordinate(
-                position.target.latitude,
-                position.target.longitude
-            )
-        )
-    }
+    val cameraPositionState = rememberCameraPositionState {}
 
     val scope = rememberCoroutineScope()
 
@@ -113,24 +99,15 @@ fun NaverMapScreen(
             isScaleBarEnabled = false
         ),
         cameraPositionState = cameraPositionState.apply {
-            setNewCoordinateAndShowReloadButtonIfGestured(
+            InitializeMarker(
                 this,
-                onNewCoordinateChanged,
-                onReloadOrShowMoreChanged
+                onReloadButtonChanged,
+                onScreenChanged,
+                onReloadOrShowMoreChanged,
+                onLocationButtonChanged,
+                selectedLocationButton.mode,
+                onCurrentMapChanged
             )
-            if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE
-                && selectedLocationButton.mode != LocationTrackingMode.None
-                && selectedLocationButton.mode != LocationTrackingMode.NoFollow
-            ) {
-                TurnOffLocationButton(onLocationButtonChanged)
-            } else {
-                InitializeMarker(
-                    this,
-                    onReloadButtonChanged,
-                    onScreenChanged,
-                )
-            }
-            GetScreenCoordinate(this, onScreenChanged)
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
@@ -210,6 +187,11 @@ fun NaverMapScreen(
                 onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
             }
         }
+
+        if (isReloadButtonClicked) {
+            GetScreenCoordinate(cameraPositionState, onScreenChanged)
+            onGetNewScreenCoordinateChanged(true)
+        }
     }
 
     CurrentLocationComponent(
@@ -262,9 +244,15 @@ fun InitializeMarker(
     cameraPositionState: CameraPositionState,
     onReloadButtonChanged: (Boolean) -> Unit,
     onScreenChanged: (ScreenCoordinate) -> Unit,
+    onReloadOrShowMoreChanged: (Boolean) -> Unit,
+    onLocationButtonChanged: (LocationTrackingButton) -> Unit,
+    selectedLocationButtonMode: LocationTrackingMode,
+    onCurrentMapChanged: (Boolean) -> Unit,
     mainViewModel: MapViewModel = hiltViewModel()
 ) {
     val (isInitialLocationSet, onInitialLocationSetChanged) = remember { mutableStateOf(false) }
+    val (isMapGestured, onMapGestureChanged) = remember { mutableStateOf(false) }
+
     LaunchedEffect(cameraPositionState.isMoving) {
         if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState.value == INITIALIZE_ABLE
             && cameraPositionState.position.target == LatLng(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
@@ -281,11 +269,25 @@ fun InitializeMarker(
         if (cameraPositionState.isMoving.not() && mainViewModel.storeInitializeState.value == INITIALIZE_MOVE_ONCE) {
             initializeStoreInCurrentLocation(mainViewModel, onInitialLocationSetChanged)
         }
+
+        if ((mainViewModel.storeInitializeState.value == INITIALIZE_DONE || mainViewModel.storeInitializeState.value == INITIALIZE_DEFAULT_DONE)
+            && cameraPositionState.isMoving
+            && cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE
+        ) {
+            checkMapGestured(onReloadOrShowMoreChanged, onCurrentMapChanged, onMapGestureChanged)
+        }
     }
     if (isInitialLocationSet) {
         GetScreenCoordinate(cameraPositionState, onScreenChanged)
         onInitialLocationSetChanged(false)
         onReloadButtonChanged(true)
+    }
+
+    if (isMapGestured) {
+        if (selectedLocationButtonMode != LocationTrackingMode.None && selectedLocationButtonMode != LocationTrackingMode.NoFollow) {
+            TurnOffLocationButton(onLocationButtonChanged)
+        }
+        onMapGestureChanged(false)
     }
 }
 
@@ -330,20 +332,14 @@ private fun initializeStoreInCurrentLocation(
     onInitialLocationSetChanged(true)
 }
 
-fun setNewCoordinateAndShowReloadButtonIfGestured(
-    cameraPositionState: CameraPositionState,
-    onNewCoordinateChanged: (Coordinate) -> Unit,
-    onReloadOrShowMoreChanged: (Boolean) -> Unit
+private fun checkMapGestured(
+    onReloadOrShowMoreChanged: (Boolean) -> Unit,
+    onCurrentMapChanged: (Boolean) -> Unit,
+    onMapGestureChanged: (Boolean) -> Unit
 ) {
-    if (cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE) {
-        onReloadOrShowMoreChanged(true)
-        onNewCoordinateChanged(
-            Coordinate(
-                cameraPositionState.position.target.latitude,
-                cameraPositionState.position.target.longitude
-            )
-        )
-    }
+    onReloadOrShowMoreChanged(true)
+    onCurrentMapChanged(true)
+    onMapGestureChanged(true)
 }
 
 @Composable
