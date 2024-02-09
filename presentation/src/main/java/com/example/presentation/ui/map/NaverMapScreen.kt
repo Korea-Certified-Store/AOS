@@ -52,7 +52,6 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import kotlinx.coroutines.launch
 
-
 @SuppressLint("StateFlowValueCalledInComposition", "CoroutineCreationDuringComposition")
 @ExperimentalNaverMapApi
 @Composable
@@ -79,6 +78,8 @@ fun NaverMapScreen(
     clickedStoreLocation: Coordinate,
     onShowMoreCountChanged: (ShowMoreCount) -> Unit,
     onReloadOrShowMoreChanged: (Boolean) -> Unit,
+    isReloadButtonClicked: Boolean,
+    onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -105,7 +106,6 @@ fun NaverMapScreen(
                 selectedLocationButton.mode,
                 onCurrentMapChanged
             )
-            GetScreenCoordinate(this, onScreenChanged)
         },
         locationSource = rememberFusedLocationSource(),
         properties = MapProperties(
@@ -184,6 +184,11 @@ fun NaverMapScreen(
             if (selectedLocationButton == LocationTrackingButton.FOLLOW || selectedLocationButton == LocationTrackingButton.FACE) {
                 onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
             }
+        }
+
+        if (isReloadButtonClicked) {
+            GetScreenCoordinate(cameraPositionState, onScreenChanged)
+            onGetNewScreenCoordinateChanged(true)
         }
     }
 
@@ -275,8 +280,10 @@ fun InitializeMarker(
         onReloadButtonChanged(true)
     }
 
-    if (isMapGestured && selectedLocationButtonMode != LocationTrackingMode.None && selectedLocationButtonMode != LocationTrackingMode.NoFollow) {
-        TurnOffLocationButton(onLocationButtonChanged)
+    if (isMapGestured) {
+        if (selectedLocationButtonMode != LocationTrackingMode.None && selectedLocationButtonMode != LocationTrackingMode.NoFollow) {
+            TurnOffLocationButton(onLocationButtonChanged)
+        }
         onMapGestureChanged(false)
     }
 }

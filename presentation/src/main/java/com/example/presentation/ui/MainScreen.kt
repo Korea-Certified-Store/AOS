@@ -111,6 +111,12 @@ fun MainScreen(
 
     val (isReloadOrShowMoreShowAble, onReloadOrShowMoreChanged) = remember { mutableStateOf(false) }
 
+    val (isScreenCoordinateChanged, onGetNewScreenCoordinateChanged) = remember {
+        mutableStateOf(
+            false
+        )
+    }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -133,7 +139,9 @@ fun MainScreen(
         onListItemChanged,
         clickedStoreInfo.location,
         onShowMoreCountChanged,
-        onReloadOrShowMoreChanged
+        onReloadOrShowMoreChanged,
+        isReloadButtonClicked,
+        onGetNewScreenCoordinateChanged
     )
 
     if (isReloadOrShowMoreShowAble) {
@@ -202,7 +210,7 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
-    if (isReloadButtonClicked) {
+    if (isReloadButtonClicked && isScreenCoordinateChanged) {
         onFilteredMarkerChanged(false)
         onErrorSnackBarChanged("")
         mapViewModel.getStoreDetail(
@@ -219,6 +227,7 @@ fun MainScreen(
             neLat = screenCoordinate.northEast.latitude
         )
         onReloadButtonChanged(false)
+        onGetNewScreenCoordinateChanged(false)
     }
 
     if (isFilterStateChanged) {
