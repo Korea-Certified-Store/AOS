@@ -6,7 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface  StoreDetailApiService {
-
     @GET("/api/v2/storecertification/byLocation")
     suspend fun getStoreDetailsByLocation(
         @Query(NORTH_WEST_LONG) nwLong: Double,
