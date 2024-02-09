@@ -1,7 +1,7 @@
 package com.example.data.source.remote.api
 
 import com.example.data.dto.response.BaseResponse
-import com.example.data.dto.response.ResponseStoreDetailDto
+import com.example.data.dto.response.store.ResponseStoreDetailDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 

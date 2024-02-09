@@ -1,6 +1,6 @@
 package com.example.data.source.remote
 
-import com.example.data.dto.response.toDomainModel
+import com.example.data.dto.response.store.toDomainModel
 import com.example.data.source.StoreDetailDataSource
 import com.example.data.source.remote.api.StoreDetailApiService
 import com.example.domain.model.map.StoreDetailModel
