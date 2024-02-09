@@ -270,7 +270,8 @@ fun InitializeMarker(
             initializeStoreInCurrentLocation(mainViewModel, onInitialLocationSetChanged)
         }
 
-        if (mainViewModel.storeInitializeState.value == INITIALIZE_DONE && cameraPositionState.isMoving
+        if ((mainViewModel.storeInitializeState.value == INITIALIZE_DONE || mainViewModel.storeInitializeState.value == INITIALIZE_DEFAULT_DONE)
+            && cameraPositionState.isMoving
             && cameraPositionState.cameraUpdateReason == CameraUpdateReason.GESTURE
         ) {
             checkMapGestured(onReloadOrShowMoreChanged, onCurrentMapChanged, onMapGestureChanged)
