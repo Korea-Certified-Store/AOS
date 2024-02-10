@@ -154,6 +154,9 @@ fun NaverMapScreen(
                     if (mapViewModel.ableToShowSplashScreen.value) {
                         onSplashScreenShowAble(false)
                     }
+                    if (state.msg == "이 지역에는 가게가 존재하지 않습니다.") {
+                        onReloadOrShowMoreChanged(false)
+                    }
                     onLoadingChanged(false)
                     onErrorSnackBarChanged(state.msg)
                 }
