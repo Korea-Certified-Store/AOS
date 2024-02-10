@@ -35,6 +35,7 @@ fun MainScreen(
     onCallStoreChanged: (String) -> Unit,
     onSplashScreenShowAble: (Boolean) -> Unit,
     navController: NavController,
+    searchText: String?,
     mapViewModel: MapViewModel = hiltViewModel()
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
@@ -161,7 +162,7 @@ fun MainScreen(
         )
     }
 
-    StoreSearchComponent(navController)
+    StoreSearchComponent(navController, searchText)
 
     FilterComponent(
         isKindFilterClicked,

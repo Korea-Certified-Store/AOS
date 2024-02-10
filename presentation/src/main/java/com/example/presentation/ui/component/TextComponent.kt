@@ -8,7 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.example.presentation.ui.theme.MediumBlue
-import com.example.presentation.ui.theme.MediumGray
+import com.example.presentation.ui.theme.DarkGray
 
 @Composable
 fun StoreTitleText(storeName: String, fontSize: Int, id: String) {
@@ -27,7 +27,7 @@ fun StoreTitleText(storeName: String, fontSize: Int, id: String) {
 fun StorePrimaryTypeText(storeType: String, fontSize: Int, id: String) {
     Text(
         text = storeType,
-        color = MediumGray,
+        color = DarkGray,
         fontSize = fontSize.sp,
         fontWeight = FontWeight.Normal,
         modifier = Modifier.layoutId(id)

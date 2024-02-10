@@ -67,10 +67,14 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = Screen.Main.route
                     ) {
+                        val searchText = remember {
+                            navController.previousBackStackEntry?.savedStateHandle?.get<String>("search_text")
+                        }
                         MainScreen(
                             onCallStoreChanged,
                             onSplashScreenShowAble,
-                            navController
+                            navController,
+                            searchText
                         )
                     }
                     composable(
