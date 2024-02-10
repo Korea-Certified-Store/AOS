@@ -1,5 +1,6 @@
 package com.example.presentation.ui.search
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.presentation.R
 import com.example.presentation.ui.navigation.Screen
-import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
@@ -62,35 +62,33 @@ fun StoreSearchComponent(navController: NavController, searchText: String?) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         if (searchText == null) {
-            Text(
-                text = stringResource(R.string.search_placeholder_text),
-                fontSize = 14.sp,
-                color = MediumGray,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(start = DEFAULT_MARGIN.dp)
-            )
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.search),
-                contentDescription = "Search",
-                modifier = Modifier
-                    .padding(end = DEFAULT_MARGIN.dp)
-                    .size(16.dp)
-            )
+            SearchPlaceHolderText(stringResource(R.string.search_placeholder_text))
+            SearchSuffixImage(R.drawable.search)
         } else {
-            Text(
-                text = searchText,
-                fontSize = 14.sp,
-                color = Black,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(start = DEFAULT_MARGIN.dp)
-            )
-            Image(
-                imageVector = ImageVector.vectorResource(id = R.drawable.delete),
-                contentDescription = "Delete",
-                modifier = Modifier
-                    .padding(end = DEFAULT_MARGIN.dp)
-                    .size(16.dp)
-            )
+            SearchPlaceHolderText(searchText)
+            SearchSuffixImage(R.drawable.delete)
         }
     }
+}
+
+@Composable
+fun SearchPlaceHolderText(text: String) {
+    Text(
+        text = text,
+        fontSize = 14.sp,
+        color = MediumGray,
+        fontWeight = FontWeight.Medium,
+        modifier = Modifier.padding(start = DEFAULT_MARGIN.dp)
+    )
+}
+
+@Composable
+fun SearchSuffixImage(@DrawableRes image: Int) {
+    Image(
+        imageVector = ImageVector.vectorResource(id = R.drawable.delete),
+        contentDescription = "Delete",
+        modifier = Modifier
+            .padding(end = DEFAULT_MARGIN.dp)
+            .size(16.dp)
+    )
 }
