@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -57,6 +60,8 @@ fun SearchScreen(navController: NavHostController) {
 @Composable
 fun SearchTextField() {
     var text by remember { mutableStateOf("") }
+
+    val focusRequester = remember { FocusRequester() }
 
     BasicTextField(
         value = text,
@@ -104,7 +109,12 @@ fun SearchTextField() {
         maxLines = 1,
         singleLine = true,
         textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = FontWeight.Medium),
+        modifier = Modifier.focusRequester(focusRequester)
     )
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 }
 
 @Preview
