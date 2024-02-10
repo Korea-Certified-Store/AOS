@@ -78,7 +78,8 @@ fun SearchPlaceHolderText(text: String) {
         fontSize = 14.sp,
         color = MediumGray,
         fontWeight = FontWeight.Medium,
-        modifier = Modifier.padding(start = DEFAULT_MARGIN.dp)
+        modifier = Modifier.padding(start = DEFAULT_MARGIN.dp),
+        maxLines = 1
     )
 }
 
