@@ -17,10 +17,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.presentation.R
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.location.LocationPermissionRequest
+import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.onboarding.OnboardingScreen
+import com.example.presentation.ui.search.SearchScreen
 import com.example.presentation.ui.splash.SplashScreen
 import com.example.presentation.ui.theme.Android_KCSTheme
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -54,11 +59,31 @@ class MainActivity : ComponentActivity() {
             val isFirstRun = preferences.getBoolean("isFirstRun", true)
 
             Android_KCSTheme {
-                MainScreen(
-                    mapViewModel,
-                    onCallStoreChanged,
-                    onSplashScreenShowAble
-                )
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.Main.route
+                ) {
+                    composable(
+                        route = Screen.Main.route
+                    ) {
+                        val searchText = remember {
+                            navController.previousBackStackEntry?.savedStateHandle?.get<String>("search_text")
+                        }
+                        MainScreen(
+                            onCallStoreChanged,
+                            onSplashScreenShowAble,
+                            navController,
+                            searchText
+                        )
+                    }
+                    composable(
+                        route = Screen.Search.route
+                    ) {
+                        SearchScreen(navController)
+                    }
+                }
+
                 if (isFirstRun) {
                     if (isOnboardingScreenShowAble) {
                         OnboardingScreen(onOnboardingScreenShowAble)

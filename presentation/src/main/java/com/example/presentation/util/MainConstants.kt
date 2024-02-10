@@ -21,6 +21,8 @@ object MainConstants {
     const val INITIALIZE_DONE = 2
     const val DEFAULT_LATITUDE = 37.5666102
     const val DEFAULT_LONGITUDE = 126.9783881
+    const val SEARCH_TEXT_FIELD_HEIGHT = 50
+    const val SEARCH_TEXT_FIELD_TOP_PADDING = 19
 
     const val KIND_STORE = "착한가격업소"
     const val GREAT_STORE = "모범음식점"

@@ -59,7 +59,6 @@ import kotlinx.coroutines.launch
 @ExperimentalNaverMapApi
 @Composable
 fun NaverMapScreen(
-    mapViewModel: MapViewModel,
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
@@ -83,6 +82,7 @@ fun NaverMapScreen(
     onReloadOrShowMoreChanged: (Boolean) -> Unit,
     isReloadButtonClicked: Boolean,
     onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
+    mapViewModel: MapViewModel = hiltViewModel()
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 

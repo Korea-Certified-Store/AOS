@@ -46,7 +46,6 @@ import com.example.presentation.ui.component.StoreTitleText
 import com.example.presentation.ui.component.StoreTypeChips
 import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightGray
-import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.Red
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_IMG_SIZE
@@ -164,7 +163,7 @@ fun StoreOpeningTime(
         Text(
             text = timeDescription,
             Modifier.alignByBaseline(),
-            color = MediumGray,
+            color = DarkGray,
             fontSize = 11.sp,
             fontWeight = FontWeight.Normal
         )
@@ -201,7 +200,6 @@ fun StoreCallButton(
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.call),
-                tint = DarkGray,
                 contentDescription = "Call",
                 modifier = Modifier.size(21.dp)
             )
