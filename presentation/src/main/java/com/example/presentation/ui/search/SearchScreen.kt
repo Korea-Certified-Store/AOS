@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.presentation.R
 import com.example.presentation.ui.map.list.StoreListDivider
 import com.example.presentation.ui.theme.Black
@@ -41,9 +42,8 @@ import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
-@Preview
 @Composable
-fun SearchScreen() {
+fun SearchScreen(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {

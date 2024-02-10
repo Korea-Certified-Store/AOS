@@ -8,6 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
@@ -30,9 +32,10 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 @ExperimentalNaverMapApi
 @Composable
 fun MainScreen(
-    mapViewModel: MapViewModel,
     onCallStoreChanged: (String) -> Unit,
-    onSplashScreenShowAble: (Boolean) -> Unit
+    onSplashScreenShowAble: (Boolean) -> Unit,
+    navController: NavController,
+    mapViewModel: MapViewModel = hiltViewModel()
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
@@ -119,7 +122,6 @@ fun MainScreen(
     }
 
     NaverMapScreen(
-        mapViewModel,
         isMarkerClicked,
         onBottomSheetChanged,
         onStoreInfoChanged,
@@ -159,7 +161,7 @@ fun MainScreen(
         )
     }
 
-    StoreSearchComponent()
+    StoreSearchComponent(navController)
 
     FilterComponent(
         isKindFilterClicked,

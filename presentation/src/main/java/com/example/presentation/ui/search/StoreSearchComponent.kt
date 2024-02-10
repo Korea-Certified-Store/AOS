@@ -19,19 +19,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.presentation.R
+import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
-@Preview
 @Composable
-fun StoreSearchComponent() {
+fun StoreSearchComponent(navController: NavController) {
     Row(
         modifier = Modifier
             .padding(
@@ -44,7 +44,7 @@ fun StoreSearchComponent() {
             .fillMaxWidth()
             .height(SEARCH_TEXT_FIELD_HEIGHT.dp)
             .background(color = White, shape = RoundedCornerShape(size = 12.dp))
-            .clickable {  },
+            .clickable { navController.navigate(Screen.Search.route) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
