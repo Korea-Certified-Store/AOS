@@ -2,10 +2,15 @@ package com.example.domain.usecase
 
 import com.example.domain.model.map.StoreDetail
 import com.example.domain.repository.StoreDetailRepository
+import com.example.domain.usecase.ErrorMessage.ERROR_MESSAGE_CHECK_INTERNET
+import com.example.domain.usecase.ErrorMessage.ERROR_MESSAGE_SERVER_IS_NOT_WORKING
+import com.example.domain.usecase.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
+import com.example.domain.usecase.ErrorMessage.ERROR_MESSAGE_UNKNOWN_ERROR
 import com.example.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 class GetStoreDetailUseCase(
     private val repository: StoreDetailRepository
@@ -32,7 +37,7 @@ class GetStoreDetailUseCase(
             neLat
         ).fold(onSuccess = { items ->
             if (items.isEmpty()) {
-                emit(Resource.Failure("이 지역에는 가게가 존재하지 않습니다."))
+                emit(Resource.Failure(ERROR_MESSAGE_STORE_IS_EMPTY))
             } else {
                 emit(Resource.Success(items.map {
                     it.map { storeDetailModel ->
@@ -55,10 +60,18 @@ class GetStoreDetailUseCase(
                 }))
             }
         }, onFailure = { e ->
-            if (e is IOException) {
-                emit(Resource.Failure("서버와의 통신이 원활하지 않습니다."))
-            } else {
-                emit(Resource.Failure("데이터를 불러올 수 없습니다."))
+            when (e) {
+                is UnknownHostException -> {
+                    emit(Resource.Failure(ERROR_MESSAGE_CHECK_INTERNET))
+                }
+
+                is SocketTimeoutException -> {
+                    emit(Resource.Failure(ERROR_MESSAGE_SERVER_IS_NOT_WORKING))
+                }
+
+                else -> {
+                    emit(Resource.Failure(ERROR_MESSAGE_UNKNOWN_ERROR))
+                }
             }
         })
     }

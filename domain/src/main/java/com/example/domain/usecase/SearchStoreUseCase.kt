@@ -5,7 +5,8 @@ import com.example.domain.repository.SearchStoreRepository
 import com.example.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 class SearchStoreUseCase(
     private val repository: SearchStoreRepository
@@ -37,10 +38,18 @@ class SearchStoreUseCase(
                 }))
             },
             onFailure = { e ->
-                if (e is IOException) {
-                    emit(Resource.Failure("서버와의 통신이 원활하지 않습니다."))
-                } else {
-                    emit(Resource.Failure("데이터를 불러올 수 없습니다."))
+                when (e) {
+                    is UnknownHostException -> {
+                        emit(Resource.Failure(ErrorMessage.ERROR_MESSAGE_CHECK_INTERNET))
+                    }
+
+                    is SocketTimeoutException -> {
+                        emit(Resource.Failure(ErrorMessage.ERROR_MESSAGE_SERVER_IS_NOT_WORKING))
+                    }
+
+                    else -> {
+                        emit(Resource.Failure(ErrorMessage.ERROR_MESSAGE_UNKNOWN_ERROR))
+                    }
                 }
             }
         )
