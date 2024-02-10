@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.map.ShowMoreCount
+import com.example.domain.usecase.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
 import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.LocationTrackingButton
@@ -153,6 +154,9 @@ fun NaverMapScreen(
                 is UiState.Failure -> {
                     if (mapViewModel.ableToShowSplashScreen.value) {
                         onSplashScreenShowAble(false)
+                    }
+                    if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
+                        onReloadOrShowMoreChanged(false)
                     }
                     onLoadingChanged(false)
                     onErrorSnackBarChanged(state.msg)

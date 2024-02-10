@@ -5,7 +5,8 @@ import com.example.domain.repository.SearchStoreRepository
 import com.example.domain.util.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 class SearchStoreUseCase(
     private val repository: SearchStoreRepository
@@ -18,29 +19,41 @@ class SearchStoreUseCase(
         emit(Resource.Loading())
         repository.searchStore(currLong, currLat, searchKeyword).fold(
             onSuccess = { items ->
-                emit(Resource.Success(items.map { storeDetailModel ->
-                    val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
-                    val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
-                    StoreDetail(
-                        id = storeDetailModel.id,
-                        displayName = storeDetailModel.displayName,
-                        primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
-                        formattedAddress = storeDetailModel.formattedAddress,
-                        phoneNumber = storeDetailModel.phoneNumber,
-                        location = storeDetailModel.location,
-                        operatingType = operatingType.operatingType.description,
-                        timeDescription = operatingType.timeDescription,
-                        localPhotos = storeDetailModel.localPhotos,
-                        certificationName = storeDetailModel.certificationName,
-                        operationTimeOfWeek = operationTimeOfWeek
-                    )
-                }))
+                if (items.isEmpty()) {
+                    emit(Resource.Failure(ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY))
+                } else {
+                    emit(Resource.Success(items.map { storeDetailModel ->
+                        val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
+                        val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
+                        StoreDetail(
+                            id = storeDetailModel.id,
+                            displayName = storeDetailModel.displayName,
+                            primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
+                            formattedAddress = storeDetailModel.formattedAddress,
+                            phoneNumber = storeDetailModel.phoneNumber,
+                            location = storeDetailModel.location,
+                            operatingType = operatingType.operatingType.description,
+                            timeDescription = operatingType.timeDescription,
+                            localPhotos = storeDetailModel.localPhotos,
+                            certificationName = storeDetailModel.certificationName,
+                            operationTimeOfWeek = operationTimeOfWeek
+                        )
+                    }))
+                }
             },
             onFailure = { e ->
-                if (e is IOException) {
-                    emit(Resource.Failure("서버와의 통신이 원활하지 않습니다."))
-                } else {
-                    emit(Resource.Failure("데이터를 불러올 수 없습니다."))
+                when (e) {
+                    is UnknownHostException -> {
+                        emit(Resource.Failure(ErrorMessage.ERROR_MESSAGE_CHECK_INTERNET))
+                    }
+
+                    is SocketTimeoutException -> {
+                        emit(Resource.Failure(ErrorMessage.ERROR_MESSAGE_SERVER_IS_NOT_WORKING))
+                    }
+
+                    else -> {
+                        emit(Resource.Failure(ErrorMessage.ERROR_MESSAGE_UNKNOWN_ERROR))
+                    }
                 }
             }
         )
