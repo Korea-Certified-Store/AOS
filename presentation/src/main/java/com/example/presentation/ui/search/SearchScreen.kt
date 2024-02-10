@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,11 +25,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.presentation.R
 import com.example.presentation.ui.map.list.StoreListDivider
+import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
@@ -50,18 +54,19 @@ fun SearchScreen(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        SearchTextField()
+        SearchTextField(navController)
         RecentSearchList()
     }
 }
 
 
-@Preview
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchTextField() {
+fun SearchTextField(navController: NavHostController) {
     var text by remember { mutableStateOf("") }
 
     val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     BasicTextField(
         value = text,
@@ -109,7 +114,11 @@ fun SearchTextField() {
         maxLines = 1,
         singleLine = true,
         textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = FontWeight.Medium),
-        modifier = Modifier.focusRequester(focusRequester)
+        modifier = Modifier.focusRequester(focusRequester),
+        keyboardActions = KeyboardActions(onDone = {
+            navController.navigate(Screen.Main.route)
+            keyboardController?.hide()
+        })
     )
 
     LaunchedEffect(Unit) {
