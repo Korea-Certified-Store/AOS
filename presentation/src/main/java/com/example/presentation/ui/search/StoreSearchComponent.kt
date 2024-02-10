@@ -54,6 +54,8 @@ fun StoreSearchComponent(navController: NavController, searchText: String?) {
             .clickable {
                 if (searchText == null) {
                     navController.navigate(Screen.Search.route)
+                } else {
+                    navController.popBackStack()
                 }
             },
         verticalAlignment = Alignment.CenterVertically,
