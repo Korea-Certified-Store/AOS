@@ -22,7 +22,7 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
-import com.example.presentation.ui.search.SearchTextField
+import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -159,7 +159,7 @@ fun MainScreen(
         )
     }
 
-    SearchTextField()
+    StoreSearchComponent()
 
     FilterComponent(
         isKindFilterClicked,

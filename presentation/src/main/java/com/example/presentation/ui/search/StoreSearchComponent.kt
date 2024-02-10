@@ -31,7 +31,7 @@ import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
 @Preview
 @Composable
-fun SearchTextField() {
+fun StoreSearchComponent() {
     Row(
         modifier = Modifier
             .padding(
