@@ -19,23 +19,27 @@ class SearchStoreUseCase(
         emit(Resource.Loading())
         repository.searchStore(currLong, currLat, searchKeyword).fold(
             onSuccess = { items ->
-                emit(Resource.Success(items.map { storeDetailModel ->
-                    val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
-                    val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
-                    StoreDetail(
-                        id = storeDetailModel.id,
-                        displayName = storeDetailModel.displayName,
-                        primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
-                        formattedAddress = storeDetailModel.formattedAddress,
-                        phoneNumber = storeDetailModel.phoneNumber,
-                        location = storeDetailModel.location,
-                        operatingType = operatingType.operatingType.description,
-                        timeDescription = operatingType.timeDescription,
-                        localPhotos = storeDetailModel.localPhotos,
-                        certificationName = storeDetailModel.certificationName,
-                        operationTimeOfWeek = operationTimeOfWeek
-                    )
-                }))
+                if (items.isEmpty()) {
+                    emit(Resource.Failure(ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY))
+                } else {
+                    emit(Resource.Success(items.map { storeDetailModel ->
+                        val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
+                        val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
+                        StoreDetail(
+                            id = storeDetailModel.id,
+                            displayName = storeDetailModel.displayName,
+                            primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
+                            formattedAddress = storeDetailModel.formattedAddress,
+                            phoneNumber = storeDetailModel.phoneNumber,
+                            location = storeDetailModel.location,
+                            operatingType = operatingType.operatingType.description,
+                            timeDescription = operatingType.timeDescription,
+                            localPhotos = storeDetailModel.localPhotos,
+                            certificationName = storeDetailModel.certificationName,
+                            operationTimeOfWeek = operationTimeOfWeek
+                        )
+                    }))
+                }
             },
             onFailure = { e ->
                 when (e) {
