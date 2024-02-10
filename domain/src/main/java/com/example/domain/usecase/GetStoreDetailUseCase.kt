@@ -31,25 +31,29 @@ class GetStoreDetailUseCase(
             neLong,
             neLat
         ).fold(onSuccess = { items ->
-            emit(Resource.Success(items.map {
-                it.map { storeDetailModel ->
-                    val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
-                    val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
-                    StoreDetail(
-                        id = storeDetailModel.id,
-                        displayName = storeDetailModel.displayName,
-                        primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
-                        formattedAddress = storeDetailModel.formattedAddress,
-                        phoneNumber = storeDetailModel.phoneNumber,
-                        location = storeDetailModel.location,
-                        operatingType = operatingType.operatingType.description,
-                        timeDescription = operatingType.timeDescription,
-                        localPhotos = storeDetailModel.localPhotos,
-                        certificationName = storeDetailModel.certificationName,
-                        operationTimeOfWeek = operationTimeOfWeek
-                    )
-                }
-            }))
+            if (items.isEmpty()) {
+                emit(Resource.Failure("이 지역에는 가게가 존재하지 않습니다."))
+            } else {
+                emit(Resource.Success(items.map {
+                    it.map { storeDetailModel ->
+                        val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
+                        val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
+                        StoreDetail(
+                            id = storeDetailModel.id,
+                            displayName = storeDetailModel.displayName,
+                            primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
+                            formattedAddress = storeDetailModel.formattedAddress,
+                            phoneNumber = storeDetailModel.phoneNumber,
+                            location = storeDetailModel.location,
+                            operatingType = operatingType.operatingType.description,
+                            timeDescription = operatingType.timeDescription,
+                            localPhotos = storeDetailModel.localPhotos,
+                            certificationName = storeDetailModel.certificationName,
+                            operationTimeOfWeek = operationTimeOfWeek
+                        )
+                    }
+                }))
+            }
         }, onFailure = { e ->
             if (e is IOException) {
                 emit(Resource.Failure("서버와의 통신이 원활하지 않습니다."))
