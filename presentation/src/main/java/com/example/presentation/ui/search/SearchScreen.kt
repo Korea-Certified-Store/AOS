@@ -32,6 +32,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -91,7 +92,7 @@ fun SearchTextField(navController: NavHostController) {
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
                     if (text.isEmpty()) {
                         Text(
-                            text = "가게명, 업종, 주소 검색",
+                            text = stringResource(R.string.search_placeholder_text),
                             fontSize = 14.sp,
                             color = SemiLightGray,
                             fontWeight = FontWeight.Medium
