@@ -73,9 +73,9 @@ fun ReloadButton(
 @Composable
 private fun ReloadInCurrentLocation() {
     Icon(
-        imageVector = ImageVector.vectorResource(id = R.drawable.search),
+        imageVector = ImageVector.vectorResource(id = R.drawable.reload),
         tint = Blue,
-        contentDescription = "Search",
+        contentDescription = "Reload",
         modifier = Modifier.size(13.dp)
     )
     Spacer(modifier = Modifier.width(6.dp))

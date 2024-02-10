@@ -27,4 +27,5 @@
     <string name="ONBOARDING_EXPLANATION_4">감염병에 취약한 식사문화 개선을 위해\n덜어 먹기, 위생적 수저관리, 종사자 마스크\n착용 및 생활 방역을 준수하는 곳으로\n소재지 지자체의 인증을\n받은 음식점을 의미합니다.</string>
     <string name="ONBOARDING_TITLE_5">나인가 시작하기</string>
     <string name="ONBOARDING_EXPLANATION_5">이젠 정말 나인가와 함께 할 시간이에요!</string>
+    <string name="search_placeholder_text">가게명, 업종, 주소 검색</string>
 </resources>
