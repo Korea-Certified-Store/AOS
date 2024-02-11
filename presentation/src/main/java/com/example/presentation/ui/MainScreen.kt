@@ -22,6 +22,7 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
+import com.example.presentation.ui.search.TempSearchScreen
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -117,6 +118,23 @@ fun MainScreen(
         )
     }
 
+    val (isSearchButtonClicked, onSearchButtonChanged) = remember { mutableStateOf(false) }
+
+    val (isSearchAble, onSearchAbleChanged) = remember { mutableStateOf(false) }
+
+    val (searchKeyword, onSearchKeywordChanged) = remember {
+        mutableStateOf("강남")
+    }
+
+    val (mapCenterCoordinate, onMapCenterCoordinateChanged) = remember {
+        mutableStateOf(
+            Coordinate(
+                0.0,
+                0.0
+            )
+        )
+    }
+
     NaverMapScreen(
         mapViewModel,
         isMarkerClicked,
@@ -141,7 +159,10 @@ fun MainScreen(
         onShowMoreCountChanged,
         onReloadOrShowMoreChanged,
         isReloadButtonClicked,
-        onGetNewScreenCoordinateChanged
+        onGetNewScreenCoordinateChanged,
+        isSearchButtonClicked,
+        onMapCenterCoordinateChanged,
+        onSearchAbleChanged
     )
 
     if (isReloadOrShowMoreShowAble) {
@@ -168,6 +189,8 @@ fun MainScreen(
         mapViewModel,
         onFilterStateChanged
     )
+
+    TempSearchScreen(onSearchButtonChanged)
 
     if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.HALF || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
         DimScreen(bottomSheetExpandedType, onBottomSheetExpandedChanged)
@@ -208,6 +231,16 @@ fun MainScreen(
     if (isCallDialogCancelClicked) {
         onCallDialogCanceled(false)
         onCallDialogChanged(false)
+    }
+
+    if (isSearchAble) {
+        onSearchButtonChanged(false)
+        mapViewModel.searchStore(
+            mapCenterCoordinate.longitude,
+            mapCenterCoordinate.latitude,
+            searchKeyword
+        )
+        onSearchAbleChanged(false)
     }
 
     if (isReloadButtonClicked && isScreenCoordinateChanged) {

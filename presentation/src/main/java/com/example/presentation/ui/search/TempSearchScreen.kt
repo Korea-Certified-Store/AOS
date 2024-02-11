@@ -10,18 +10,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.presentation.ui.map.MapViewModel
-import com.example.presentation.util.MainConstants.DEFAULT_LATITUDE
-import com.example.presentation.util.MainConstants.DEFAULT_LONGITUDE
 
 @Composable
-fun TempSearchScreen(viewModel: MapViewModel = hiltViewModel()) {
+fun TempSearchScreen(
+    onSearchButtonChanged: (Boolean) -> Unit,
+) {
     Column {
         Spacer(modifier = Modifier.height(100.dp))
         Row {
             Spacer(modifier = Modifier.width(200.dp))
-            Button(onClick = { viewModel.searchStore(DEFAULT_LONGITUDE, DEFAULT_LATITUDE, "강남") }) {
+            Button(onClick = {
+                onSearchButtonChanged(true)
+            }) {
                 Text(text = "테스트 용 버튼")
             }
         }

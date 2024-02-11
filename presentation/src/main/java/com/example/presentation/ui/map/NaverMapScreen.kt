@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -83,6 +82,9 @@ fun NaverMapScreen(
     onReloadOrShowMoreChanged: (Boolean) -> Unit,
     isReloadButtonClicked: Boolean,
     onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
+    isSearchButtonClicked: Boolean,
+    onMapCenterCoordinateChanged: (Coordinate) -> Unit,
+    onSearchAbleChanged: (Boolean) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -209,10 +211,18 @@ fun NaverMapScreen(
                 onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
             }
         }
-
         if (isReloadButtonClicked) {
             GetScreenCoordinate(cameraPositionState, onScreenChanged)
             onGetNewScreenCoordinateChanged(true)
+        }
+        if (isSearchButtonClicked) {
+            onMapCenterCoordinateChanged(
+                Coordinate(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude,
+                )
+            )
+            onSearchAbleChanged(true)
         }
     }
 
