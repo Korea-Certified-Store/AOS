@@ -125,10 +125,7 @@ fun NaverMapScreen(
         },
     ) {
 
-        val lifecycleOwner = LocalLifecycleOwner.current
-        val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle(
-            lifecycleOwner
-        )
+        val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle()
 
         LaunchedEffect(key1 = storeDetailData) {
             when (val state = storeDetailData) {
@@ -164,9 +161,30 @@ fun NaverMapScreen(
             }
         }
 
+        val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
+        LaunchedEffect(key1 = searchStore) {
+            when (val state = storeDetailData) {
+                is UiState.Loading -> {
+                    // Todo : 검색 시 로딩 뷰 구현
+                }
+
+                is UiState.Success -> {
+                    onFilteredMarkerChanged(true)
+                    onCurrentMapChanged(false)
+                    onReloadOrShowMoreChanged(false)
+                }
+
+                is UiState.Failure -> {
+                    if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
+                        onReloadOrShowMoreChanged(false)
+                    }
+                    onErrorSnackBarChanged(state.msg)
+                }
+            }
+        }
+
         if (isFilteredMarker) {
             FilteredMarkers(
-                mapViewModel.flattenedStoreDetailList.value,
                 mapViewModel,
                 onBottomSheetChanged,
                 onStoreInfoChanged,
@@ -215,14 +233,14 @@ private fun TurnOffLocationButton(onLocationButtonChanged: (LocationTrackingButt
 @ExperimentalNaverMapApi
 @Composable
 fun FilteredMarkers(
-    storeInfo: List<com.example.domain.model.map.StoreDetail>,
     mapViewModel: MapViewModel,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     clickedMarkerId: Long,
     onMarkerChanged: (Long) -> Unit,
 ) {
-    storeInfo.filter { info ->
+    val storeDetailData by mapViewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
+    storeDetailData.filter { info ->
         mapViewModel.getFilterSet().intersect(info.certificationName.toSet()).isNotEmpty()
     }.forEach { info ->
         val storeType =

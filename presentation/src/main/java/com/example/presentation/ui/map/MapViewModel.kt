@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.map.StoreDetail
 import com.example.domain.usecase.GetStoreDetailUseCase
+import com.example.domain.usecase.SearchStoreUseCase
 import com.example.domain.util.Resource
 import com.example.presentation.model.LocationTrackingButton
+import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.FAIL_TO_LOAD_DATA
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.INITIALIZE_ABLE
@@ -25,7 +27,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetStoreDetailUseCase) :
+class MapViewModel @Inject constructor(
+    private val getStoreDetailUseCase: GetStoreDetailUseCase,
+    private val searchStoreUseCase: SearchStoreUseCase,
+) :
     ViewModel() {
 
     private val _ableToShowSplashScreen = MutableStateFlow(true)
@@ -50,6 +55,11 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
 
     private val _isInitialize = MutableStateFlow(true)
     val isInitialize get() = _isInitialize
+
+    private val _searchStoreModelData =
+        MutableStateFlow<UiState<List<StoreDetail>>>(UiState.Loading)
+    val searchStoreModelData: StateFlow<UiState<List<StoreDetail>>> =
+        _searchStoreModelData.asStateFlow()
 
     fun showMoreStore(count: Int) {
         val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
@@ -147,5 +157,31 @@ class MapViewModel @Inject constructor(private val getStoreDetailUseCase: GetSto
 
     fun updateIsInitialize() {
         _isInitialize.value = false
+    }
+
+    fun searchStore(
+        currLong: Double,
+        currLat: Double,
+        searchKeyword: String
+    ) = viewModelScope.launch {
+        searchStoreUseCase(
+            currLong, currLat, searchKeyword
+        ).collectLatest { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _searchStoreModelData.value = UiState.Success(result.data ?: emptyList())
+                }
+
+                is Resource.Failure -> {
+                    _searchStoreModelData.value =
+                        UiState.Failure(result.message ?: MainConstants.FAIL_TO_LOAD_DATA)
+                }
+
+                is Resource.Loading -> {
+                    _searchStoreModelData.value = UiState.Loading
+                }
+            }
+            _flattenedStoreDetailList.value = result.data ?: emptyList()
+        }
     }
 }

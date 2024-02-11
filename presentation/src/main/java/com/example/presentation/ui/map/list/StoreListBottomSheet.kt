@@ -129,10 +129,7 @@ fun StoreListContent(
     onListItemChanged: (Boolean) -> Unit,
     viewModel: MapViewModel = hiltViewModel()
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle(
-        lifecycleOwner
-    )
+    val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
 
     LazyColumn(modifier = Modifier.heightIn(max = LIST_BOTTOM_SHEET_EXPAND_HEIGHT.dp)) {
         itemsIndexed(
