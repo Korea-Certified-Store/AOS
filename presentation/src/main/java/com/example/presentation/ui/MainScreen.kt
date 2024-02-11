@@ -123,7 +123,7 @@ fun MainScreen(
     val (isSearchAble, onSearchAbleChanged) = remember { mutableStateOf(false) }
 
     val (searchKeyword, onSearchKeywordChanged) = remember {
-        mutableStateOf("강남")
+        mutableStateOf("아구찜")
     }
 
     val (mapCenterCoordinate, onMapCenterCoordinateChanged) = remember {

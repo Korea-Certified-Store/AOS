@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,7 +42,9 @@ import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.example.presentation.util.UiState
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
@@ -163,9 +166,12 @@ fun NaverMapScreen(
             }
         }
 
+        val padding = with(LocalDensity.current) {
+            Dp(35F).roundToPx()
+        }
         val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
         LaunchedEffect(key1 = searchStore) {
-            when (val state = storeDetailData) {
+            when (val state = searchStore) {
                 is UiState.Loading -> {
                     // Todo : 검색 시 로딩 뷰 구현
                 }
@@ -174,6 +180,20 @@ fun NaverMapScreen(
                     onFilteredMarkerChanged(true)
                     onCurrentMapChanged(false)
                     onReloadOrShowMoreChanged(false)
+                    val bounds = LatLngBounds(
+                        mapViewModel.searchBounds.value.first,
+                        mapViewModel.searchBounds.value.second
+                    )
+                    cameraPositionState.animate(
+                        if (bounds.southWest.latitude == 0.0) {
+                            val position = CameraPosition(bounds.northEast, 16.0)
+                            CameraUpdate.toCameraPosition(position)
+                        } else {
+                            CameraUpdate.fitBounds(bounds, padding)
+                        },
+                        animation = CameraAnimation.Fly,
+                        durationMs = 500
+                    )
                 }
 
                 is UiState.Failure -> {

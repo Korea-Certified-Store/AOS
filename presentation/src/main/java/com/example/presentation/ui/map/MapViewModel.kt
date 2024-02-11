@@ -11,13 +11,13 @@ import com.example.domain.usecase.GetStoreDetailUseCase
 import com.example.domain.usecase.SearchStoreUseCase
 import com.example.domain.util.Resource
 import com.example.presentation.model.LocationTrackingButton
-import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.FAIL_TO_LOAD_DATA
 import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.INITIALIZE_ABLE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.SAFE_STORE
 import com.example.presentation.util.UiState
+import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -60,6 +60,11 @@ class MapViewModel @Inject constructor(
         MutableStateFlow<UiState<List<StoreDetail>>>(UiState.Loading)
     val searchStoreModelData: StateFlow<UiState<List<StoreDetail>>> =
         _searchStoreModelData.asStateFlow()
+
+    private val _searchBounds =
+        MutableStateFlow(Pair(LatLng(0.0, 0.0), LatLng(0.0, 0.0)))
+    val searchBounds: StateFlow<Pair<LatLng, LatLng>> =
+        _searchBounds.asStateFlow()
 
     fun showMoreStore(count: Int) {
         val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
@@ -170,11 +175,12 @@ class MapViewModel @Inject constructor(
             when (result) {
                 is Resource.Success -> {
                     _searchStoreModelData.value = UiState.Success(result.data ?: emptyList())
+                    setSearchBounds(result)
                 }
 
                 is Resource.Failure -> {
                     _searchStoreModelData.value =
-                        UiState.Failure(result.message ?: MainConstants.FAIL_TO_LOAD_DATA)
+                        UiState.Failure(result.message ?: FAIL_TO_LOAD_DATA)
                 }
 
                 is Resource.Loading -> {
@@ -182,6 +188,26 @@ class MapViewModel @Inject constructor(
                 }
             }
             _flattenedStoreDetailList.value = result.data ?: emptyList()
+        }
+    }
+
+    private fun setSearchBounds(result: Resource<List<StoreDetail>>) {
+        if (result.data!!.size == 1) {
+            _searchBounds.value = Pair(
+                LatLng(0.0, 0.0),
+                LatLng(result.data!![0].location.latitude, result.data!![0].location.longitude)
+            )
+        } else {
+            val longitudeValues = result.data!!.map { it.location.longitude }
+            val latitudeValues = result.data!!.map { it.location.latitude }
+            val eastValue = longitudeValues.max()
+            val westValue = longitudeValues.min()
+            val northValue = latitudeValues.max()
+            val southValue = latitudeValues.min()
+            _searchBounds.value = Pair(
+                LatLng(southValue, westValue),
+                LatLng(northValue, eastValue)
+            )
         }
     }
 }
