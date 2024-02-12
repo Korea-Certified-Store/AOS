@@ -7,11 +7,12 @@ import com.example.domain.model.search.SearchWord
 @Entity
 data class SearchWordEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Long = 0,
     val keyword: String,
     val searchTime: Long
 ) {
     fun toDomainModel() = SearchWord(
+        id = id,
         keyword = keyword,
         searchTime = searchTime
     )

@@ -21,6 +21,9 @@ interface SearchWordDao {
     @Query("DELETE FROM SearchWordEntity")
     suspend fun deleteAllSearchWords()
 
+    @Query("DELETE FROM SearchWordEntity WHERE id = :id")
+    suspend fun deleteSearchWordsById(id: Int)
+
     @Query("SELECT * FROM SearchWordEntity WHERE keyword = :keyword")
     suspend fun getSearchWordByKeyword(keyword: String): SearchWordEntity?
 

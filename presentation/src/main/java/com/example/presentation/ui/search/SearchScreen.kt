@@ -141,7 +141,7 @@ fun SearchTextField(
 
 fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
     val nowTime = System.currentTimeMillis()
-    viewModel.insertSearchWord(SearchWord(keyword, nowTime))
+    viewModel.insertSearchWord(SearchWord(keyword = keyword, searchTime = nowTime))
 }
 
 @Preview
@@ -152,14 +152,14 @@ fun RecentSearchList(viewModel: SearchViewModel = hiltViewModel()) {
 
     LazyColumn {
         itemsIndexed(recentSearchWords) { _, item ->
-            RecentSearchItem(text = item)
+            RecentSearchItem(item)
             StoreListDivider()
         }
     }
 }
 
 @Composable
-fun RecentSearchItem(text: String) {
+fun RecentSearchItem(searchWord: SearchWord) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,7 +168,7 @@ fun RecentSearchItem(text: String) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = text)
+        Text(text = searchWord.keyword)
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.delete),
             contentDescription = "delete"

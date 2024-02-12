@@ -30,8 +30,8 @@ class SearchViewModel @Inject constructor(
     val searchStoreModelData: StateFlow<UiState<List<StoreDetail>>> =
         _searchStoreModelData.asStateFlow()
 
-    private val _recentSearchWords = MutableStateFlow<List<String>>(listOf())
-    val recentSearchWords: StateFlow<List<String>> = _recentSearchWords.asStateFlow()
+    private val _recentSearchWords = MutableStateFlow<List<SearchWord>>(listOf())
+    val recentSearchWords: StateFlow<List<SearchWord>> = _recentSearchWords.asStateFlow()
 
     fun searchStore(
         currLong: Double,
