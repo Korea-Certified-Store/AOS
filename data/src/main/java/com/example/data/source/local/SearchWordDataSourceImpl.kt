@@ -17,4 +17,12 @@ class SearchWordDataSourceImpl @Inject constructor(private val searchWordDao: Se
     override suspend fun insertSearchWord(searchWord: SearchWord) {
         searchWordDao.insertOrUpdateSearch(SearchWordEntity(keyword = searchWord.keyword, searchTime = searchWord.searchTime))
     }
+
+    override suspend fun deleteAllSearchWords() {
+        searchWordDao.deleteAllSearchWords()
+    }
+
+    override suspend fun deleteSearchWordsById(id: Long) {
+        searchWordDao.deleteSearchWordsById(id)
+    }
 }

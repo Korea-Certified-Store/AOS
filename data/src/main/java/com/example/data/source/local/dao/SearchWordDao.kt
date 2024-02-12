@@ -22,7 +22,7 @@ interface SearchWordDao {
     suspend fun deleteAllSearchWords()
 
     @Query("DELETE FROM SearchWordEntity WHERE id = :id")
-    suspend fun deleteSearchWordsById(id: Int)
+    suspend fun deleteSearchWordsById(id: Long)
 
     @Query("SELECT * FROM SearchWordEntity WHERE keyword = :keyword")
     suspend fun getSearchWordByKeyword(keyword: String): SearchWordEntity?
