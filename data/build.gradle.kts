@@ -50,6 +50,7 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     // room
-    implementation(libs.room.runtime)
+    implementation(libs.bundles.room)
     kapt(libs.room.compiler)
+
 }

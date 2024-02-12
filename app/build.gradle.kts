@@ -115,7 +115,7 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-ktx:18.6.1")
 
     // room
-    implementation(libs.room.runtime)
+    implementation(libs.bundles.room)
     kapt(libs.room.compiler)
 
 }

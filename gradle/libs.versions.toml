@@ -128,6 +128,7 @@ google-services-dependencies = { group = "com.google.gms", name = "google-servic
 # room
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room"}
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room"}
+room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -149,3 +150,4 @@ android-test = ["ext-junit", "espresso"]
 retrofit = ["squareupRetrofit2", "retrofit-kotlin-serialization-converter"]
 squareup = ["squareupRetrofit2ConverterGson", "squareupOkhttp3", "squareupOkhttp3Logging", "squareupOkhttp3Bom", "kotlin-serialization-json"]
 coroutine = ["kotlinx.coroutines.android", "kotlinx.coroutines.core"]
+room = ["room-ktx", "room-runtime"]
