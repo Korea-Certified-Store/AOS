@@ -3,6 +3,9 @@ package com.example.presentation.ui.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.map.StoreDetail
+import com.example.domain.model.search.SearchWord
+import com.example.domain.usecase.GetRecentSearchWordUseCase
+import com.example.domain.usecase.InsertSearchWordUseCase
 import com.example.domain.usecase.SearchStoreUseCase
 import com.example.domain.util.Resource
 import com.example.presentation.util.MainConstants
@@ -16,13 +19,19 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(private val searchStoreUseCase: SearchStoreUseCase) :
-    ViewModel() {
+class SearchViewModel @Inject constructor(
+    private val searchStoreUseCase: SearchStoreUseCase,
+    private val getRecentSearchWordUseCase: GetRecentSearchWordUseCase,
+    private val insertSearchWordUseCase: InsertSearchWordUseCase
+) : ViewModel() {
 
     private val _searchStoreModelData =
         MutableStateFlow<UiState<List<StoreDetail>>>(UiState.Loading)
     val searchStoreModelData: StateFlow<UiState<List<StoreDetail>>> =
         _searchStoreModelData.asStateFlow()
+
+    private val _recentSearchWords = MutableStateFlow<List<String>>(listOf())
+    val recentSearchWords: StateFlow<List<String>> = _recentSearchWords.asStateFlow()
 
     fun searchStore(
         currLong: Double,
@@ -47,5 +56,15 @@ class SearchViewModel @Inject constructor(private val searchStoreUseCase: Search
                 }
             }
         }
+    }
+
+    fun getRecentSearchWord() = viewModelScope.launch {
+        getRecentSearchWordUseCase().collectLatest { result ->
+            _recentSearchWords.value = result
+        }
+    }
+
+    fun insertSearchWord(searchWord: SearchWord) = viewModelScope.launch {
+        insertSearchWordUseCase(searchWord)
     }
 }
