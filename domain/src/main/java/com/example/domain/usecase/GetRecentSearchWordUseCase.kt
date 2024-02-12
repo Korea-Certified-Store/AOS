@@ -5,7 +5,7 @@ import com.example.domain.repository.SearchWordRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetRecentSearchWordUseCase(private val repository: SearchWordRepository) {
-    suspend operator fun invoke(): Flow<List<SearchWord>> {
+    operator fun invoke(): Flow<List<SearchWord>> {
         return repository.getRecentSearchWords()
     }
 }
