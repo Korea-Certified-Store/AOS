@@ -12,11 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,30 +39,60 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Medium
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.presentation.R
-import com.example.presentation.ui.map.list.StoreListDivider
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
+import com.example.presentation.ui.theme.LightGray
+import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
+
 @Composable
 fun SearchScreen(navController: NavHostController) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        SearchTextField(navController)
+        SearchAppBar(navController)
+        SearchDivider(6)
         RecentSearchList()
     }
 }
 
+@Composable
+private fun SearchAppBar(navController: NavHostController) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(
+                horizontal = DEFAULT_MARGIN.dp,
+                vertical = SEARCH_TEXT_FIELD_TOP_PADDING.dp
+            )
+    ) {
+        BackArrow()
+        SearchTextField(navController)
+    }
+}
+
+@Composable
+fun SearchDivider(thickness: Int) {
+    Divider(
+        modifier = Modifier
+            .fillMaxWidth(),
+        thickness = thickness.dp, color = LightGray
+    )
+}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -77,9 +110,6 @@ fun SearchTextField(navController: NavHostController) {
                 modifier = Modifier
                     .padding(
                         start = DEFAULT_MARGIN.dp,
-                        end = DEFAULT_MARGIN.dp,
-                        top = SEARCH_TEXT_FIELD_TOP_PADDING.dp,
-                        bottom = 8.dp
                     )
                     .shadow(4.dp, RoundedCornerShape(size = 12.dp))
                     .fillMaxWidth()
@@ -117,7 +147,10 @@ fun SearchTextField(navController: NavHostController) {
         textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = FontWeight.Medium),
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
-            navController.currentBackStackEntry?.savedStateHandle?.set(key = "search_text", value = text)
+            navController.currentBackStackEntry?.savedStateHandle?.set(
+                key = "search_text",
+                value = text
+            )
             navController.navigate(Screen.Main.route)
             keyboardController?.hide()
         })
@@ -128,14 +161,51 @@ fun SearchTextField(navController: NavHostController) {
     }
 }
 
+@Composable
+private fun BackArrow() {
+    Image(
+        imageVector = ImageVector.vectorResource(id = R.drawable.arrow),
+        contentDescription = "Arrow",
+        modifier = Modifier
+            .width(10.dp)
+            .height(18.dp)
+    )
+}
+
 @Preview
 @Composable
 fun RecentSearchList() {
-    LazyColumn() {
+    TitleText()
+    SearchDivider(1)
+    LazyColumn {
         itemsIndexed(listOf("검색어1", "검색어2")) { idx, item ->
             RecentSearchItem(text = item)
-            StoreListDivider()
+            SearchDivider(1)
         }
+    }
+}
+
+@Composable
+fun TitleText() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = DEFAULT_MARGIN.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = "최근 검색어",
+            color = Black,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+            text = "전체삭제",
+            color = MediumGray,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium,
+        )
     }
 }
 
@@ -144,15 +214,32 @@ fun RecentSearchItem(text: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp)
+            .height(53.dp)
             .padding(horizontal = DEFAULT_MARGIN.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = text)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.wrapContentSize(),
+        ) {
+            Image(
+                imageVector = ImageVector.vectorResource(id = R.drawable.search_blue),
+                contentDescription = "search blue",
+                modifier = Modifier.size(15.dp)
+            )
+            Text(
+                text = text,
+                color = Black,
+                fontSize = 16.sp,
+                fontWeight = Medium,
+                modifier = Modifier.padding(start = 11.dp)
+            )
+        }
         Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.delete),
-            contentDescription = "delete"
+            imageVector = ImageVector.vectorResource(id = R.drawable.delete_circle),
+            contentDescription = "delete",
+            modifier = Modifier.size(14.dp)
         )
     }
 }
