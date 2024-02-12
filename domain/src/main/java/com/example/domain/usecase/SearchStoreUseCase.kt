@@ -2,7 +2,10 @@ package com.example.domain.usecase
 
 import com.example.domain.model.map.StoreDetail
 import com.example.domain.repository.SearchStoreRepository
+import com.example.domain.util.ErrorMessage
 import com.example.domain.util.Resource
+import com.example.domain.util.getOperatingType
+import com.example.domain.util.getOperationTimeOfWeek
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.SocketTimeoutException
