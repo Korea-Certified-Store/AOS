@@ -40,7 +40,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Medium
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -125,7 +125,7 @@ fun SearchTextField(navController: NavHostController) {
                             text = stringResource(R.string.search_placeholder_text),
                             fontSize = 14.sp,
                             color = SemiLightGray,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = Medium
                         )
                     } else {
                         innerTextField()
@@ -144,7 +144,7 @@ fun SearchTextField(navController: NavHostController) {
         },
         maxLines = 1,
         singleLine = true,
-        textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = FontWeight.Medium),
+        textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = Medium),
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
             navController.currentBackStackEntry?.savedStateHandle?.set(
@@ -172,21 +172,57 @@ private fun BackArrow() {
     )
 }
 
-@Preview
 @Composable
 fun RecentSearchList() {
-    TitleText()
+    val exampleItems1 = emptyList<String>()
+    val exampleItems2 = listOf(
+        "검색어1",
+        "검색어2검색어2검색어2검색어2",
+        "검색어5검색어5검색어5검색어5검색어5검색어5검색어5검색어5검색어5"
+    )
+    val recentSearchItems = exampleItems2
+
+    TitleText(recentSearchItems)
     SearchDivider(1)
-    LazyColumn {
-        itemsIndexed(listOf("검색어1", "검색어2")) { idx, item ->
-            RecentSearchItem(text = item)
-            SearchDivider(1)
+    if (recentSearchItems.isEmpty()) {
+        EmptyRecentSearchScreen()
+    } else {
+        LazyColumn {
+            itemsIndexed(recentSearchItems) { idx, item ->
+                RecentSearchItem(text = item)
+                SearchDivider(1)
+            }
         }
     }
 }
 
 @Composable
-fun TitleText() {
+private fun EmptyRecentSearchScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 141.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            modifier = Modifier
+                .size(40.dp),
+            imageVector = ImageVector.vectorResource(id = R.drawable.exclamation_mark),
+            contentDescription = "exclamation mark"
+        )
+        Text(
+            modifier = Modifier
+                .padding(top = 16.dp),
+            text = "최근 검색 기록이 없습니다",
+            color = MediumGray,
+            fontSize = 14.sp,
+            fontWeight = Medium,
+        )
+    }
+}
+
+@Composable
+fun TitleText(exampleItems: List<String>) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -200,12 +236,14 @@ fun TitleText() {
             fontSize = 17.sp,
             fontWeight = FontWeight.SemiBold,
         )
-        Text(
-            text = "전체삭제",
-            color = MediumGray,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-        )
+        if (exampleItems.isNotEmpty()) {
+            Text(
+                text = "전체삭제",
+                color = MediumGray,
+                fontSize = 12.sp,
+                fontWeight = Medium,
+            )
+        }
     }
 }
 
@@ -229,11 +267,15 @@ fun RecentSearchItem(text: String) {
                 modifier = Modifier.size(15.dp)
             )
             Text(
+                modifier = Modifier
+                    .padding(start = 11.dp)
+                    .width(300.dp),
                 text = text,
                 color = Black,
                 fontSize = 16.sp,
                 fontWeight = Medium,
-                modifier = Modifier.padding(start = 11.dp)
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
         Image(
