@@ -18,6 +18,9 @@ interface SearchWordDao {
     @Query("DELETE FROM SearchWordEntity WHERE searchTime = (SELECT MIN(searchTime) FROM SearchWordEntity)")
     suspend fun deleteOldestSearchWord()
 
+    @Query("DELETE FROM SearchWordEntity")
+    suspend fun deleteAllSearchWords()
+
     @Query("SELECT * FROM SearchWordEntity WHERE keyword = :keyword")
     suspend fun getSearchWordByKeyword(keyword: String): SearchWordEntity?
 
