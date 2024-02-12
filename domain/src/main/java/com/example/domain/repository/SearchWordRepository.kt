@@ -7,4 +7,8 @@ interface SearchWordRepository {
     fun getRecentSearchWords(): Flow<List<SearchWord>>
 
     suspend fun insertSearchWord(searchWord: SearchWord)
+
+    suspend fun deleteAllSearchWords()
+
+    suspend fun deleteSearchWordsById(id: Long)
 }

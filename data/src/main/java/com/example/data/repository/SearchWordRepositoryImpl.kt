@@ -15,4 +15,12 @@ class SearchWordRepositoryImpl @Inject constructor(private val dataSource: Searc
     override suspend fun insertSearchWord(searchWord: SearchWord) {
         dataSource.insertSearchWord(searchWord)
     }
+
+    override suspend fun deleteAllSearchWords() {
+        dataSource.deleteAllSearchWords()
+    }
+
+    override suspend fun deleteSearchWordsById(id: Long) {
+        dataSource.deleteSearchWordsById(id)
+    }
 }
