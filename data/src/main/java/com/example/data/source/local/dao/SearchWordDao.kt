@@ -4,38 +4,39 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import com.example.data.source.local.entity.SearchWord
+import com.example.data.source.local.entity.SearchWordEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SearchWordDao {
-    @Query("SELECT * FROM searchword ORDER BY searchTime DESC")
-    fun getSearchWords(): List<SearchWord>
+    @Query("SELECT * FROM SearchWordEntity ORDER BY searchTime DESC")
+    fun getSearchWords(): Flow<List<SearchWordEntity>>
 
-    @Query("SELECT COUNT(*) FROM searchword")
+    @Query("SELECT COUNT(*) FROM SearchWordEntity")
     suspend fun getSearchWordCount(): Int
 
-    @Query("DELETE FROM searchword WHERE searchTime = (SELECT MIN(searchTime) FROM searchword)")
+    @Query("DELETE FROM SearchWordEntity WHERE searchTime = (SELECT MIN(searchTime) FROM SearchWordEntity)")
     suspend fun deleteOldestSearchWord()
 
-    @Query("SELECT * FROM searchword WHERE keyword = :keyword")
-    suspend fun getSearchWordByKeyword(keyword: String): SearchWord?
+    @Query("SELECT * FROM SearchWordEntity WHERE keyword = :keyword")
+    suspend fun getSearchWordByKeyword(keyword: String): SearchWordEntity?
 
-    @Query("UPDATE searchword SET searchTime = :searchTime WHERE keyword = :keyword")
+    @Query("UPDATE SearchWordEntity SET searchTime = :searchTime WHERE keyword = :keyword")
     suspend fun updateSearchTime(keyword: String, searchTime: Long)
 
     @Insert
-    fun insertSearchWord(searchHistory: SearchWord)
+    suspend fun insertSearchWord(searchWord: SearchWordEntity)
 
     @Transaction
-    suspend fun insertOrUpdateSearch(searchHistory: SearchWord) {
+    suspend fun insertOrUpdateSearch(searchWord: SearchWordEntity) {
         if (getSearchWordCount() >= 30) {
             deleteOldestSearchWord()
         }
-        val existingSearch = getSearchWordByKeyword(searchHistory.keyword)
+        val existingSearch = getSearchWordByKeyword(searchWord.keyword)
         if (existingSearch != null) {
-            updateSearchTime(searchHistory.keyword, System.currentTimeMillis())
+            updateSearchTime(searchWord.keyword, System.currentTimeMillis())
         } else {
-            insertSearchWord(searchHistory)
+            insertSearchWord(searchWord)
         }
     }
 }
