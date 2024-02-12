@@ -1,10 +1,8 @@
 package com.example.presentation.ui.search
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -47,10 +47,6 @@ fun StoreSearchComponent(navController: NavController, searchText: String?) {
             .fillMaxWidth()
             .height(SEARCH_TEXT_FIELD_HEIGHT.dp)
             .background(color = White, shape = RoundedCornerShape(size = 12.dp))
-            .border(
-                border = BorderStroke(if (searchText == null) 0.dp else 1.5.dp, MediumGray),
-                shape = RoundedCornerShape(size = 12.dp)
-            )
             .clickable {
                 if (searchText == null) {
                     navController.navigate(Screen.Search.route)
@@ -61,22 +57,22 @@ fun StoreSearchComponent(navController: NavController, searchText: String?) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        if (searchText == null) {
-            SearchPlaceHolderText(stringResource(R.string.search_placeholder_text))
+        if (searchText.isNullOrBlank()) {
+            SearchPlaceHolderText(stringResource(R.string.search_placeholder_text), MediumGray)
             SearchSuffixImage(R.drawable.search)
         } else {
-            SearchPlaceHolderText(searchText)
+            SearchPlaceHolderText(searchText, Black)
             SearchSuffixImage(R.drawable.delete)
         }
     }
 }
 
 @Composable
-fun SearchPlaceHolderText(text: String) {
+fun SearchPlaceHolderText(text: String, textColor: Color) {
     Text(
         text = text,
         fontSize = 14.sp,
-        color = MediumGray,
+        color = textColor,
         fontWeight = FontWeight.Medium,
         modifier = Modifier.padding(start = DEFAULT_MARGIN.dp),
         maxLines = 1
@@ -86,7 +82,7 @@ fun SearchPlaceHolderText(text: String) {
 @Composable
 fun SearchSuffixImage(@DrawableRes image: Int) {
     Image(
-        imageVector = ImageVector.vectorResource(id = R.drawable.delete),
+        imageVector = ImageVector.vectorResource(id = image),
         contentDescription = "Delete",
         modifier = Modifier
             .padding(end = DEFAULT_MARGIN.dp)
