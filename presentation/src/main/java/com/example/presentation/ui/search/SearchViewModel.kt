@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.map.StoreDetail
 import com.example.domain.model.search.SearchWord
+import com.example.domain.usecase.DeleteAllSearchWordsUseCase
+import com.example.domain.usecase.DeleteSearchWordByIdUseCase
 import com.example.domain.usecase.GetRecentSearchWordUseCase
 import com.example.domain.usecase.InsertSearchWordUseCase
 import com.example.domain.usecase.SearchStoreUseCase
@@ -22,7 +24,9 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val searchStoreUseCase: SearchStoreUseCase,
     private val getRecentSearchWordUseCase: GetRecentSearchWordUseCase,
-    private val insertSearchWordUseCase: InsertSearchWordUseCase
+    private val insertSearchWordUseCase: InsertSearchWordUseCase,
+    private val deleteAllSearchWordsUseCase: DeleteAllSearchWordsUseCase,
+    private val deleteSearchWordByIdUseCase: DeleteSearchWordByIdUseCase
 ) : ViewModel() {
 
     private val _searchStoreModelData =
@@ -66,5 +70,13 @@ class SearchViewModel @Inject constructor(
 
     fun insertSearchWord(searchWord: SearchWord) = viewModelScope.launch {
         insertSearchWordUseCase(searchWord)
+    }
+
+    fun deleteAllSearchWords() = viewModelScope.launch {
+        deleteAllSearchWordsUseCase()
+    }
+
+    fun deleteSearchWordById(id: Long) = viewModelScope.launch {
+        deleteSearchWordByIdUseCase(id)
     }
 }

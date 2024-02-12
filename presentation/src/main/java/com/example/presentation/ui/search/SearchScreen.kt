@@ -2,6 +2,7 @@ package com.example.presentation.ui.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -159,7 +160,7 @@ fun RecentSearchList(viewModel: SearchViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun RecentSearchItem(searchWord: SearchWord) {
+fun RecentSearchItem(searchWord: SearchWord, viewModel: SearchViewModel = hiltViewModel()) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -171,7 +172,10 @@ fun RecentSearchItem(searchWord: SearchWord) {
         Text(text = searchWord.keyword)
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.delete),
-            contentDescription = "delete"
+            contentDescription = "delete",
+            modifier = Modifier.clickable {
+                viewModel.deleteSearchWordById(searchWord.id)
+            }
         )
     }
 }
