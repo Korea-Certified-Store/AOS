@@ -49,6 +49,8 @@ firebase-bom="32.7.1"
 firebase-analytics-ktx="21.5.0"
 google-services = "4.4.0"
 
+room = "2.5.0"
+
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
@@ -122,6 +124,10 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx", version.ref = "firebase-analytics-ktx"}
 
 google-services-dependencies = { group = "com.google.gms", name = "google-services", version.ref = "google-services"}
+
+# room
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room"}
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
