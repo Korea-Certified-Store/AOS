@@ -65,10 +65,10 @@ fun StoreSearchComponent(navController: NavController, searchText: String?) {
     ) {
         if (searchText.isNullOrBlank()) {
             SearchPlaceHolderText(stringResource(R.string.search_placeholder_text), MediumGray)
-            SearchSuffixImage(R.drawable.search)
+            SearchSuffixImage(R.drawable.search, navController)
         } else {
             SearchPlaceHolderText(searchText, Black)
-            SearchSuffixImage(R.drawable.delete)
+            SearchSuffixImage(R.drawable.delete, navController)
         }
     }
 }
@@ -86,12 +86,19 @@ fun SearchPlaceHolderText(text: String, textColor: Color) {
 }
 
 @Composable
-fun SearchSuffixImage(@DrawableRes image: Int) {
+fun SearchSuffixImage(@DrawableRes image: Int, navController: NavController) {
     Image(
         imageVector = ImageVector.vectorResource(id = image),
         contentDescription = "Delete",
         modifier = Modifier
             .padding(end = DEFAULT_MARGIN.dp)
             .size(16.dp)
+            .clickable(enabled = image == R.drawable.delete) {
+                navController.navigate(Screen.Main.route) {
+                    popUpTo(navController.graph.id) {
+                        inclusive = true
+                    }
+                }
+            }
     )
 }
