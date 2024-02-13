@@ -148,13 +148,10 @@ fun SearchTextField(navController: NavHostController) {
                 }
                 Row {
                     Image(
-                        imageVector = ImageVector.vectorResource(id = if (searchText.isEmpty()) R.drawable.search else R.drawable.delete),
+                        imageVector = ImageVector.vectorResource(R.drawable.search),
                         contentDescription = "Search",
                         modifier = Modifier
-                            .size(16.dp)
-                            .clickable(enabled = searchText.isNotEmpty()) {
-                                searchText = ""
-                            },
+                            .size(16.dp),
                         colorFilter = ColorFilter.tint(DarkGray)
                     )
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
