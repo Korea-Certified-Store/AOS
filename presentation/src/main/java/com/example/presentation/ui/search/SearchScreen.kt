@@ -56,6 +56,7 @@ import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
+import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
@@ -167,7 +168,7 @@ fun SearchTextField(navController: NavHostController) {
         keyboardActions = KeyboardActions(onDone = {
             if (searchText.isNotBlank()) {
                 navController.currentBackStackEntry?.savedStateHandle?.set(
-                    key = "search_text",
+                    key = SEARCH_KEY,
                     value = searchText
                 )
                 navController.navigate(Screen.Main.route)
@@ -236,7 +237,7 @@ private fun EmptyRecentSearchScreen() {
         Text(
             modifier = Modifier
                 .padding(top = 16.dp),
-            text = "최근 검색 기록이 없습니다",
+            text = stringResource(R.string.empty_recent_search_word),
             color = MediumGray,
             fontSize = 14.sp,
             fontWeight = Medium,

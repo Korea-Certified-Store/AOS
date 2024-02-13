@@ -28,4 +28,5 @@ object MainConstants {
     const val GREAT_STORE = "모범음식점"
     const val SAFE_STORE = "안심식당"
     const val FAIL_TO_LOAD_DATA = "데이터를 불러올 수 없습니다"
+    const val SEARCH_KEY = "search_key"
 }

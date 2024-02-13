@@ -30,6 +30,7 @@ import com.example.presentation.ui.onboarding.OnboardingScreen
 import com.example.presentation.ui.search.SearchScreen
 import com.example.presentation.ui.splash.SplashScreen
 import com.example.presentation.ui.theme.Android_KCSTheme
+import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -77,7 +78,7 @@ class MainActivity : ComponentActivity() {
                         route = Screen.Main.route
                     ) {
                         val searchText = remember {
-                            navController.previousBackStackEntry?.savedStateHandle?.get<String>("search_text")
+                            navController.previousBackStackEntry?.savedStateHandle?.get<String>(SEARCH_KEY)
                         }
                         MainScreen(
                             onCallStoreChanged,
