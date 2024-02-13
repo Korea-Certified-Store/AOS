@@ -9,7 +9,7 @@ object MainConstants {
     const val DEFAULT_MARGIN = 16
     const val UN_MARKER = -1L
     const val DETAIL_BOTTOM_SHEET_HEIGHT = 530
-    const val LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT = 38
+    const val LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT = 67
     const val LIST_BOTTOM_SHEET_EXPAND_HEIGHT = 586
     const val LIST_BOTTOM_SHEET_FULL_PADDING = 50
     const val HANDLE_HEIGHT = 14
