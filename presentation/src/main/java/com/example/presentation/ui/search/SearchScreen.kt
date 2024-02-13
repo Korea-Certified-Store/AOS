@@ -159,12 +159,14 @@ fun SearchTextField(navController: NavHostController) {
         textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = Medium),
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
-            navController.currentBackStackEntry?.savedStateHandle?.set(
-                key = "search_text",
-                value = searchText
-            )
-            navController.navigate(Screen.Main.route)
-            keyboardController?.hide()
+            if (searchText.isNotBlank()) {
+                navController.currentBackStackEntry?.savedStateHandle?.set(
+                    key = "search_text",
+                    value = searchText
+                )
+                navController.navigate(Screen.Main.route)
+                keyboardController?.hide()
+            }
         })
     )
 
