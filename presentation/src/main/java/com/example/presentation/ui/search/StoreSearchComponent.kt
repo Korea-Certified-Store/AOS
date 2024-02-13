@@ -1,8 +1,10 @@
 package com.example.presentation.ui.search
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -47,6 +49,10 @@ fun StoreSearchComponent(navController: NavController, searchText: String?) {
             .fillMaxWidth()
             .height(SEARCH_TEXT_FIELD_HEIGHT.dp)
             .background(color = White, shape = RoundedCornerShape(size = 12.dp))
+            .border(
+                border = BorderStroke(if (searchText == null) 0.dp else 1.5.dp, MediumGray),
+                shape = RoundedCornerShape(size = 12.dp)
+            )
             .clickable {
                 if (searchText == null) {
                     navController.navigate(Screen.Search.route)

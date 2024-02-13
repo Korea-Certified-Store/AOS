@@ -1,7 +1,9 @@
 package com.example.presentation.ui.search
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,9 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -47,6 +49,7 @@ import androidx.navigation.NavHostController
 import com.example.presentation.R
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
+import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.SemiLightGray
@@ -97,30 +100,33 @@ fun SearchDivider(thickness: Int) {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchTextField(navController: NavHostController) {
-    var text by remember { mutableStateOf("") }
+    var searchText by remember { mutableStateOf("") }
 
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     BasicTextField(
-        value = text,
-        onValueChange = { textValue -> text = textValue },
+        value = searchText,
+        onValueChange = { textValue -> searchText = textValue },
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier
                     .padding(
                         start = DEFAULT_MARGIN.dp,
                     )
-                    .shadow(4.dp, RoundedCornerShape(size = 12.dp))
                     .fillMaxWidth()
                     .height(SEARCH_TEXT_FIELD_HEIGHT.dp)
-                    .background(color = White, shape = RoundedCornerShape(size = 12.dp)),
+                    .background(color = White, shape = RoundedCornerShape(size = 12.dp))
+                    .border(
+                        border = BorderStroke(1.5.dp, MediumGray),
+                        shape = RoundedCornerShape(size = 12.dp)
+                    ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row {
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
-                    if (text.isEmpty()) {
+                    if (searchText.isEmpty()) {
                         Text(
                             text = stringResource(R.string.search_placeholder_text),
                             fontSize = 14.sp,
@@ -136,7 +142,8 @@ fun SearchTextField(navController: NavHostController) {
                     Image(
                         imageVector = ImageVector.vectorResource(id = R.drawable.search),
                         contentDescription = "Search",
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
+                        colorFilter = ColorFilter.tint(DarkGray)
                     )
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
                 }
@@ -149,7 +156,7 @@ fun SearchTextField(navController: NavHostController) {
         keyboardActions = KeyboardActions(onDone = {
             navController.currentBackStackEntry?.savedStateHandle?.set(
                 key = "search_text",
-                value = text
+                value = searchText
             )
             navController.navigate(Screen.Main.route)
             keyboardController?.hide()
@@ -231,14 +238,14 @@ fun TitleText(exampleItems: List<String>) {
             .padding(horizontal = DEFAULT_MARGIN.dp, vertical = 8.dp)
     ) {
         Text(
-            text = "최근 검색어",
+            text = stringResource(R.string.recent_search_word),
             color = Black,
             fontSize = 17.sp,
             fontWeight = FontWeight.SemiBold,
         )
         if (exampleItems.isNotEmpty()) {
             Text(
-                text = "전체삭제",
+                text = stringResource(R.string.delete_all),
                 color = MediumGray,
                 fontSize = 12.sp,
                 fontWeight = Medium,
@@ -268,8 +275,8 @@ fun RecentSearchItem(text: String) {
             )
             Text(
                 modifier = Modifier
-                    .padding(start = 11.dp)
-                    .width(300.dp),
+                    .fillMaxWidth(0.85f)
+                    .padding(start = 11.dp),
                 text = text,
                 color = Black,
                 fontSize = 16.sp,
@@ -281,7 +288,7 @@ fun RecentSearchItem(text: String) {
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.delete_circle),
             contentDescription = "delete",
-            modifier = Modifier.size(14.dp)
+            modifier = Modifier.size(16.dp)
         )
     }
 }
