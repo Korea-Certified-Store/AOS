@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -83,7 +84,7 @@ private fun SearchAppBar(navController: NavHostController) {
                 vertical = SEARCH_TEXT_FIELD_TOP_PADDING.dp
             )
     ) {
-        BackArrow()
+        BackArrow(navController)
         SearchTextField(navController)
     }
 }
@@ -169,13 +170,16 @@ fun SearchTextField(navController: NavHostController) {
 }
 
 @Composable
-private fun BackArrow() {
+private fun BackArrow(navController: NavHostController) {
     Image(
         imageVector = ImageVector.vectorResource(id = R.drawable.arrow),
         contentDescription = "Arrow",
         modifier = Modifier
             .width(10.dp)
             .height(18.dp)
+            .clickable {
+                navController.popBackStack()
+            }
     )
 }
 
