@@ -42,6 +42,7 @@ import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_EXPAND_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_FULL_PADDING
+import com.example.presentation.util.UiState
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -109,6 +110,7 @@ fun StoreListBottomSheet(
 @Composable
 fun StoreListHeader(viewModel: MapViewModel = hiltViewModel()) {
     val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
+    val uiState by viewModel.storeDetailModelData.collectAsStateWithLifecycle()
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -123,9 +125,13 @@ fun StoreListHeader(viewModel: MapViewModel = hiltViewModel()) {
             fontWeight = FontWeight.Medium
         )
         Spacer(modifier = Modifier.height(3.dp))
+
         Text(
-            text = if (storeDetailData.isEmpty()) stringResource(R.string.no_search_result)
-            else stringResource(R.string.have_n_stores, storeDetailData.size),
+            text = if (uiState is UiState.Loading) ""
+            else {
+                if (storeDetailData.isEmpty()) stringResource(R.string.no_search_result)
+                else stringResource(R.string.have_n_stores, storeDetailData.size)
+            },
             color = DarkGray,
             fontSize = 12.sp,
             fontWeight = FontWeight.Normal
