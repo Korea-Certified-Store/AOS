@@ -9,12 +9,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.presentation.R
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.White
 
 @Composable
-fun DeleteAllDialog(onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
+fun DeleteAllDialog(
+    onDeleteAllDialogVisibleChanged: (Boolean) -> Unit,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
     AlertDialog(
         onDismissRequest = { onDeleteAllDialogVisibleChanged(false) },
         title = {
@@ -47,7 +51,11 @@ fun DeleteAllDialog(onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
                 text = stringResource(R.string.delete2),
                 fontWeight = FontWeight.Medium,
                 fontSize = 12.sp,
-                color = Black
+                color = Black,
+                modifier = Modifier.clickable {
+                    viewModel.deleteAllSearchWords()
+                    onDeleteAllDialogVisibleChanged(false)
+                }
             )
         },
         shape = RectangleShape,
