@@ -188,8 +188,7 @@ private fun BackArrow(navController: NavHostController) {
         imageVector = ImageVector.vectorResource(id = R.drawable.arrow),
         contentDescription = "Arrow",
         modifier = Modifier
-            .width(10.dp)
-            .height(18.dp)
+            .size(18.dp)
             .clickable {
                 navController.popBackStack()
             }
