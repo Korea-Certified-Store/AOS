@@ -62,13 +62,19 @@ import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
 @Composable
 fun SearchScreen(navController: NavHostController) {
+    val (isDeleteAllDialogVisible, onDeleteAllDialogVisibleChanged) = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         SearchAppBar(navController)
         SearchDivider(6)
-        RecentSearchList()
+        RecentSearchList(onDeleteAllDialogVisibleChanged)
+
+        if (isDeleteAllDialogVisible){
+            DeleteAllDialog(onDeleteAllDialogVisibleChanged)
+        }
     }
 }
 
@@ -190,7 +196,7 @@ private fun BackArrow(navController: NavHostController) {
 }
 
 @Composable
-fun RecentSearchList() {
+fun RecentSearchList(onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
     val exampleItems1 = emptyList<String>()
     val exampleItems2 = listOf(
         "검색어1",
@@ -199,7 +205,7 @@ fun RecentSearchList() {
     )
     val recentSearchItems = exampleItems2
 
-    TitleText(recentSearchItems)
+    TitleText(recentSearchItems, onDeleteAllDialogVisibleChanged)
     SearchDivider(1)
     if (recentSearchItems.isEmpty()) {
         EmptyRecentSearchScreen()
@@ -239,7 +245,7 @@ private fun EmptyRecentSearchScreen() {
 }
 
 @Composable
-fun TitleText(exampleItems: List<String>) {
+fun TitleText(exampleItems: List<String>, onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -259,6 +265,9 @@ fun TitleText(exampleItems: List<String>) {
                 color = MediumGray,
                 fontSize = 12.sp,
                 fontWeight = Medium,
+                modifier = Modifier.clickable {
+                    onDeleteAllDialogVisibleChanged(true)
+                }
             )
         }
     }
