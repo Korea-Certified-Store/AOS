@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -33,6 +32,7 @@ import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.component.BottomSheetDragHandle
+import com.example.presentation.ui.component.EmptyScreen
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.DarkGray
@@ -115,7 +115,7 @@ fun StoreListHeader(viewModel: MapViewModel = hiltViewModel()) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(top = 9.dp, bottom = 14.dp)
+            .padding(top = 9.dp, bottom = 17.dp)
             .fillMaxWidth()
     ) {
         Text(
@@ -125,7 +125,6 @@ fun StoreListHeader(viewModel: MapViewModel = hiltViewModel()) {
             fontWeight = FontWeight.Medium
         )
         Spacer(modifier = Modifier.height(3.dp))
-
         Text(
             text = if (uiState is UiState.Loading) ""
             else {
@@ -136,7 +135,6 @@ fun StoreListHeader(viewModel: MapViewModel = hiltViewModel()) {
             fontSize = 12.sp,
             fontWeight = FontWeight.Normal
         )
-        Spacer(modifier = Modifier.height(17.dp))
     }
 }
 
@@ -150,26 +148,30 @@ fun StoreListContent(
 ) {
     val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
 
-    Column {
+    Column(modifier = Modifier.height(LIST_BOTTOM_SHEET_EXPAND_HEIGHT.dp)) {
         Divider(
             modifier = Modifier.fillMaxWidth(),
             thickness = 0.5.dp, color = SemiLightGray
         )
-        LazyColumn(modifier = Modifier.heightIn(max = LIST_BOTTOM_SHEET_EXPAND_HEIGHT.dp)) {
-            itemsIndexed(
-                storeDetailData.filter {
-                    viewModel.getFilterSet().intersect(it.certificationName.toSet())
-                        .isNotEmpty()
+        if (storeDetailData.isEmpty()) {
+            EmptyScreen(R.string.can_not_find_stores)
+        } else {
+            LazyColumn {
+                itemsIndexed(
+                    storeDetailData.filter {
+                        viewModel.getFilterSet().intersect(it.certificationName.toSet())
+                            .isNotEmpty()
+                    }
+                ) { _, item ->
+                    StoreListItem(
+                        item.toUiModel(),
+                        onBottomSheetChanged,
+                        onStoreInfoChanged,
+                        onMarkerChanged,
+                        onListItemChanged
+                    )
+                    StoreListDivider()
                 }
-            ) { _, item ->
-                StoreListItem(
-                    item.toUiModel(),
-                    onBottomSheetChanged,
-                    onStoreInfoChanged,
-                    onMarkerChanged,
-                    onListItemChanged
-                )
-                StoreListDivider()
             }
         }
     }

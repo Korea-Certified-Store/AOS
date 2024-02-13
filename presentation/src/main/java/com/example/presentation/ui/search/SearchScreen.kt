@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.presentation.R
+import com.example.presentation.ui.component.EmptyScreen
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.DarkGray
@@ -63,7 +64,11 @@ import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
 @Composable
 fun SearchScreen(navController: NavHostController) {
-    val (isDeleteAllDialogVisible, onDeleteAllDialogVisibleChanged) = remember { mutableStateOf(false) }
+    val (isDeleteAllDialogVisible, onDeleteAllDialogVisibleChanged) = remember {
+        mutableStateOf(
+            false
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -73,7 +78,7 @@ fun SearchScreen(navController: NavHostController) {
         SearchDivider(6)
         RecentSearchList(onDeleteAllDialogVisibleChanged)
 
-        if (isDeleteAllDialogVisible){
+        if (isDeleteAllDialogVisible) {
             DeleteAllDialog(onDeleteAllDialogVisibleChanged)
         }
     }
@@ -208,7 +213,7 @@ fun RecentSearchList(onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
     TitleText(recentSearchItems, onDeleteAllDialogVisibleChanged)
     SearchDivider(1)
     if (recentSearchItems.isEmpty()) {
-        EmptyRecentSearchScreen()
+        EmptyScreen(R.string.empty_recent_search_word)
     } else {
         LazyColumn {
             itemsIndexed(recentSearchItems) { idx, item ->
@@ -216,31 +221,6 @@ fun RecentSearchList(onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
                 SearchDivider(1)
             }
         }
-    }
-}
-
-@Composable
-private fun EmptyRecentSearchScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 141.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Image(
-            modifier = Modifier
-                .size(40.dp),
-            imageVector = ImageVector.vectorResource(id = R.drawable.exclamation_mark),
-            contentDescription = "exclamation mark"
-        )
-        Text(
-            modifier = Modifier
-                .padding(top = 16.dp),
-            text = stringResource(R.string.empty_recent_search_word),
-            color = MediumGray,
-            fontSize = 14.sp,
-            fontWeight = Medium,
-        )
     }
 }
 
