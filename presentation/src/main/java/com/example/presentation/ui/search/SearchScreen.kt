@@ -2,6 +2,7 @@ package com.example.presentation.ui.search
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.domain.model.search.SearchWord
 import com.example.presentation.R
 import com.example.presentation.ui.map.list.StoreListDivider
 import com.example.presentation.ui.navigation.Screen
@@ -63,7 +67,10 @@ fun SearchScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchTextField(navController: NavHostController) {
+fun SearchTextField(
+    navController: NavHostController,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
     var text by remember { mutableStateOf("") }
 
     val focusRequester = remember { FocusRequester() }
@@ -117,7 +124,12 @@ fun SearchTextField(navController: NavHostController) {
         textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = FontWeight.Medium),
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
-            navController.currentBackStackEntry?.savedStateHandle?.set(key = "search_text", value = text)
+            insertSearchWord(text, viewModel)
+
+            navController.currentBackStackEntry?.savedStateHandle?.set(
+                key = "search_text",
+                value = text
+            )
             navController.navigate(Screen.Main.route)
             keyboardController?.hide()
         })
@@ -128,19 +140,27 @@ fun SearchTextField(navController: NavHostController) {
     }
 }
 
+fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
+    val nowTime = System.currentTimeMillis()
+    viewModel.insertSearchWord(SearchWord(keyword = keyword, searchTime = nowTime))
+}
+
 @Preview
 @Composable
-fun RecentSearchList() {
-    LazyColumn() {
-        itemsIndexed(listOf("검색어1", "검색어2")) { idx, item ->
-            RecentSearchItem(text = item)
+fun RecentSearchList(viewModel: SearchViewModel = hiltViewModel()) {
+    viewModel.getRecentSearchWord()
+    val recentSearchWords by viewModel.recentSearchWords.collectAsStateWithLifecycle()
+
+    LazyColumn {
+        itemsIndexed(recentSearchWords) { _, item ->
+            RecentSearchItem(item)
             StoreListDivider()
         }
     }
 }
 
 @Composable
-fun RecentSearchItem(text: String) {
+fun RecentSearchItem(searchWord: SearchWord, viewModel: SearchViewModel = hiltViewModel()) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -149,10 +169,13 @@ fun RecentSearchItem(text: String) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = text)
+        Text(text = searchWord.keyword)
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.delete),
-            contentDescription = "delete"
+            contentDescription = "delete",
+            modifier = Modifier.clickable {
+                viewModel.deleteSearchWordById(searchWord.id)
+            }
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.example.domain.usecase
+package com.example.domain.util
 
 import com.example.domain.model.map.Day
 import com.example.domain.model.map.OpeningHoursModel

@@ -1,4 +1,4 @@
-package com.example.domain.usecase
+package com.example.domain.util
 
 object ErrorMessage {
     const val ERROR_MESSAGE_STORE_IS_EMPTY = "검색 결과가 존재하지 않습니다."
