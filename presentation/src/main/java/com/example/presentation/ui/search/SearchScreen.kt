@@ -51,7 +51,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.domain.model.search.SearchWord
 import com.example.presentation.R
-import com.example.presentation.ui.map.list.StoreListDivider
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.DarkGray
@@ -99,7 +98,6 @@ private fun SearchAppBar(navController: NavHostController) {
     ) {
         BackArrow(navController)
         SearchTextField(navController)
-        RecentSearchList()
     }
 }
 
@@ -173,7 +171,7 @@ fun SearchTextField(
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
             if (searchText.isNotBlank()) {
-                insertSearchWord(text, viewModel)
+                insertSearchWord(searchText, viewModel)
 
                 navController.currentBackStackEntry?.savedStateHandle?.set(
                     key = SEARCH_KEY,
@@ -195,7 +193,6 @@ fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
     viewModel.insertSearchWord(SearchWord(keyword = keyword, searchTime = nowTime))
 }
 
-@Preview
 @Composable
 private fun BackArrow(navController: NavHostController) {
     Image(
@@ -218,14 +215,14 @@ fun RecentSearchList(
     val recentSearchWords by viewModel.recentSearchWords.collectAsStateWithLifecycle()
 
 
-    TitleText(recentSearchItems, onDeleteAllDialogVisibleChanged)
+    TitleText(recentSearchWords, onDeleteAllDialogVisibleChanged)
     SearchDivider(1)
     if (recentSearchWords.isEmpty()) {
         EmptyRecentSearchScreen()
     } else {
         LazyColumn {
             itemsIndexed(recentSearchWords) { idx, item ->
-                RecentSearchItem(text = item)
+                RecentSearchItem(item)
                 SearchDivider(1)
             }
         }
@@ -258,7 +255,7 @@ private fun EmptyRecentSearchScreen() {
 }
 
 @Composable
-fun TitleText(exampleItems: List<String>, onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
+fun TitleText(exampleItems: List<SearchWord>, onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -320,9 +317,11 @@ fun RecentSearchItem(searchWord: SearchWord, viewModel: SearchViewModel = hiltVi
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.delete_circle),
             contentDescription = "delete",
-            modifier = Modifier.size(16.dp).clickable {
-                viewModel.deleteSearchWordById(searchWord.id)
-            }
+            modifier = Modifier
+                .size(16.dp)
+                .clickable {
+                    viewModel.deleteSearchWordById(searchWord.id)
+                }
         )
     }
 }
