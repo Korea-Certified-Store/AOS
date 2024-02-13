@@ -1,7 +1,6 @@
 package com.example.data.dto.response.store
 
 import com.example.domain.model.map.TimeInfoModel
-import kotlinx.serialization.Serializable
 
 data class TimeInfoData(
     val day: String,

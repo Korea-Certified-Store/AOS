@@ -2,11 +2,13 @@ package com.example.domain.usecase
 
 import com.example.domain.model.map.StoreDetail
 import com.example.domain.repository.StoreDetailRepository
-import com.example.domain.usecase.ErrorMessage.ERROR_MESSAGE_CHECK_INTERNET
-import com.example.domain.usecase.ErrorMessage.ERROR_MESSAGE_SERVER_IS_NOT_WORKING
-import com.example.domain.usecase.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
-import com.example.domain.usecase.ErrorMessage.ERROR_MESSAGE_UNKNOWN_ERROR
+import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_CHECK_INTERNET
+import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_SERVER_IS_NOT_WORKING
+import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
+import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_UNKNOWN_ERROR
 import com.example.domain.util.Resource
+import com.example.domain.util.getOperatingType
+import com.example.domain.util.getOperationTimeOfWeek
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.SocketTimeoutException

@@ -46,8 +46,12 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Medium
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.domain.model.search.SearchWord
 import com.example.presentation.R
+import com.example.presentation.ui.map.list.StoreListDivider
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.DarkGray
@@ -60,20 +64,22 @@ import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
-
 @Composable
 fun SearchScreen(navController: NavHostController) {
-    val (isDeleteAllDialogVisible, onDeleteAllDialogVisibleChanged) = remember { mutableStateOf(false) }
+    val (isDeleteAllDialogVisible, onDeleteAllDialogVisibleChanged) = remember {
+        mutableStateOf(
+            false
+        )
+    }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         SearchAppBar(navController)
         SearchDivider(6)
         RecentSearchList(onDeleteAllDialogVisibleChanged)
 
-        if (isDeleteAllDialogVisible){
+        if (isDeleteAllDialogVisible) {
             DeleteAllDialog(onDeleteAllDialogVisibleChanged)
         }
     }
@@ -93,6 +99,7 @@ private fun SearchAppBar(navController: NavHostController) {
     ) {
         BackArrow(navController)
         SearchTextField(navController)
+        RecentSearchList()
     }
 }
 
@@ -107,7 +114,10 @@ fun SearchDivider(thickness: Int) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchTextField(navController: NavHostController) {
+fun SearchTextField(
+    navController: NavHostController,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
     var searchText by remember { mutableStateOf("") }
 
     val focusRequester = remember { FocusRequester() }
@@ -150,8 +160,7 @@ fun SearchTextField(navController: NavHostController) {
                     Image(
                         imageVector = ImageVector.vectorResource(R.drawable.search),
                         contentDescription = "Search",
-                        modifier = Modifier
-                            .size(16.dp),
+                        modifier = Modifier.size(16.dp),
                         colorFilter = ColorFilter.tint(DarkGray)
                     )
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
@@ -164,6 +173,8 @@ fun SearchTextField(navController: NavHostController) {
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
             if (searchText.isNotBlank()) {
+                insertSearchWord(text, viewModel)
+
                 navController.currentBackStackEntry?.savedStateHandle?.set(
                     key = SEARCH_KEY,
                     value = searchText
@@ -179,6 +190,12 @@ fun SearchTextField(navController: NavHostController) {
     }
 }
 
+fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
+    val nowTime = System.currentTimeMillis()
+    viewModel.insertSearchWord(SearchWord(keyword = keyword, searchTime = nowTime))
+}
+
+@Preview
 @Composable
 private fun BackArrow(navController: NavHostController) {
     Image(
@@ -193,22 +210,21 @@ private fun BackArrow(navController: NavHostController) {
 }
 
 @Composable
-fun RecentSearchList(onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
-    val exampleItems1 = emptyList<String>()
-    val exampleItems2 = listOf(
-        "검색어1",
-        "검색어2검색어2검색어2검색어2",
-        "검색어5검색어5검색어5검색어5검색어5검색어5검색어5검색어5검색어5"
-    )
-    val recentSearchItems = exampleItems2
+fun RecentSearchList(
+    onDeleteAllDialogVisibleChanged: (Boolean) -> Unit,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
+    viewModel.getRecentSearchWord()
+    val recentSearchWords by viewModel.recentSearchWords.collectAsStateWithLifecycle()
+
 
     TitleText(recentSearchItems, onDeleteAllDialogVisibleChanged)
     SearchDivider(1)
-    if (recentSearchItems.isEmpty()) {
+    if (recentSearchWords.isEmpty()) {
         EmptyRecentSearchScreen()
     } else {
         LazyColumn {
-            itemsIndexed(recentSearchItems) { idx, item ->
+            itemsIndexed(recentSearchWords) { idx, item ->
                 RecentSearchItem(text = item)
                 SearchDivider(1)
             }
@@ -271,7 +287,7 @@ fun TitleText(exampleItems: List<String>, onDeleteAllDialogVisibleChanged: (Bool
 }
 
 @Composable
-fun RecentSearchItem(text: String) {
+fun RecentSearchItem(searchWord: SearchWord, viewModel: SearchViewModel = hiltViewModel()) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -293,7 +309,7 @@ fun RecentSearchItem(text: String) {
                 modifier = Modifier
                     .fillMaxWidth(0.85f)
                     .padding(start = 11.dp),
-                text = text,
+                text = searchWord.keyword,
                 color = Black,
                 fontSize = 16.sp,
                 fontWeight = Medium,
@@ -304,7 +320,9 @@ fun RecentSearchItem(text: String) {
         Image(
             imageVector = ImageVector.vectorResource(id = R.drawable.delete_circle),
             contentDescription = "delete",
-            modifier = Modifier.size(16.dp)
+            modifier = Modifier.size(16.dp).clickable {
+                viewModel.deleteSearchWordById(searchWord.id)
+            }
         )
     }
 }
