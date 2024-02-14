@@ -13,7 +13,7 @@ runtime-ktx = "2.6.1"
 
 compose = "1.4.3"
 activity-compose = "1.7.0"
-material3 = "1.1.0-beta01"
+material3 = "1.0.1"
 constraintlayout-compose = "1.0.0-rc01"
 navigation-compose = "2.7.7"
 
@@ -48,6 +48,8 @@ playServicesMeasurementApi = "21.5.0"
 firebase-bom="32.7.1"
 firebase-analytics-ktx="21.5.0"
 google-services = "4.4.0"
+
+room = "2.5.0"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
@@ -123,6 +125,11 @@ firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx"
 
 google-services-dependencies = { group = "com.google.gms", name = "google-services", version.ref = "google-services"}
 
+# room
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room"}
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room"}
+room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room"}
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
@@ -143,3 +150,4 @@ android-test = ["ext-junit", "espresso"]
 retrofit = ["squareupRetrofit2", "retrofit-kotlin-serialization-converter"]
 squareup = ["squareupRetrofit2ConverterGson", "squareupOkhttp3", "squareupOkhttp3Logging", "squareupOkhttp3Bom", "kotlin-serialization-json"]
 coroutine = ["kotlinx.coroutines.android", "kotlinx.coroutines.core"]
+room = ["room-ktx", "room-runtime"]

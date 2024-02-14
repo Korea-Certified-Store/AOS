@@ -201,7 +201,8 @@ fun StoreCallButton(
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.call),
                 contentDescription = "Call",
-                modifier = Modifier.size(21.dp)
+                modifier = Modifier.size(21.dp),
+                tint = DarkGray
             )
         }
     }

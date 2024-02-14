@@ -1,7 +1,9 @@
 package com.example.android_kcs.di
 
 import com.example.data.source.SearchStoreDataSource
+import com.example.data.source.SearchWordDataSource
 import com.example.data.source.StoreDetailDataSource
+import com.example.data.source.local.SearchWordDataSourceImpl
 import com.example.data.source.remote.SearchStoreSourceImpl
 import com.example.data.source.remote.StoreDetailSourceImpl
 import dagger.Binds
@@ -21,5 +23,9 @@ abstract class DataSourceModule {
     @Singleton
     @Binds
     abstract fun providesSearchStoreSource(dataSourceImpl: SearchStoreSourceImpl): SearchStoreDataSource
+
+    @Singleton
+    @Binds
+    abstract fun providesSearchWordSource(dataSourceImpl: SearchWordDataSourceImpl): SearchWordDataSource
 
 }

@@ -2,7 +2,10 @@ package com.example.domain.usecase
 
 import com.example.domain.model.map.StoreDetail
 import com.example.domain.repository.SearchStoreRepository
+import com.example.domain.util.ErrorMessage
 import com.example.domain.util.Resource
+import com.example.domain.util.getOperatingType
+import com.example.domain.util.getOperationTimeOfWeek
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.net.SocketTimeoutException
@@ -19,23 +22,27 @@ class SearchStoreUseCase(
         emit(Resource.Loading())
         repository.searchStore(currLong, currLat, searchKeyword).fold(
             onSuccess = { items ->
-                emit(Resource.Success(items.map { storeDetailModel ->
-                    val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
-                    val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
-                    StoreDetail(
-                        id = storeDetailModel.id,
-                        displayName = storeDetailModel.displayName,
-                        primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
-                        formattedAddress = storeDetailModel.formattedAddress,
-                        phoneNumber = storeDetailModel.phoneNumber,
-                        location = storeDetailModel.location,
-                        operatingType = operatingType.operatingType.description,
-                        timeDescription = operatingType.timeDescription,
-                        localPhotos = storeDetailModel.localPhotos,
-                        certificationName = storeDetailModel.certificationName,
-                        operationTimeOfWeek = operationTimeOfWeek
-                    )
-                }))
+                if (items.isEmpty()) {
+                    emit(Resource.Failure(ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY))
+                } else {
+                    emit(Resource.Success(items.map { storeDetailModel ->
+                        val operatingType = getOperatingType(storeDetailModel.regularOpeningHours)
+                        val operationTimeOfWeek = getOperationTimeOfWeek(storeDetailModel)
+                        StoreDetail(
+                            id = storeDetailModel.id,
+                            displayName = storeDetailModel.displayName,
+                            primaryTypeDisplayName = storeDetailModel.primaryTypeDisplayName,
+                            formattedAddress = storeDetailModel.formattedAddress,
+                            phoneNumber = storeDetailModel.phoneNumber,
+                            location = storeDetailModel.location,
+                            operatingType = operatingType.operatingType.description,
+                            timeDescription = operatingType.timeDescription,
+                            localPhotos = storeDetailModel.localPhotos,
+                            certificationName = storeDetailModel.certificationName,
+                            operationTimeOfWeek = operationTimeOfWeek
+                        )
+                    }))
+                }
             },
             onFailure = { e ->
                 when (e) {
