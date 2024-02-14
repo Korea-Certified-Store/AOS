@@ -32,6 +32,9 @@ import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
+import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
+import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
+import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
 @Composable
 fun FilterComponent(
@@ -49,7 +52,7 @@ fun FilterComponent(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .padding(top = 12.dp, start = 16.dp),
+            .padding(top = (SEARCH_TEXT_FIELD_HEIGHT + SEARCH_TEXT_FIELD_TOP_PADDING + 8).dp, start = DEFAULT_MARGIN.dp),
         verticalAlignment = Alignment.Top
     ) {
         FilterButton(

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.theme.LightBlue
 import com.example.presentation.ui.theme.LightYellow
-import com.example.presentation.ui.theme.MediumGray
+import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.Pink
 
 
@@ -33,7 +33,7 @@ fun StoreTypeChip(storeType: StoreType) {
     ) {
         Text(
             text = stringResource(storeType.storeTypeName),
-            color = MediumGray,
+            color = DarkGray,
             fontSize = 9.sp,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp)

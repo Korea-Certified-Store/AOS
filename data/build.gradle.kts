@@ -48,4 +48,9 @@ dependencies {
     // hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    // room
+    implementation(libs.bundles.room)
+    kapt(libs.room.compiler)
+
 }

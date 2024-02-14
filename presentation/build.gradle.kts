@@ -99,9 +99,12 @@ dependencies {
     implementation(libs.androidx.runtime.ktx)
     implementation(libs.material)
 
+    // constraintlayout
     implementation(libs.constraintlayout.compose)
 
+    // coil
     implementation(libs.landscapist.coil)
 
-
+    // navigation
+    implementation(libs.navigation.compose)
 }

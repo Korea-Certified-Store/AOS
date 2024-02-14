@@ -8,6 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
@@ -22,6 +24,7 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
+import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.ui.search.TempSearchScreen
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UN_MARKER
@@ -30,9 +33,11 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 @ExperimentalNaverMapApi
 @Composable
 fun MainScreen(
-    mapViewModel: MapViewModel,
     onCallStoreChanged: (String) -> Unit,
-    onSplashScreenShowAble: (Boolean) -> Unit
+    onSplashScreenShowAble: (Boolean) -> Unit,
+    navController: NavController,
+    searchText: String?,
+    mapViewModel: MapViewModel = hiltViewModel()
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
@@ -136,7 +141,6 @@ fun MainScreen(
     }
 
     NaverMapScreen(
-        mapViewModel,
         isMarkerClicked,
         onBottomSheetChanged,
         onStoreInfoChanged,
@@ -178,6 +182,8 @@ fun MainScreen(
             showMoreCount
         )
     }
+
+    StoreSearchComponent(navController, searchText)
 
     FilterComponent(
         isKindFilterClicked,

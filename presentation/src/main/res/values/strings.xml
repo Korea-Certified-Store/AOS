@@ -27,4 +27,14 @@
     <string name="ONBOARDING_EXPLANATION_4">감염병에 취약한 식사문화 개선을 위해\n덜어 먹기, 위생적 수저관리, 종사자 마스크\n착용 및 생활 방역을 준수하는 곳으로\n소재지 지자체의 인증을\n받은 음식점을 의미합니다.</string>
     <string name="ONBOARDING_TITLE_5">나인가 시작하기</string>
     <string name="ONBOARDING_EXPLANATION_5">이젠 정말 나인가와 함께 할 시간이에요!</string>
+    <string name="search_placeholder_text">가게명, 업종, 주소 검색</string>
+    <string name="delete_all">전체삭제</string>
+    <string name="recent_search_word">최근 검색어</string>
+    <string name="delete">삭제하기</string>
+    <string name="do_you_want_delete_all">최근 검색어를 모두 삭제하시겠습니까?</string>
+    <string name="delete2">삭제</string>
+    <string name="empty_recent_search_word">최근 검색 기록이 없습니다</string>
+    <string name="no_search_result">검색 결과가 존재하지 않습니다</string>
+    <string name="have_n_stores">총 %1$s개의 가게가 있습니다</string>
+    <string name="can_not_find_stores">주변 가게 정보를 찾을 수 없습니다</string>
 </resources>
