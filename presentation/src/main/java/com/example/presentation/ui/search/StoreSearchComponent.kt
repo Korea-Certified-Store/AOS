@@ -18,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -61,22 +63,22 @@ fun StoreSearchComponent(navController: NavController, searchText: String?) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        if (searchText == null) {
-            SearchPlaceHolderText(stringResource(R.string.search_placeholder_text))
-            SearchSuffixImage(R.drawable.search)
+        if (searchText.isNullOrBlank()) {
+            SearchPlaceHolderText(stringResource(R.string.search_placeholder_text), MediumGray)
+            SearchSuffixImage(R.drawable.search, navController)
         } else {
-            SearchPlaceHolderText(searchText)
-            SearchSuffixImage(R.drawable.delete)
+            SearchPlaceHolderText(searchText, Black)
+            SearchSuffixImage(R.drawable.delete, navController)
         }
     }
 }
 
 @Composable
-fun SearchPlaceHolderText(text: String) {
+fun SearchPlaceHolderText(text: String, textColor: Color) {
     Text(
         text = text,
         fontSize = 14.sp,
-        color = MediumGray,
+        color = textColor,
         fontWeight = FontWeight.Medium,
         modifier = Modifier.padding(start = DEFAULT_MARGIN.dp),
         maxLines = 1
@@ -84,12 +86,19 @@ fun SearchPlaceHolderText(text: String) {
 }
 
 @Composable
-fun SearchSuffixImage(@DrawableRes image: Int) {
+fun SearchSuffixImage(@DrawableRes image: Int, navController: NavController) {
     Image(
-        imageVector = ImageVector.vectorResource(id = R.drawable.delete),
+        imageVector = ImageVector.vectorResource(id = image),
         contentDescription = "Delete",
         modifier = Modifier
             .padding(end = DEFAULT_MARGIN.dp)
             .size(16.dp)
+            .clickable(enabled = image == R.drawable.delete) {
+                navController.navigate(Screen.Main.route) {
+                    popUpTo(navController.graph.id) {
+                        inclusive = true
+                    }
+                }
+            }
     )
 }

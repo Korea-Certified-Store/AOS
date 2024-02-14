@@ -1,7 +1,9 @@
 package com.example.presentation.ui.search
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,11 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,16 +33,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight.Companion.Medium
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,25 +51,64 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.domain.model.search.SearchWord
 import com.example.presentation.R
-import com.example.presentation.ui.map.list.StoreListDivider
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
+import com.example.presentation.ui.theme.DarkGray
+import com.example.presentation.ui.theme.LightGray
+import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
+import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
 @Composable
 fun SearchScreen(navController: NavHostController) {
+    val (isDeleteAllDialogVisible, onDeleteAllDialogVisibleChanged) = remember {
+        mutableStateOf(
+            false
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        SearchTextField(navController)
-        RecentSearchList()
+        SearchAppBar(navController)
+        SearchDivider(6)
+        RecentSearchList(onDeleteAllDialogVisibleChanged)
+
+        if (isDeleteAllDialogVisible) {
+            DeleteAllDialog(onDeleteAllDialogVisibleChanged)
+        }
     }
 }
 
+@Composable
+private fun SearchAppBar(navController: NavHostController) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(
+                horizontal = DEFAULT_MARGIN.dp,
+                vertical = SEARCH_TEXT_FIELD_TOP_PADDING.dp
+            )
+    ) {
+        BackArrow(navController)
+        SearchTextField(navController)
+    }
+}
+
+@Composable
+fun SearchDivider(thickness: Int) {
+    Divider(
+        modifier = Modifier
+            .fillMaxWidth(),
+        thickness = thickness.dp, color = LightGray
+    )
+}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -71,38 +116,38 @@ fun SearchTextField(
     navController: NavHostController,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
-    var text by remember { mutableStateOf("") }
+    var searchText by remember { mutableStateOf("") }
 
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     BasicTextField(
-        value = text,
-        onValueChange = { textValue -> text = textValue },
+        value = searchText,
+        onValueChange = { textValue -> searchText = textValue },
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier
                     .padding(
                         start = DEFAULT_MARGIN.dp,
-                        end = DEFAULT_MARGIN.dp,
-                        top = SEARCH_TEXT_FIELD_TOP_PADDING.dp,
-                        bottom = 8.dp
                     )
-                    .shadow(4.dp, RoundedCornerShape(size = 12.dp))
                     .fillMaxWidth()
                     .height(SEARCH_TEXT_FIELD_HEIGHT.dp)
-                    .background(color = White, shape = RoundedCornerShape(size = 12.dp)),
+                    .background(color = White, shape = RoundedCornerShape(size = 12.dp))
+                    .border(
+                        border = BorderStroke(1.5.dp, MediumGray),
+                        shape = RoundedCornerShape(size = 12.dp)
+                    ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row {
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
-                    if (text.isEmpty()) {
+                    if (searchText.isEmpty()) {
                         Text(
                             text = stringResource(R.string.search_placeholder_text),
                             fontSize = 14.sp,
                             color = SemiLightGray,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = Medium
                         )
                     } else {
                         innerTextField()
@@ -111,9 +156,10 @@ fun SearchTextField(
                 }
                 Row {
                     Image(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.search),
+                        imageVector = ImageVector.vectorResource(R.drawable.search),
                         contentDescription = "Search",
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
+                        colorFilter = ColorFilter.tint(DarkGray)
                     )
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
                 }
@@ -121,17 +167,19 @@ fun SearchTextField(
         },
         maxLines = 1,
         singleLine = true,
-        textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = FontWeight.Medium),
+        textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = Medium),
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
-            insertSearchWord(text, viewModel)
+            if (searchText.isNotBlank()) {
+                insertSearchWord(searchText, viewModel)
 
-            navController.currentBackStackEntry?.savedStateHandle?.set(
-                key = "search_text",
-                value = text
-            )
-            navController.navigate(Screen.Main.route)
-            keyboardController?.hide()
+                navController.currentBackStackEntry?.savedStateHandle?.set(
+                    key = SEARCH_KEY,
+                    value = searchText
+                )
+                navController.navigate(Screen.Main.route)
+                keyboardController?.hide()
+            }
         })
     )
 
@@ -145,16 +193,92 @@ fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
     viewModel.insertSearchWord(SearchWord(keyword = keyword, searchTime = nowTime))
 }
 
-@Preview
 @Composable
-fun RecentSearchList(viewModel: SearchViewModel = hiltViewModel()) {
+private fun BackArrow(navController: NavHostController) {
+    Image(
+        imageVector = ImageVector.vectorResource(id = R.drawable.arrow),
+        contentDescription = "Arrow",
+        modifier = Modifier
+            .size(18.dp)
+            .clickable {
+                navController.popBackStack()
+            }
+    )
+}
+
+@Composable
+fun RecentSearchList(
+    onDeleteAllDialogVisibleChanged: (Boolean) -> Unit,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
     viewModel.getRecentSearchWord()
     val recentSearchWords by viewModel.recentSearchWords.collectAsStateWithLifecycle()
 
-    LazyColumn {
-        itemsIndexed(recentSearchWords) { _, item ->
-            RecentSearchItem(item)
-            StoreListDivider()
+
+    TitleText(recentSearchWords, onDeleteAllDialogVisibleChanged)
+    SearchDivider(1)
+    if (recentSearchWords.isEmpty()) {
+        EmptyRecentSearchScreen()
+    } else {
+        LazyColumn {
+            itemsIndexed(recentSearchWords) { idx, item ->
+                RecentSearchItem(item)
+                SearchDivider(1)
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyRecentSearchScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 141.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            modifier = Modifier
+                .size(40.dp),
+            imageVector = ImageVector.vectorResource(id = R.drawable.exclamation_mark),
+            contentDescription = "exclamation mark"
+        )
+        Text(
+            modifier = Modifier
+                .padding(top = 16.dp),
+            text = stringResource(R.string.empty_recent_search_word),
+            color = MediumGray,
+            fontSize = 14.sp,
+            fontWeight = Medium,
+        )
+    }
+}
+
+@Composable
+fun TitleText(exampleItems: List<SearchWord>, onDeleteAllDialogVisibleChanged: (Boolean) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = DEFAULT_MARGIN.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.recent_search_word),
+            color = Black,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+        if (exampleItems.isNotEmpty()) {
+            Text(
+                text = stringResource(R.string.delete_all),
+                color = MediumGray,
+                fontSize = 12.sp,
+                fontWeight = Medium,
+                modifier = Modifier.clickable {
+                    onDeleteAllDialogVisibleChanged(true)
+                }
+            )
         }
     }
 }
@@ -164,18 +288,40 @@ fun RecentSearchItem(searchWord: SearchWord, viewModel: SearchViewModel = hiltVi
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp)
+            .height(53.dp)
             .padding(horizontal = DEFAULT_MARGIN.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = searchWord.keyword)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.wrapContentSize(),
+        ) {
+            Image(
+                imageVector = ImageVector.vectorResource(id = R.drawable.search_blue),
+                contentDescription = "search blue",
+                modifier = Modifier.size(15.dp)
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
+                    .padding(start = 11.dp),
+                text = searchWord.keyword,
+                color = Black,
+                fontSize = 16.sp,
+                fontWeight = Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
         Image(
-            imageVector = ImageVector.vectorResource(id = R.drawable.delete),
+            imageVector = ImageVector.vectorResource(id = R.drawable.delete_circle),
             contentDescription = "delete",
-            modifier = Modifier.clickable {
-                viewModel.deleteSearchWordById(searchWord.id)
-            }
+            modifier = Modifier
+                .size(16.dp)
+                .clickable {
+                    viewModel.deleteSearchWordById(searchWord.id)
+                }
         )
     }
 }

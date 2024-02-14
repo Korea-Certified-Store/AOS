@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -129,10 +128,7 @@ fun StoreListContent(
     onListItemChanged: (Boolean) -> Unit,
     viewModel: MapViewModel = hiltViewModel()
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle(
-        lifecycleOwner
-    )
+    val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
 
     LazyColumn(modifier = Modifier.heightIn(max = LIST_BOTTOM_SHEET_EXPAND_HEIGHT.dp)) {
         itemsIndexed(
