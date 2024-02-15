@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.model.Contact
@@ -37,7 +36,7 @@ fun MainScreen(
     onSplashScreenShowAble: (Boolean) -> Unit,
     navController: NavController,
     searchText: String?,
-    mapViewModel: MapViewModel = hiltViewModel()
+    mapViewModel: MapViewModel
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
@@ -162,7 +161,8 @@ fun MainScreen(
         onGetNewScreenCoordinateChanged,
         isSearchComponentClicked,
         onMapCenterCoordinateChanged,
-        onSearchCoordinatedChanged
+        onSearchCoordinatedChanged,
+        mapViewModel
     )
 
     if (isReloadOrShowMoreShowAble) {
@@ -175,7 +175,8 @@ fun MainScreen(
             onMarkerChanged,
             onBottomSheetChanged,
             isLoading,
-            showMoreCount
+            showMoreCount,
+            mapViewModel
         )
     }
 
@@ -212,7 +213,8 @@ fun MainScreen(
             onBottomSheetChanged,
             onStoreInfoChanged,
             onMarkerChanged,
-            onListItemChanged
+            onListItemChanged,
+            mapViewModel
         )
     }
 

@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.map.ShowMoreCount
 import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
@@ -87,7 +86,7 @@ fun NaverMapScreen(
     isSearchComponentClicked: Boolean,
     onMapCenterCoordinateChanged: (Coordinate) -> Unit,
     onSearchCoordinateChanged: (Boolean) -> Unit,
-    mapViewModel: MapViewModel = hiltViewModel()
+    mapViewModel: MapViewModel
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -112,7 +111,8 @@ fun NaverMapScreen(
                 onReloadOrShowMoreChanged,
                 onLocationButtonChanged,
                 selectedLocationButton.mode,
-                onCurrentMapChanged
+                onCurrentMapChanged,
+                mapViewModel
             )
         },
         locationSource = rememberFusedLocationSource(),
@@ -300,7 +300,7 @@ fun InitializeMarker(
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
     selectedLocationButtonMode: LocationTrackingMode,
     onCurrentMapChanged: (Boolean) -> Unit,
-    mainViewModel: MapViewModel = hiltViewModel()
+    mainViewModel: MapViewModel
 ) {
     val (isInitialLocationSet, onInitialLocationSetChanged) = remember { mutableStateOf(false) }
     val (isMapGestured, onMapGestureChanged) = remember { mutableStateOf(false) }

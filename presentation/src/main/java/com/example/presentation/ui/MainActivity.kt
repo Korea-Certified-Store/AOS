@@ -86,7 +86,8 @@ class MainActivity : ComponentActivity() {
                             isFirstRun,
                             isOnboardingScreenShowAble,
                             onOnboardingScreenShowAble,
-                            isSplashScreenShowAble
+                            isSplashScreenShowAble,
+                            mapViewModel
                         )
                     }
                     composable(
@@ -97,7 +98,7 @@ class MainActivity : ComponentActivity() {
                                 SEARCH_COORDINATE_KEY
                             )
                         }
-                        SearchScreen(navController, searchCoordinate)
+                        SearchScreen(navController, searchCoordinate, mapViewModel)
                     }
                 }
             }

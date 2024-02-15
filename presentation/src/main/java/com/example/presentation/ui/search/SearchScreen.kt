@@ -54,6 +54,7 @@ import com.example.presentation.R
 import com.example.presentation.model.Coordinate
 import com.example.presentation.ui.component.EmptyScreen
 import com.example.presentation.ui.map.MapViewModel
+import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.LightGray
@@ -61,11 +62,16 @@ import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
+import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
 @Composable
-fun SearchScreen(navController: NavHostController, searchCoordinate: Coordinate?) {
+fun SearchScreen(
+    navController: NavHostController,
+    searchCoordinate: Coordinate?,
+    mapViewModel: MapViewModel
+) {
     val (isDeleteAllDialogVisible, onDeleteAllDialogVisibleChanged) = remember {
         mutableStateOf(
             false
@@ -75,7 +81,7 @@ fun SearchScreen(navController: NavHostController, searchCoordinate: Coordinate?
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        SearchAppBar(navController, searchCoordinate)
+        SearchAppBar(navController, searchCoordinate, mapViewModel)
         SearchDivider(6)
         RecentSearchList(onDeleteAllDialogVisibleChanged)
 
@@ -86,7 +92,11 @@ fun SearchScreen(navController: NavHostController, searchCoordinate: Coordinate?
 }
 
 @Composable
-private fun SearchAppBar(navController: NavHostController, searchCoordinate: Coordinate?) {
+private fun SearchAppBar(
+    navController: NavHostController,
+    searchCoordinate: Coordinate?,
+    mapViewModel: MapViewModel
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -98,7 +108,7 @@ private fun SearchAppBar(navController: NavHostController, searchCoordinate: Coo
             )
     ) {
         BackArrow(navController)
-        SearchTextField(navController, searchCoordinate)
+        SearchTextField(navController, searchCoordinate, mapViewModel)
     }
 }
 
@@ -116,8 +126,8 @@ fun SearchDivider(thickness: Int) {
 fun SearchTextField(
     navController: NavHostController,
     searchCoordinate: Coordinate?,
+    mapViewModel: MapViewModel,
     searchViewModel: SearchViewModel = hiltViewModel(),
-    mapViewModel: MapViewModel = hiltViewModel()
 ) {
     var searchText by remember { mutableStateOf("") }
 
@@ -182,12 +192,12 @@ fun SearchTextField(
                         searchCoordinate.latitude,
                         searchText
                     )
-//                    navController.currentBackStackEntry?.savedStateHandle?.set(
-//                        key = SEARCH_KEY,
-//                        value = searchText
-//                    )
-//                    navController.navigate(Screen.Main.route)
-//                    keyboardController?.hide()
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        key = SEARCH_KEY,
+                        value = searchText
+                    )
+                    navController.navigate(Screen.Main.route)
+                    keyboardController?.hide()
                 }
             }
         })

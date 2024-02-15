@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.mapper.toUiModel
@@ -54,7 +53,8 @@ fun StoreListBottomSheet(
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onMarkerChanged: (Long) -> Unit,
-    onListItemChanged: (Boolean) -> Unit
+    onListItemChanged: (Boolean) -> Unit,
+    mapViewModel: MapViewModel
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -66,12 +66,13 @@ fun StoreListBottomSheet(
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContent = {
-            StoreListHeader()
+            StoreListHeader(mapViewModel)
             StoreListContent(
                 onBottomSheetChanged,
                 onStoreInfoChanged,
                 onMarkerChanged,
-                onListItemChanged
+                onListItemChanged,
+                mapViewModel
             )
         },
         sheetPeekHeight = (LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT + HANDLE_HEIGHT).dp,
@@ -108,7 +109,7 @@ fun StoreListBottomSheet(
 }
 
 @Composable
-fun StoreListHeader(viewModel: MapViewModel = hiltViewModel()) {
+fun StoreListHeader(viewModel: MapViewModel) {
     val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
     val uiState by viewModel.storeDetailModelData.collectAsStateWithLifecycle()
 
@@ -144,7 +145,7 @@ fun StoreListContent(
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onMarkerChanged: (Long) -> Unit,
     onListItemChanged: (Boolean) -> Unit,
-    viewModel: MapViewModel = hiltViewModel()
+    viewModel: MapViewModel
 ) {
     val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
 
