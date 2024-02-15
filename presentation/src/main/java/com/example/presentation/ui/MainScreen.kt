@@ -24,8 +24,10 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
+import com.example.presentation.ui.search.ReSearchComponent
 import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.util.MainConstants
+import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 
@@ -116,6 +118,8 @@ fun MainScreen(
 
     val (isReloadOrShowMoreShowAble, onReloadOrShowMoreChanged) = remember { mutableStateOf(false) }
 
+    val (isReSearchButtonClicked, onReSearchButtonChanged) = remember { mutableStateOf(false) }
+
     val (isScreenCoordinateChanged, onGetNewScreenCoordinateChanged) = remember {
         mutableStateOf(
             false
@@ -149,17 +153,32 @@ fun MainScreen(
     )
 
     if (isReloadOrShowMoreShowAble) {
-        ReloadOrShowMoreButton(
-            isMarkerClicked,
-            currentSummaryInfoHeight,
-            isMapGestured,
-            onShowMoreCountChanged,
-            onReloadButtonChanged,
-            onMarkerChanged,
-            onBottomSheetChanged,
-            isLoading,
-            showMoreCount
-        )
+        val searchText = navController.previousBackStackEntry?.savedStateHandle?.contains(
+            SEARCH_KEY
+        ) ?: false
+        if (searchText) {
+            ReSearchComponent(
+                isMarkerClicked,
+                currentSummaryInfoHeight,
+                isMapGestured,
+                onReSearchButtonChanged,
+                onMarkerChanged,
+                onBottomSheetChanged,
+                isLoading,
+            )
+        } else {
+            ReloadOrShowMoreButton(
+                isMarkerClicked,
+                currentSummaryInfoHeight,
+                isMapGestured,
+                onShowMoreCountChanged,
+                onReloadButtonChanged,
+                onMarkerChanged,
+                onBottomSheetChanged,
+                isLoading,
+                showMoreCount
+            )
+        }
     }
 
     StoreSearchComponent(navController, searchText)
@@ -214,6 +233,12 @@ fun MainScreen(
     if (isCallDialogCancelClicked) {
         onCallDialogCanceled(false)
         onCallDialogChanged(false)
+    }
+
+    if (isReSearchButtonClicked) {
+        //TODO : Search API 실행
+        onReSearchButtonChanged(false)
+        onGetNewScreenCoordinateChanged(false)
     }
 
     if (isReloadButtonClicked && isScreenCoordinateChanged) {
