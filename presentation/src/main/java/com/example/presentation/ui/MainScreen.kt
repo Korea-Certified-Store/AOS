@@ -37,7 +37,6 @@ fun MainScreen(
     onCallStoreChanged: (String) -> Unit,
     onSplashScreenShowAble: (Boolean) -> Unit,
     navController: NavController,
-    searchText: String?,
     mapViewModel: MapViewModel = hiltViewModel()
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
@@ -126,6 +125,14 @@ fun MainScreen(
         )
     }
 
+    val isSearchTextExist = navController.previousBackStackEntry?.savedStateHandle?.contains(
+        SEARCH_KEY
+    ) ?: false
+
+    val searchText = navController.previousBackStackEntry?.savedStateHandle?.get<String>(
+        SEARCH_KEY
+    )
+
     NaverMapScreen(
         isMarkerClicked,
         onBottomSheetChanged,
@@ -153,10 +160,7 @@ fun MainScreen(
     )
 
     if (isReloadOrShowMoreShowAble) {
-        val searchText = navController.previousBackStackEntry?.savedStateHandle?.contains(
-            SEARCH_KEY
-        ) ?: false
-        if (searchText) {
+        if (isSearchTextExist) {
             ReSearchComponent(
                 isMarkerClicked,
                 currentSummaryInfoHeight,

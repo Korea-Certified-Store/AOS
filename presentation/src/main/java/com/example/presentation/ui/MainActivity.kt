@@ -26,8 +26,6 @@ import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.search.SearchScreen
 import com.example.presentation.ui.theme.Android_KCSTheme
-import com.example.presentation.util.MainConstants.SEARCH_KEY
-import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -72,16 +70,10 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = Screen.Main.route
                     ) {
-                        val searchText = remember {
-                            navController.previousBackStackEntry?.savedStateHandle?.get<String>(
-                                SEARCH_KEY
-                            )
-                        }
                         InitScreen(
                             onCallStoreChanged,
                             onSplashScreenShowAble,
                             navController,
-                            searchText,
                             isFirstRun,
                             isOnboardingScreenShowAble,
                             onOnboardingScreenShowAble,
