@@ -139,6 +139,14 @@ fun MainScreen(
     }
     val (isBackPressed, onBackPressedChanged) = remember { mutableStateOf(false) }
 
+    val isSearchTextExist = navController.previousBackStackEntry?.savedStateHandle?.contains(
+        SEARCH_KEY
+    ) ?: false
+
+    val searchText = navController.previousBackStackEntry?.savedStateHandle?.get<String>(
+        SEARCH_KEY
+    )
+
     NaverMapScreen(
         isMarkerClicked,
         onBottomSheetChanged,
@@ -175,10 +183,7 @@ fun MainScreen(
     )
 
     if (isReloadOrShowMoreShowAble) {
-        val searchText = navController.previousBackStackEntry?.savedStateHandle?.contains(
-            SEARCH_KEY
-        ) ?: false
-        if (searchText) {
+        if (isSearchTextExist) {
             ReSearchComponent(
                 isMarkerClicked,
                 currentSummaryInfoHeight,
