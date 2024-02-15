@@ -1,5 +1,6 @@
 package com.example.presentation.ui.search
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -65,6 +67,7 @@ import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
+import com.example.presentation.util.UiState
 
 @Composable
 fun SearchScreen(
@@ -134,6 +137,10 @@ fun SearchTextField(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
+
     BasicTextField(
         value = searchText,
         onValueChange = { textValue -> searchText = textValue },
@@ -192,12 +199,23 @@ fun SearchTextField(
                         searchCoordinate.latitude,
                         searchText
                     )
-                    navController.currentBackStackEntry?.savedStateHandle?.set(
-                        key = SEARCH_KEY,
-                        value = searchText
-                    )
-                    navController.navigate(Screen.Main.route)
-                    keyboardController?.hide()
+
+                    when (val state = searchStore) {
+                        is UiState.Success -> {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                key = SEARCH_KEY,
+                                value = searchText
+                            )
+                            navController.navigate(Screen.Main.route)
+                            keyboardController?.hide()
+                        }
+
+                        is UiState.Failure -> {
+                            Toast.makeText(context, state.msg, Toast.LENGTH_SHORT).show()
+                        }
+
+                        else -> {}
+                    }
                 }
             }
         })
