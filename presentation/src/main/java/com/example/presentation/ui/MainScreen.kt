@@ -1,6 +1,7 @@
 package com.example.presentation.ui
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -26,8 +27,10 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
+import com.example.presentation.ui.search.ReSearchComponent
 import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.util.MainConstants
+import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.example.presentation.util.MapScreenType
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -109,6 +112,8 @@ fun MainScreen(
 
     val (isLoading, onLoadingChanged) = remember { mutableStateOf(false) }
 
+    val (isFilteredMarker, onFilteredMarkerChanged) = remember { mutableStateOf(false) }
+
     val (errorToastMsg, onErrorToastChanged) = remember { mutableStateOf("") }
 
     val (isListItemClicked, onListItemChanged) = remember { mutableStateOf(false) }
@@ -116,6 +121,8 @@ fun MainScreen(
     val (showMoreCount, onShowMoreCountChanged) = remember { mutableStateOf(ShowMoreCount(-1, 5)) }
 
     val (isReloadOrShowMoreShowAble, onReloadOrShowMoreChanged) = remember { mutableStateOf(false) }
+
+    val (isReSearchButtonClicked, onReSearchButtonChanged) = remember { mutableStateOf(false) }
 
     val (isScreenCoordinateChanged, onGetNewScreenCoordinateChanged) = remember {
         mutableStateOf(
@@ -161,22 +168,40 @@ fun MainScreen(
         isBackPressed,
         onBackPressedChanged,
         mapViewModel,
-        navController
+        navController,
+        isFilteredMarker,
+        onFilteredMarkerChanged,
+        isReSearchButtonClicked
     )
 
     if (isReloadOrShowMoreShowAble) {
-        ReloadOrShowMoreButton(
-            isMarkerClicked,
-            currentSummaryInfoHeight,
-            isMapGestured,
-            onShowMoreCountChanged,
-            onReloadButtonChanged,
-            onMarkerChanged,
-            onBottomSheetChanged,
-            isLoading,
-            showMoreCount,
-            mapViewModel
-        )
+        val searchText = navController.previousBackStackEntry?.savedStateHandle?.contains(
+            SEARCH_KEY
+        ) ?: false
+        if (searchText) {
+            ReSearchComponent(
+                isMarkerClicked,
+                currentSummaryInfoHeight,
+                isMapGestured,
+                onReSearchButtonChanged,
+                onMarkerChanged,
+                onBottomSheetChanged,
+                isLoading,
+            )
+        } else {
+            ReloadOrShowMoreButton(
+                isMarkerClicked,
+                currentSummaryInfoHeight,
+                isMapGestured,
+                onShowMoreCountChanged,
+                onReloadButtonChanged,
+                onMarkerChanged,
+                onBottomSheetChanged,
+                isLoading,
+                showMoreCount,
+                mapViewModel
+            )
+        }
     }
 
     StoreSearchComponent(
@@ -238,9 +263,23 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
+    val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
+    if (isReSearchButtonClicked && isScreenCoordinateChanged) {
+        Log.d("테스트", "키워드 재검색 눌리고있음?")
+        mapViewModel.updateIsFilteredMarker(false)
+        mapViewModel.searchStore(
+            mapCenterCoordinate.longitude,
+            mapCenterCoordinate.latitude,
+            searchText ?: ""
+        )
+        onReSearchButtonChanged(false)
+        onGetNewScreenCoordinateChanged(false)
+    }
+
     if ((isReloadButtonClicked && isScreenCoordinateChanged)) {
         mapViewModel.updateIsFilteredMarker(false)
         onErrorToastChanged("")
+        onFilteredMarkerChanged(false)
         mapViewModel.getStoreDetail(
             nwLong = screenCoordinate.northWest.longitude,
             nwLat = screenCoordinate.northWest.latitude,

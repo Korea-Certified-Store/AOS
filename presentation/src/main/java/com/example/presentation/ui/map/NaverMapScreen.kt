@@ -91,7 +91,10 @@ fun NaverMapScreen(
     isBackPressed: Boolean,
     onBackPressedChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    isFilteredMarker: Boolean,
+    onFilteredMarkerChanged: (Boolean) -> Unit,
+    isReSearchButtonClicked: Boolean
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -247,6 +250,15 @@ fun NaverMapScreen(
             if (selectedLocationButton == LocationTrackingButton.FOLLOW || selectedLocationButton == LocationTrackingButton.FACE) {
                 onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
             }
+        }
+        if (isReSearchButtonClicked) {
+            mapViewModel.updateMapCenterCoordinate(
+                Coordinate(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude
+                )
+            )
+            onGetNewScreenCoordinateChanged(true)
         }
         if (isReloadButtonClicked) {
             GetScreenCoordinate(cameraPositionState, onScreenChanged)
