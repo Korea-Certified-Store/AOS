@@ -39,6 +39,7 @@ import com.example.presentation.util.MainConstants.INITIALIZE_DONE
 import com.example.presentation.util.MainConstants.INITIALIZE_MOVE_ONCE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.UN_MARKER
+import com.example.presentation.util.MapScreenType
 import com.example.presentation.util.UiState
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -86,7 +87,8 @@ fun NaverMapScreen(
     isSearchComponentClicked: Boolean,
     onMapCenterCoordinateChanged: (Coordinate) -> Unit,
     onSearchCoordinateChanged: (Boolean) -> Unit,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    mapScreenType: MapScreenType
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -132,75 +134,79 @@ fun NaverMapScreen(
 
         val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle()
 
-        LaunchedEffect(key1 = storeDetailData) {
-            when (val state = storeDetailData) {
-                is UiState.Loading -> {
-                    if (mapViewModel.ableToShowSplashScreen.value.not()) {
-                        onLoadingChanged(true)
-                    }
-                }
+        if (mapScreenType == MapScreenType.MAIN) {
+            LaunchedEffect(key1 = storeDetailData) {
 
-                is UiState.Success -> {
-                    val isInitializationLocation =
-                        mapViewModel.isLocationPermissionGranted.value.not()
-                                || (mapViewModel.storeInitializeState.value == INITIALIZE_DONE)
-                    if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value) {
-                        onSplashScreenShowAble(false)
+                when (val state = storeDetailData) {
+                    is UiState.Loading -> {
+                        if (mapViewModel.ableToShowSplashScreen.value.not()) {
+                            onLoadingChanged(true)
+                        }
                     }
-                    onFilteredMarkerChanged(true)
-                    onLoadingChanged(false)
-                    onCurrentMapChanged(false)
-                    onShowMoreCountChanged(ShowMoreCount(0, state.data.size))
-                }
 
-                is UiState.Failure -> {
-                    if (mapViewModel.ableToShowSplashScreen.value) {
-                        onSplashScreenShowAble(false)
+                    is UiState.Success -> {
+                        val isInitializationLocation =
+                            mapViewModel.isLocationPermissionGranted.value.not()
+                                    || (mapViewModel.storeInitializeState.value == INITIALIZE_DONE)
+                        if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value) {
+                            onSplashScreenShowAble(false)
+                        }
+                        onFilteredMarkerChanged(true)
+                        onLoadingChanged(false)
+                        onCurrentMapChanged(false)
+                        onShowMoreCountChanged(ShowMoreCount(0, state.data.size))
                     }
-                    if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
-                        onReloadOrShowMoreChanged(false)
+
+                    is UiState.Failure -> {
+                        if (mapViewModel.ableToShowSplashScreen.value) {
+                            onSplashScreenShowAble(false)
+                        }
+                        if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
+                            onReloadOrShowMoreChanged(false)
+                        }
+                        onLoadingChanged(false)
+                        onErrorSnackBarChanged(state.msg)
                     }
-                    onLoadingChanged(false)
-                    onErrorSnackBarChanged(state.msg)
                 }
             }
-        }
+        } else {
+            val padding = with(LocalDensity.current) {
+                Dp(35F).roundToPx()
+            }
+            val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
+            LaunchedEffect(key1 = searchStore) {
 
-        val padding = with(LocalDensity.current) {
-            Dp(35F).roundToPx()
-        }
-        val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
-        LaunchedEffect(key1 = searchStore) {
-            when (val state = searchStore) {
-                is UiState.Loading -> {
-                    // Todo : 검색 시 로딩 뷰 구현
-                }
-
-                is UiState.Success -> {
-                    onFilteredMarkerChanged(true)
-                    onCurrentMapChanged(false)
-                    onReloadOrShowMoreChanged(false)
-                    val bounds = LatLngBounds(
-                        mapViewModel.searchBounds.value.first,
-                        mapViewModel.searchBounds.value.second
-                    )
-                    cameraPositionState.animate(
-                        if (bounds.southWest.latitude == 0.0) {
-                            val position = CameraPosition(bounds.northEast, 16.0)
-                            CameraUpdate.toCameraPosition(position)
-                        } else {
-                            CameraUpdate.fitBounds(bounds, padding)
-                        },
-                        animation = CameraAnimation.Fly,
-                        durationMs = 500
-                    )
-                }
-
-                is UiState.Failure -> {
-                    if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
-                        onReloadOrShowMoreChanged(false)
+                when (val state = searchStore) {
+                    is UiState.Loading -> {
+                        // Todo : 검색 시 로딩 뷰 구현
                     }
-                    onErrorSnackBarChanged(state.msg)
+
+                    is UiState.Success -> {
+                        onFilteredMarkerChanged(true)
+                        onCurrentMapChanged(false)
+                        onReloadOrShowMoreChanged(false)
+                        val bounds = LatLngBounds(
+                            mapViewModel.searchBounds.value.first,
+                            mapViewModel.searchBounds.value.second
+                        )
+                        cameraPositionState.animate(
+                            if (bounds.southWest.latitude == 0.0) {
+                                val position = CameraPosition(bounds.northEast, 16.0)
+                                CameraUpdate.toCameraPosition(position)
+                            } else {
+                                CameraUpdate.fitBounds(bounds, padding)
+                            },
+                            animation = CameraAnimation.Fly,
+                            durationMs = 500
+                        )
+                    }
+
+                    is UiState.Failure -> {
+                        if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
+                            onReloadOrShowMoreChanged(false)
+                        }
+                        onErrorSnackBarChanged(state.msg)
+                    }
                 }
             }
         }

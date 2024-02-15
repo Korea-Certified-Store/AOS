@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.domain.model.search.SearchWord
 import com.example.presentation.R
@@ -134,12 +135,9 @@ fun SearchTextField(
 ) {
     var searchText by remember { mutableStateOf("") }
 
+    val (isDoneClicked, onDoneClickChanged) = remember { mutableStateOf(false) }
+
     val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
-
-    val context = LocalContext.current
 
     BasicTextField(
         value = searchText,
@@ -199,23 +197,7 @@ fun SearchTextField(
                         searchCoordinate.latitude,
                         searchText
                     )
-
-                    when (val state = searchStore) {
-                        is UiState.Success -> {
-                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                key = SEARCH_KEY,
-                                value = searchText
-                            )
-                            navController.navigate(Screen.Main.route)
-                            keyboardController?.hide()
-                        }
-
-                        is UiState.Failure -> {
-                            Toast.makeText(context, state.msg, Toast.LENGTH_SHORT).show()
-                        }
-
-                        else -> {}
-                    }
+                    onDoneClickChanged(true)
                 }
             }
         })
@@ -224,11 +206,51 @@ fun SearchTextField(
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
+
+    checkSearchResult(isDoneClicked, onDoneClickChanged, searchText, mapViewModel, navController)
 }
 
 fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
     val nowTime = System.currentTimeMillis()
     viewModel.insertSearchWord(SearchWord(keyword = keyword, searchTime = nowTime))
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun checkSearchResult(
+    isDoneClicked: Boolean,
+    onDoneClickChanged: (Boolean) -> Unit,
+    searchText: String,
+    mapViewModel: MapViewModel,
+    navController: NavController
+) {
+    val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
+
+    if (isDoneClicked) {
+        LaunchedEffect(key1 = searchStore) {
+            when (val state = searchStore) {
+                is UiState.Success -> {
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        key = SEARCH_KEY,
+                        value = searchText
+                    )
+                    navController.navigate(Screen.Main.route)
+                    keyboardController?.hide()
+                    onDoneClickChanged(false)
+                }
+
+                is UiState.Failure -> {
+                    Toast.makeText(context, state.msg, Toast.LENGTH_SHORT).show()
+                    onDoneClickChanged(false)
+                }
+
+                else -> {}
+            }
+        }
+    }
 }
 
 @Composable

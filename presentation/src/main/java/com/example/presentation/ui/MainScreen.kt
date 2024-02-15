@@ -27,6 +27,7 @@ import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UN_MARKER
+import com.example.presentation.util.MapScreenType
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 
 @ExperimentalNaverMapApi
@@ -135,6 +136,14 @@ fun MainScreen(
         )
     }
 
+    val (mapScreenType, onMapScreenTypeChanged) = remember { mutableStateOf(MapScreenType.MAIN) }
+
+    if (searchText == null) {
+        onMapScreenTypeChanged(MapScreenType.MAIN)
+    } else {
+        onMapScreenTypeChanged(MapScreenType.SEARCH)
+    }
+
     NaverMapScreen(
         isMarkerClicked,
         onBottomSheetChanged,
@@ -162,7 +171,8 @@ fun MainScreen(
         isSearchComponentClicked,
         onMapCenterCoordinateChanged,
         onSearchCoordinatedChanged,
-        mapViewModel
+        mapViewModel,
+        mapScreenType
     )
 
     if (isReloadOrShowMoreShowAble) {
