@@ -24,8 +24,8 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
+import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.search.StoreSearchComponent
-import com.example.presentation.ui.search.TempSearchScreen
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -123,13 +123,9 @@ fun MainScreen(
         )
     }
 
-    val (isSearchButtonClicked, onSearchButtonChanged) = remember { mutableStateOf(false) }
+    val (isSearchComponentClicked, onSearchComponentChanged) = remember { mutableStateOf(false) }
 
-    val (isSearchAble, onSearchAbleChanged) = remember { mutableStateOf(false) }
-
-    val (searchKeyword, onSearchKeywordChanged) = remember {
-        mutableStateOf("아구찜")
-    }
+    val (isSearchCoordinateGotten, onSearchCoordinatedChanged) = remember { mutableStateOf(false) }
 
     val (mapCenterCoordinate, onMapCenterCoordinateChanged) = remember {
         mutableStateOf(
@@ -164,9 +160,9 @@ fun MainScreen(
         onReloadOrShowMoreChanged,
         isReloadButtonClicked,
         onGetNewScreenCoordinateChanged,
-        isSearchButtonClicked,
+        isSearchComponentClicked,
         onMapCenterCoordinateChanged,
-        onSearchAbleChanged
+        onSearchCoordinatedChanged
     )
 
     if (isReloadOrShowMoreShowAble) {
@@ -183,7 +179,7 @@ fun MainScreen(
         )
     }
 
-    StoreSearchComponent(navController, searchText)
+    StoreSearchComponent(navController, searchText, onSearchComponentChanged)
 
     FilterComponent(
         isKindFilterClicked,
@@ -195,8 +191,6 @@ fun MainScreen(
         mapViewModel,
         onFilterStateChanged
     )
-
-    TempSearchScreen(onSearchButtonChanged)
 
     if (bottomSheetExpandedType == ExpandedType.FULL || bottomSheetExpandedType == ExpandedType.HALF || bottomSheetExpandedType == ExpandedType.DIM_CLICK) {
         DimScreen(bottomSheetExpandedType, onBottomSheetExpandedChanged)
@@ -239,14 +233,14 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
-    if (isSearchAble) {
-        onSearchButtonChanged(false)
-        mapViewModel.searchStore(
-            mapCenterCoordinate.longitude,
-            mapCenterCoordinate.latitude,
-            searchKeyword
+    if (isSearchCoordinateGotten) {
+        onSearchComponentChanged(false)
+        navController.currentBackStackEntry?.savedStateHandle?.set(
+            key = MainConstants.SEARCH_COORDINATE_KEY,
+            value = mapCenterCoordinate
         )
-        onSearchAbleChanged(false)
+        navController.navigate(Screen.Search.route)
+        onSearchCoordinatedChanged(false)
     }
 
     if (isReloadButtonClicked && isScreenCoordinateChanged) {

@@ -84,9 +84,9 @@ fun NaverMapScreen(
     onReloadOrShowMoreChanged: (Boolean) -> Unit,
     isReloadButtonClicked: Boolean,
     onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
-    isSearchButtonClicked: Boolean,
+    isSearchComponentClicked: Boolean,
     onMapCenterCoordinateChanged: (Coordinate) -> Unit,
-    onSearchAbleChanged: (Boolean) -> Unit,
+    onSearchCoordinateChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel = hiltViewModel()
 ) {
     val cameraPositionState = rememberCameraPositionState {}
@@ -235,14 +235,14 @@ fun NaverMapScreen(
             GetScreenCoordinate(cameraPositionState, onScreenChanged)
             onGetNewScreenCoordinateChanged(true)
         }
-        if (isSearchButtonClicked) {
+        if (isSearchComponentClicked) {
             onMapCenterCoordinateChanged(
                 Coordinate(
                     cameraPositionState.position.target.latitude,
                     cameraPositionState.position.target.longitude,
                 )
             )
-            onSearchAbleChanged(true)
+            onSearchCoordinateChanged(true)
         }
     }
 

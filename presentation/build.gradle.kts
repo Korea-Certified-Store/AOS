@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     id(libs.plugins.hilt.plugin.get().pluginId)
+    id("kotlin-parcelize")
 }
 
 val properties = Properties()
