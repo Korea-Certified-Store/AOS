@@ -105,8 +105,6 @@ fun MainScreen(
 
     val (isLoading, onLoadingChanged) = remember { mutableStateOf(false) }
 
-    val (isFilteredMarker, onFilteredMarkerChanged) = remember { mutableStateOf(false) }
-
     val (errorToastMsg, onErrorToastChanged) = remember { mutableStateOf("") }
 
     val (isListItemClicked, onListItemChanged) = remember { mutableStateOf(false) }
@@ -123,6 +121,12 @@ fun MainScreen(
 
     val (isSearchComponentClicked, onSearchComponentChanged) = remember { mutableStateOf(false) }
 
+    val (isSearchTerminationButtonClicked, onSearchTerminationButtonChanged) = remember {
+        mutableStateOf(
+            false
+        )
+    }
+
     NaverMapScreen(
         isMarkerClicked,
         onBottomSheetChanged,
@@ -137,8 +141,6 @@ fun MainScreen(
         onSplashScreenShowAble,
         onLoadingChanged,
         onCurrentMapChanged,
-        isFilteredMarker,
-        onFilteredMarkerChanged,
         onErrorToastChanged,
         isListItemClicked,
         onListItemChanged,
@@ -149,6 +151,8 @@ fun MainScreen(
         onGetNewScreenCoordinateChanged,
         isSearchComponentClicked,
         onSearchComponentChanged,
+        isSearchTerminationButtonClicked,
+        onSearchTerminationButtonChanged,
         mapViewModel,
         navController
     )
@@ -168,7 +172,11 @@ fun MainScreen(
         )
     }
 
-    StoreSearchComponent(navController, searchText, onSearchComponentChanged)
+    StoreSearchComponent(
+        searchText,
+        onSearchComponentChanged,
+        onSearchTerminationButtonChanged
+    )
 
     FilterComponent(
         isKindFilterClicked,
@@ -223,8 +231,8 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
-    if (isReloadButtonClicked && isScreenCoordinateChanged) {
-        onFilteredMarkerChanged(false)
+    if ((isReloadButtonClicked && isScreenCoordinateChanged)) {
+        mapViewModel.updateIsFilteredMarker(false)
         onErrorToastChanged("")
         mapViewModel.getStoreDetail(
             nwLong = screenCoordinate.northWest.longitude,

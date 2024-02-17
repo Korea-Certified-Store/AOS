@@ -77,6 +77,12 @@ class MapViewModel @Inject constructor(
     private val _mapScreenType = MutableStateFlow(MapScreenType.MAIN)
     val mapScreenType: StateFlow<MapScreenType> = _mapScreenType
 
+    private val _isSearchTerminated = MutableStateFlow(false)
+    val isSearchTerminated: StateFlow<Boolean> = _isSearchTerminated
+
+    private val _isFilteredMarker = MutableStateFlow(false)
+    val isFilteredMarker: StateFlow<Boolean> = _isFilteredMarker
+
     fun showMoreStore(count: Int) {
         val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
             is UiState.Success -> uiState.data.getOrNull(count) ?: emptyList()
@@ -232,5 +238,13 @@ class MapViewModel @Inject constructor(
 
     fun updateMapScreenType(type: MapScreenType) {
         _mapScreenType.value = type
+    }
+
+    fun updateIsSearchTerminated(isTerminated: Boolean) {
+        _isSearchTerminated.value = isTerminated
+    }
+
+    fun updateIsFilteredMarker(isFilteredMarker: Boolean) {
+        _isFilteredMarker.value = isFilteredMarker
     }
 }
