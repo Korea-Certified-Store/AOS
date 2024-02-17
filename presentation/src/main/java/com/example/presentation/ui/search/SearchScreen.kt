@@ -92,6 +92,7 @@ fun SearchScreen(
 
     BackHandler {
         mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+        mapViewModel.updateIsSearchTerminated(true)
         navController.popBackStack()
     }
 }
@@ -111,7 +112,7 @@ private fun SearchAppBar(
                 vertical = SEARCH_TEXT_FIELD_TOP_PADDING.dp
             )
     ) {
-        BackArrow(navController)
+        BackArrow(navController, mapViewModel)
         SearchTextField(navController, mapViewModel)
     }
 }
@@ -228,13 +229,14 @@ fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
 }
 
 @Composable
-private fun BackArrow(navController: NavHostController) {
+private fun BackArrow(navController: NavHostController, mapViewModel: MapViewModel) {
     Image(
         imageVector = ImageVector.vectorResource(id = R.drawable.arrow),
         contentDescription = "Arrow",
         modifier = Modifier
             .size(18.dp)
             .clickable {
+                mapViewModel.updateIsSearchTerminated(true)
                 navController.popBackStack()
             }
     )

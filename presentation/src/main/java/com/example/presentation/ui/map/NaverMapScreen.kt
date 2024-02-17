@@ -19,7 +19,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.domain.model.map.ShowMoreCount
 import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
 import com.example.presentation.mapper.toUiModel
@@ -88,8 +88,10 @@ fun NaverMapScreen(
     onSearchComponentChanged: (Boolean) -> Unit,
     isSearchTerminationButtonClicked: Boolean,
     onSearchTerminationButtonChanged: (Boolean) -> Unit,
+    isBackPressed: Boolean,
+    onBackPressedChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel,
-    navController: NavController
+    navController: NavHostController
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -260,6 +262,17 @@ fun NaverMapScreen(
             mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
             navController.navigate(Screen.Search.route)
             onSearchComponentChanged(false)
+        }
+        if (isBackPressed) {
+            mapViewModel.updateMapCenterCoordinate(
+                Coordinate(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude,
+                )
+            )
+            mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
+            onBackPressedChanged(false)
+            navController.popBackStack()
         }
     }
 
@@ -479,7 +492,7 @@ private fun CheckSearchTerminationButtonClicked(
     isSearchTerminationButtonClicked: Boolean,
     mapViewModel: MapViewModel,
     cameraPositionState: CameraPositionState,
-    navController: NavController,
+    navController: NavHostController,
     onSearchTerminationButtonChanged: (Boolean) -> Unit,
     onReloadButtonChanged: (Boolean) -> Unit,
     mapCenterCoordinate: Coordinate,

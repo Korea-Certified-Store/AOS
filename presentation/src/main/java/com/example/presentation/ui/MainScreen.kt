@@ -2,13 +2,16 @@ package com.example.presentation.ui
 
 import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
@@ -26,6 +29,7 @@ import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
 import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UN_MARKER
+import com.example.presentation.util.MapScreenType
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 
 @ExperimentalNaverMapApi
@@ -33,7 +37,7 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 fun MainScreen(
     onCallStoreChanged: (String) -> Unit,
     onSplashScreenShowAble: (Boolean) -> Unit,
-    navController: NavController,
+    navController: NavHostController,
     searchText: String?,
     mapViewModel: MapViewModel
 ) {
@@ -126,6 +130,7 @@ fun MainScreen(
             false
         )
     }
+    val (isBackPressed, onBackPressedChanged) = remember { mutableStateOf(false) }
 
     NaverMapScreen(
         isMarkerClicked,
@@ -153,6 +158,8 @@ fun MainScreen(
         onSearchComponentChanged,
         isSearchTerminationButtonClicked,
         onSearchTerminationButtonChanged,
+        isBackPressed,
+        onBackPressedChanged,
         mapViewModel,
         navController
     )
@@ -262,5 +269,31 @@ fun MainScreen(
         val context = LocalContext.current as Activity
         Toast.makeText(context, errorToastMsg, Toast.LENGTH_SHORT).show()
         onErrorToastChanged("")
+    }
+
+    PressBack(mapViewModel, onBackPressedChanged)
+}
+
+@Composable
+fun PressBack(
+    mapViewModel: MapViewModel,
+    onBackPressedChanged: (Boolean) -> Unit
+) {
+    val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var backPressedTime = 0L
+
+    BackHandler {
+        if (mapScreenType == MapScreenType.SEARCH) {
+            onBackPressedChanged(true)
+            mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+        } else {
+            if (System.currentTimeMillis() - backPressedTime <= 2000L) {
+                (context as Activity).finish()
+            } else {
+                Toast.makeText(context, "한 번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+            }
+            backPressedTime = System.currentTimeMillis()
+        }
     }
 }
