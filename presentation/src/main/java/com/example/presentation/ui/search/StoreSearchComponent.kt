@@ -36,7 +36,11 @@ import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
 @Composable
-fun StoreSearchComponent(navController: NavController, searchText: String?) {
+fun StoreSearchComponent(
+    navController: NavController,
+    searchText: String?,
+    onSearchComponentChanged: (Boolean) -> Unit
+) {
     Row(
         modifier = Modifier
             .padding(
@@ -54,11 +58,7 @@ fun StoreSearchComponent(navController: NavController, searchText: String?) {
                 shape = RoundedCornerShape(size = 12.dp)
             )
             .clickable {
-                if (searchText == null) {
-                    navController.navigate(Screen.Search.route)
-                } else {
-                    navController.popBackStack()
-                }
+                onSearchComponentChanged(true)
             },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween

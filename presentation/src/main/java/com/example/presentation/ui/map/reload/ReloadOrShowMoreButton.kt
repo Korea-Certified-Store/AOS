@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.example.domain.model.map.ShowMoreCount
+import com.example.presentation.ui.map.MapViewModel
 
 @Composable
 fun ReloadOrShowMoreButton(
@@ -21,7 +22,8 @@ fun ReloadOrShowMoreButton(
     onMarkerChanged: (Long) -> Unit,
     onBottomSheetChanged: (Boolean) -> Unit,
     isLoading: Boolean,
-    showMoreCount: ShowMoreCount
+    showMoreCount: ShowMoreCount,
+    mapViewModel: MapViewModel
 ) {
     Column(
         modifier = Modifier
@@ -43,9 +45,10 @@ fun ReloadOrShowMoreButton(
                 onMarkerChanged,
                 onBottomSheetChanged,
                 isLoading,
+                mapViewModel
             )
         } else {
-            ShowMoreButton(showMoreCount, onShowMoreCountChanged)
+            ShowMoreButton(showMoreCount, onShowMoreCountChanged, mapViewModel)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.presentation.ui.search
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -48,10 +50,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.domain.model.search.SearchWord
 import com.example.presentation.R
+import com.example.presentation.model.Coordinate
 import com.example.presentation.ui.component.EmptyScreen
+import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.DarkGray
@@ -63,9 +68,14 @@ import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
+import com.example.presentation.util.UiState
 
 @Composable
-fun SearchScreen(navController: NavHostController) {
+fun SearchScreen(
+    navController: NavHostController,
+    searchCoordinate: Coordinate?,
+    mapViewModel: MapViewModel
+) {
     val (isDeleteAllDialogVisible, onDeleteAllDialogVisibleChanged) = remember {
         mutableStateOf(
             false
@@ -75,7 +85,7 @@ fun SearchScreen(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        SearchAppBar(navController)
+        SearchAppBar(navController, searchCoordinate, mapViewModel)
         SearchDivider(6)
         RecentSearchList(onDeleteAllDialogVisibleChanged)
 
@@ -86,7 +96,11 @@ fun SearchScreen(navController: NavHostController) {
 }
 
 @Composable
-private fun SearchAppBar(navController: NavHostController) {
+private fun SearchAppBar(
+    navController: NavHostController,
+    searchCoordinate: Coordinate?,
+    mapViewModel: MapViewModel
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -98,7 +112,7 @@ private fun SearchAppBar(navController: NavHostController) {
             )
     ) {
         BackArrow(navController)
-        SearchTextField(navController)
+        SearchTextField(navController, searchCoordinate, mapViewModel)
     }
 }
 
@@ -115,12 +129,15 @@ fun SearchDivider(thickness: Int) {
 @Composable
 fun SearchTextField(
     navController: NavHostController,
-    viewModel: SearchViewModel = hiltViewModel()
+    searchCoordinate: Coordinate?,
+    mapViewModel: MapViewModel,
+    searchViewModel: SearchViewModel = hiltViewModel(),
 ) {
     var searchText by remember { mutableStateOf("") }
 
+    val (isDoneClicked, onDoneClickChanged) = remember { mutableStateOf(false) }
+
     val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     BasicTextField(
         value = searchText,
@@ -172,14 +189,16 @@ fun SearchTextField(
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
             if (searchText.isNotBlank()) {
-                insertSearchWord(searchText, viewModel)
+                insertSearchWord(searchText, searchViewModel)
 
-                navController.currentBackStackEntry?.savedStateHandle?.set(
-                    key = SEARCH_KEY,
-                    value = searchText
-                )
-                navController.navigate(Screen.Main.route)
-                keyboardController?.hide()
+                if (searchCoordinate != null) {
+                    mapViewModel.searchStore(
+                        searchCoordinate.longitude,
+                        searchCoordinate.latitude,
+                        searchText
+                    )
+                    onDoneClickChanged(true)
+                }
             }
         })
     )
@@ -187,11 +206,51 @@ fun SearchTextField(
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
+
+    checkSearchResult(isDoneClicked, onDoneClickChanged, searchText, mapViewModel, navController)
 }
 
 fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
     val nowTime = System.currentTimeMillis()
     viewModel.insertSearchWord(SearchWord(keyword = keyword, searchTime = nowTime))
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun checkSearchResult(
+    isDoneClicked: Boolean,
+    onDoneClickChanged: (Boolean) -> Unit,
+    searchText: String,
+    mapViewModel: MapViewModel,
+    navController: NavController
+) {
+    val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
+
+    if (isDoneClicked) {
+        LaunchedEffect(key1 = searchStore) {
+            when (val state = searchStore) {
+                is UiState.Success -> {
+                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                        key = SEARCH_KEY,
+                        value = searchText
+                    )
+                    navController.navigate(Screen.Main.route)
+                    keyboardController?.hide()
+                    onDoneClickChanged(false)
+                }
+
+                is UiState.Failure -> {
+                    Toast.makeText(context, state.msg, Toast.LENGTH_SHORT).show()
+                    onDoneClickChanged(false)
+                }
+
+                else -> {}
+            }
+        }
+    }
 }
 
 @Composable

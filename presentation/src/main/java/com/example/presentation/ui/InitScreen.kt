@@ -2,7 +2,6 @@ package com.example.presentation.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.location.LocationPermissionRequest
@@ -22,7 +21,7 @@ fun InitScreen(
     isOnboardingScreenShowAble: Boolean,
     onOnboardingScreenShowAble: (Boolean) -> Unit,
     isSplashScreenShowAble: Boolean,
-    mapViewModel: MapViewModel = hiltViewModel()
+    mapViewModel: MapViewModel
 ) {
     LocationPermissionRequest(mapViewModel)
 
@@ -30,7 +29,8 @@ fun InitScreen(
         onCallStoreChanged,
         onSplashScreenShowAble,
         navController,
-        searchText
+        searchText,
+        mapViewModel
     )
 
     if (isFirstRun) {

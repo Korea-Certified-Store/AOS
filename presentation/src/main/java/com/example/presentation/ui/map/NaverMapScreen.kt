@@ -15,10 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.map.ShowMoreCount
 import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
@@ -40,9 +39,12 @@ import com.example.presentation.util.MainConstants.INITIALIZE_DONE
 import com.example.presentation.util.MainConstants.INITIALIZE_MOVE_ONCE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.UN_MARKER
+import com.example.presentation.util.MapScreenType
 import com.example.presentation.util.UiState
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
@@ -82,7 +84,11 @@ fun NaverMapScreen(
     onReloadOrShowMoreChanged: (Boolean) -> Unit,
     isReloadButtonClicked: Boolean,
     onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
-    mapViewModel: MapViewModel = hiltViewModel()
+    isSearchComponentClicked: Boolean,
+    onMapCenterCoordinateChanged: (Coordinate) -> Unit,
+    onSearchCoordinateChanged: (Boolean) -> Unit,
+    mapViewModel: MapViewModel,
+    mapScreenType: MapScreenType
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -107,7 +113,8 @@ fun NaverMapScreen(
                 onReloadOrShowMoreChanged,
                 onLocationButtonChanged,
                 selectedLocationButton.mode,
-                onCurrentMapChanged
+                onCurrentMapChanged,
+                mapViewModel
             )
         },
         locationSource = rememberFusedLocationSource(),
@@ -125,48 +132,87 @@ fun NaverMapScreen(
         },
     ) {
 
-        val lifecycleOwner = LocalLifecycleOwner.current
-        val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle(
-            lifecycleOwner
-        )
+        val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle()
 
-        LaunchedEffect(key1 = storeDetailData) {
-            when (val state = storeDetailData) {
-                is UiState.Loading -> {
-                    if (mapViewModel.ableToShowSplashScreen.value.not()) {
-                        onLoadingChanged(true)
+        if (mapScreenType == MapScreenType.MAIN) {
+            LaunchedEffect(key1 = storeDetailData) {
+
+                when (val state = storeDetailData) {
+                    is UiState.Loading -> {
+                        if (mapViewModel.ableToShowSplashScreen.value.not()) {
+                            onLoadingChanged(true)
+                        }
+                    }
+
+                    is UiState.Success -> {
+                        val isInitializationLocation =
+                            mapViewModel.isLocationPermissionGranted.value.not()
+                                    || (mapViewModel.storeInitializeState.value == INITIALIZE_DONE)
+                        if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value) {
+                            onSplashScreenShowAble(false)
+                        }
+                        onFilteredMarkerChanged(true)
+                        onLoadingChanged(false)
+                        onCurrentMapChanged(false)
+                        onShowMoreCountChanged(ShowMoreCount(0, state.data.size))
+                    }
+
+                    is UiState.Failure -> {
+                        if (mapViewModel.ableToShowSplashScreen.value) {
+                            onSplashScreenShowAble(false)
+                        }
+                        if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
+                            onReloadOrShowMoreChanged(false)
+                        }
+                        onLoadingChanged(false)
+                        onErrorSnackBarChanged(state.msg)
                     }
                 }
+            }
+        } else {
+            val padding = with(LocalDensity.current) {
+                Dp(35F).roundToPx()
+            }
+            val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
+            LaunchedEffect(key1 = searchStore) {
 
-                is UiState.Success -> {
-                    val isInitializationLocation =
-                        mapViewModel.isLocationPermissionGranted.value.not()
-                                || (mapViewModel.storeInitializeState.value == INITIALIZE_DONE)
-                    if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value) {
-                        onSplashScreenShowAble(false)
+                when (val state = searchStore) {
+                    is UiState.Loading -> {
+                        // Todo : 검색 시 로딩 뷰 구현
                     }
-                    onFilteredMarkerChanged(true)
-                    onLoadingChanged(false)
-                    onCurrentMapChanged(false)
-                    onShowMoreCountChanged(ShowMoreCount(0, state.data.size))
-                }
 
-                is UiState.Failure -> {
-                    if (mapViewModel.ableToShowSplashScreen.value) {
-                        onSplashScreenShowAble(false)
-                    }
-                    if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
+                    is UiState.Success -> {
+                        onFilteredMarkerChanged(true)
+                        onCurrentMapChanged(false)
                         onReloadOrShowMoreChanged(false)
+                        val bounds = LatLngBounds(
+                            mapViewModel.searchBounds.value.first,
+                            mapViewModel.searchBounds.value.second
+                        )
+                        cameraPositionState.animate(
+                            if (bounds.southWest.latitude == 0.0) {
+                                val position = CameraPosition(bounds.northEast, 16.0)
+                                CameraUpdate.toCameraPosition(position)
+                            } else {
+                                CameraUpdate.fitBounds(bounds, padding)
+                            },
+                            animation = CameraAnimation.Fly,
+                            durationMs = 500
+                        )
                     }
-                    onLoadingChanged(false)
-                    onErrorSnackBarChanged(state.msg)
+
+                    is UiState.Failure -> {
+                        if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
+                            onReloadOrShowMoreChanged(false)
+                        }
+                        onErrorSnackBarChanged(state.msg)
+                    }
                 }
             }
         }
 
         if (isFilteredMarker) {
             FilteredMarkers(
-                mapViewModel.flattenedStoreDetailList.value,
                 mapViewModel,
                 onBottomSheetChanged,
                 onStoreInfoChanged,
@@ -191,10 +237,18 @@ fun NaverMapScreen(
                 onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
             }
         }
-
         if (isReloadButtonClicked) {
             GetScreenCoordinate(cameraPositionState, onScreenChanged)
             onGetNewScreenCoordinateChanged(true)
+        }
+        if (isSearchComponentClicked) {
+            onMapCenterCoordinateChanged(
+                Coordinate(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude,
+                )
+            )
+            onSearchCoordinateChanged(true)
         }
     }
 
@@ -215,14 +269,14 @@ private fun TurnOffLocationButton(onLocationButtonChanged: (LocationTrackingButt
 @ExperimentalNaverMapApi
 @Composable
 fun FilteredMarkers(
-    storeInfo: List<com.example.domain.model.map.StoreDetail>,
     mapViewModel: MapViewModel,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     clickedMarkerId: Long,
     onMarkerChanged: (Long) -> Unit,
 ) {
-    storeInfo.filter { info ->
+    val storeDetailData by mapViewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
+    storeDetailData.filter { info ->
         mapViewModel.getFilterSet().intersect(info.certificationName.toSet()).isNotEmpty()
     }.forEach { info ->
         val storeType =
@@ -252,7 +306,7 @@ fun InitializeMarker(
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
     selectedLocationButtonMode: LocationTrackingMode,
     onCurrentMapChanged: (Boolean) -> Unit,
-    mainViewModel: MapViewModel = hiltViewModel()
+    mainViewModel: MapViewModel
 ) {
     val (isInitialLocationSet, onInitialLocationSetChanged) = remember { mutableStateOf(false) }
     val (isMapGestured, onMapGestureChanged) = remember { mutableStateOf(false) }

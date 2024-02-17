@@ -31,6 +31,7 @@ import com.example.presentation.ui.component.StorePrimaryTypeText
 import com.example.presentation.ui.component.StoreTitleText
 import com.example.presentation.ui.component.StoreTypeChips
 import com.example.presentation.ui.map.summary.StoreOpeningTime
+import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.LightGray
 import com.example.presentation.util.MainConstants.BOTTOM_SHEET_STORE_DETAIL_IMG_SIZE
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
@@ -95,7 +96,8 @@ fun StoreOpeningTimeOfWeek(operationTimeOfWeek: Map<String, List<String>>, id: S
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier
-                        .wrapContentSize()
+                        .wrapContentSize(),
+                    color = Black
                 )
                 Column {
                     operationTimeOfDay.value.forEach {
@@ -105,7 +107,8 @@ fun StoreOpeningTimeOfWeek(operationTimeOfWeek: Map<String, List<String>>, id: S
                             fontWeight = FontWeight.Normal,
                             modifier = Modifier
                                 .wrapContentSize()
-                                .padding(start = 8.dp, top = 1.dp)
+                                .padding(start = 8.dp, top = 1.dp),
+                            color = Black
                         )
                     }
                 }
@@ -269,7 +272,8 @@ fun StorePhoneNumber(phoneNumber: String?, id: String) {
             .wrapContentHeight()
             .layoutId(id),
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
+        fontSize = 12.sp,
+        color = Black
     )
 }
 
@@ -282,6 +286,7 @@ fun StoreAddressInfo(addressInfo: String, id: String, maxWidth: Dp) {
             .width(maxWidth - BOTTOM_SHEET_STORE_DETAIL_IMG_SIZE.dp - (DEFAULT_MARGIN * 2).dp - 38.dp)
             .layoutId(id),
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
+        fontSize = 12.sp,
+        color = Black
     )
 }

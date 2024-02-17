@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.model.Contact
@@ -24,9 +23,11 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
+import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UN_MARKER
+import com.example.presentation.util.MapScreenType
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 
 @ExperimentalNaverMapApi
@@ -36,7 +37,7 @@ fun MainScreen(
     onSplashScreenShowAble: (Boolean) -> Unit,
     navController: NavController,
     searchText: String?,
-    mapViewModel: MapViewModel = hiltViewModel()
+    mapViewModel: MapViewModel
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
@@ -122,6 +123,27 @@ fun MainScreen(
         )
     }
 
+    val (isSearchComponentClicked, onSearchComponentChanged) = remember { mutableStateOf(false) }
+
+    val (isSearchCoordinateGotten, onSearchCoordinatedChanged) = remember { mutableStateOf(false) }
+
+    val (mapCenterCoordinate, onMapCenterCoordinateChanged) = remember {
+        mutableStateOf(
+            Coordinate(
+                0.0,
+                0.0
+            )
+        )
+    }
+
+    val (mapScreenType, onMapScreenTypeChanged) = remember { mutableStateOf(MapScreenType.MAIN) }
+
+    if (searchText == null) {
+        onMapScreenTypeChanged(MapScreenType.MAIN)
+    } else {
+        onMapScreenTypeChanged(MapScreenType.SEARCH)
+    }
+
     NaverMapScreen(
         isMarkerClicked,
         onBottomSheetChanged,
@@ -145,7 +167,12 @@ fun MainScreen(
         onShowMoreCountChanged,
         onReloadOrShowMoreChanged,
         isReloadButtonClicked,
-        onGetNewScreenCoordinateChanged
+        onGetNewScreenCoordinateChanged,
+        isSearchComponentClicked,
+        onMapCenterCoordinateChanged,
+        onSearchCoordinatedChanged,
+        mapViewModel,
+        mapScreenType
     )
 
     if (isReloadOrShowMoreShowAble) {
@@ -158,11 +185,12 @@ fun MainScreen(
             onMarkerChanged,
             onBottomSheetChanged,
             isLoading,
-            showMoreCount
+            showMoreCount,
+            mapViewModel
         )
     }
 
-    StoreSearchComponent(navController, searchText)
+    StoreSearchComponent(navController, searchText, onSearchComponentChanged)
 
     FilterComponent(
         isKindFilterClicked,
@@ -195,7 +223,8 @@ fun MainScreen(
             onBottomSheetChanged,
             onStoreInfoChanged,
             onMarkerChanged,
-            onListItemChanged
+            onListItemChanged,
+            mapViewModel
         )
     }
 
@@ -214,6 +243,16 @@ fun MainScreen(
     if (isCallDialogCancelClicked) {
         onCallDialogCanceled(false)
         onCallDialogChanged(false)
+    }
+
+    if (isSearchCoordinateGotten) {
+        onSearchComponentChanged(false)
+        navController.currentBackStackEntry?.savedStateHandle?.set(
+            key = MainConstants.SEARCH_COORDINATE_KEY,
+            value = mapCenterCoordinate
+        )
+        navController.navigate(Screen.Search.route)
+        onSearchCoordinatedChanged(false)
     }
 
     if (isReloadButtonClicked && isScreenCoordinateChanged) {
