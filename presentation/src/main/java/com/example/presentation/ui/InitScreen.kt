@@ -1,9 +1,12 @@
 package com.example.presentation.ui
 
+import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.presentation.ui.map.MapViewModel
@@ -61,12 +64,26 @@ fun InitScreen(
         LocationPermissionRequest(mapViewModel)
     }
 
+    PressBack(mapViewModel, navController)
+}
+
+@Composable
+fun PressBack(mapViewModel: MapViewModel, navController: NavHostController) {
     val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var backPressedTime = 0L
 
     BackHandler {
         if (mapScreenType == MapScreenType.SEARCH) {
             navController.popBackStack()
             mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+        } else {
+            if (System.currentTimeMillis() - backPressedTime <= 2000L) {
+                (context as Activity).finish()
+            } else {
+                Toast.makeText(context, "한 번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+            }
+            backPressedTime = System.currentTimeMillis()
         }
     }
 }

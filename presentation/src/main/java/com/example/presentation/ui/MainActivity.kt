@@ -6,9 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.EnterTransition
@@ -33,14 +31,10 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private var backPressedTime: Long = 0
-
     private val mapViewModel by viewModels<MapViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         setContent {
 
@@ -104,17 +98,6 @@ class MainActivity : ComponentActivity() {
         if (isLocationPermissionGranted(this)) {
             lifecycleScope.launch {
                 mapViewModel.updateLocationPermission(true)
-            }
-        }
-    }
-
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            if (System.currentTimeMillis() - backPressedTime <= 2000) {
-                finish()
-            } else {
-                backPressedTime = System.currentTimeMillis()
-                Toast.makeText(this@MainActivity, "한 번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show()
             }
         }
     }
