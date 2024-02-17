@@ -108,7 +108,7 @@ fun MainScreen(
 
     val (isFilteredMarker, onFilteredMarkerChanged) = remember { mutableStateOf(false) }
 
-    val (errorSnackBarMsg, onErrorSnackBarChanged) = remember { mutableStateOf("") }
+    val (errorToastMsg, onErrorToastChanged) = remember { mutableStateOf("") }
 
     val (isListItemClicked, onListItemChanged) = remember { mutableStateOf(false) }
 
@@ -148,7 +148,7 @@ fun MainScreen(
         onCurrentMapChanged,
         isFilteredMarker,
         onFilteredMarkerChanged,
-        onErrorSnackBarChanged,
+        onErrorToastChanged,
         isListItemClicked,
         onListItemChanged,
         clickedStoreInfo.location,
@@ -235,7 +235,7 @@ fun MainScreen(
 
     if (isReloadButtonClicked && isScreenCoordinateChanged) {
         onFilteredMarkerChanged(false)
-        onErrorSnackBarChanged("")
+        onErrorToastChanged("")
         mapViewModel.getStoreDetail(
             nwLong = screenCoordinate.northWest.longitude,
             nwLat = screenCoordinate.northWest.latitude,
@@ -260,9 +260,9 @@ fun MainScreen(
         onCurrentSummaryInfoHeightChanged(MainConstants.BOTTOM_SHEET_HEIGHT_OFF.dp)
     }
 
-    if (errorSnackBarMsg.isNotEmpty()) {
+    if (errorToastMsg.isNotEmpty()) {
         val context = LocalContext.current as Activity
-        Toast.makeText(context, errorSnackBarMsg, Toast.LENGTH_SHORT).show()
-        onErrorSnackBarChanged("")
+        Toast.makeText(context, errorToastMsg, Toast.LENGTH_SHORT).show()
+        onErrorToastChanged("")
     }
 }

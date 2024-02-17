@@ -70,6 +70,9 @@ class MapViewModel @Inject constructor(
     private val _mapCenterCoordinate = MutableStateFlow(Coordinate(0.0, 0.0))
     val mapCenterCoordinate: StateFlow<Coordinate> = _mapCenterCoordinate
 
+    private val _mapZoomLevel = MutableStateFlow(0.0)
+    val mapZoomLevel: StateFlow<Double> = _mapZoomLevel
+
     fun showMoreStore(count: Int) {
         val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
             is UiState.Success -> uiState.data.getOrNull(count) ?: emptyList()
@@ -217,5 +220,9 @@ class MapViewModel @Inject constructor(
 
     fun updateMapCenterCoordinate(coordinate: Coordinate) {
         _mapCenterCoordinate.value = coordinate
+    }
+
+    fun updateMapZoomLevel(zoom: Double) {
+        _mapZoomLevel.value = zoom
     }
 }
