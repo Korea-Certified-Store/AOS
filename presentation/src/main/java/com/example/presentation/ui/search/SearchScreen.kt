@@ -1,5 +1,6 @@
 package com.example.presentation.ui.search
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,7 +38,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -65,6 +65,7 @@ import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
+import com.example.presentation.util.MapScreenType
 
 @Composable
 fun SearchScreen(
@@ -87,6 +88,11 @@ fun SearchScreen(
         if (isDeleteAllDialogVisible) {
             DeleteAllDialog(onDeleteAllDialogVisibleChanged)
         }
+    }
+
+    BackHandler {
+        mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+        navController.popBackStack()
     }
 }
 
@@ -132,6 +138,7 @@ fun SearchTextField(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
+    val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
 
     BasicTextField(
         value = searchText,
@@ -194,7 +201,16 @@ fun SearchTextField(
                     key = SEARCH_KEY,
                     value = searchText
                 )
-                navController.navigate(Screen.Main.route)
+
+                mapViewModel.updateMapScreenType(MapScreenType.SEARCH)
+                if (mapScreenType == MapScreenType.MAIN) {
+                    navController.navigate(Screen.Main.route)
+                } else {
+                    navController.navigate(Screen.Main.route) {
+                        popUpTo(Screen.Main.route) { inclusive = true }
+                    }
+                }
+
                 keyboardController?.hide()
             }
         })

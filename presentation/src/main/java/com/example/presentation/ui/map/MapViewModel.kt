@@ -17,6 +17,7 @@ import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.INITIALIZE_ABLE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.SAFE_STORE
+import com.example.presentation.util.MapScreenType
 import com.example.presentation.util.UiState
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -72,6 +73,9 @@ class MapViewModel @Inject constructor(
 
     private val _mapZoomLevel = MutableStateFlow(0.0)
     val mapZoomLevel: StateFlow<Double> = _mapZoomLevel
+
+    private val _mapScreenType = MutableStateFlow(MapScreenType.MAIN)
+    val mapScreenType: StateFlow<MapScreenType> = _mapScreenType
 
     fun showMoreStore(count: Int) {
         val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
@@ -224,5 +228,9 @@ class MapViewModel @Inject constructor(
 
     fun updateMapZoomLevel(zoom: Double) {
         _mapZoomLevel.value = zoom
+    }
+
+    fun updateMapScreenType(type: MapScreenType) {
+        _mapScreenType.value = type
     }
 }

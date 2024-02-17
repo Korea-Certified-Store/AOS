@@ -1,12 +1,16 @@
 package com.example.presentation.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.location.LocationPermissionRequest
 import com.example.presentation.ui.onboarding.OnboardingScreen
 import com.example.presentation.ui.splash.SplashScreen
+import com.example.presentation.util.MapScreenType
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import kotlinx.coroutines.delay
 
@@ -55,5 +59,14 @@ fun InitScreen(
             mapViewModel.updateSplashState()
         }
         LocationPermissionRequest(mapViewModel)
+    }
+
+    val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
+
+    BackHandler {
+        if (mapScreenType == MapScreenType.SEARCH) {
+            navController.popBackStack()
+            mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+        }
     }
 }

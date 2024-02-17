@@ -89,7 +89,6 @@ fun NaverMapScreen(
     isSearchComponentClicked: Boolean,
     onSearchComponentChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel,
-    mapScreenType: MapScreenType,
     navController: NavController
 ) {
     val cameraPositionState = rememberCameraPositionState {}
@@ -135,6 +134,7 @@ fun NaverMapScreen(
     ) {
 
         val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle()
+        val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
 
         if (mapScreenType == MapScreenType.MAIN) {
             LaunchedEffect(key1 = storeDetailData) {
