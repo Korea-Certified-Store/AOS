@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Point
 import android.graphics.PointF
+import android.util.Log
 import android.view.Gravity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -76,8 +77,6 @@ fun NaverMapScreen(
     onSplashScreenShowAble: (Boolean) -> Unit,
     onLoadingChanged: (Boolean) -> Unit,
     onCurrentMapChanged: (Boolean) -> Unit,
-    isFilteredMarker: Boolean,
-    onFilteredMarkerChanged: (Boolean) -> Unit,
     onErrorToastChanged: (String) -> Unit,
     isListItemClicked: Boolean,
     onListItemChanged: (Boolean) -> Unit,
@@ -88,12 +87,17 @@ fun NaverMapScreen(
     onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
     isSearchComponentClicked: Boolean,
     onSearchComponentChanged: (Boolean) -> Unit,
+    isSearchTerminationButtonClicked: Boolean,
+    onSearchTerminationButtonChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel,
     navController: NavController
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
     val scope = rememberCoroutineScope()
+
+    val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
+    val mapZoomLevel by mapViewModel.mapZoomLevel.collectAsStateWithLifecycle()
 
     NaverMap(
         modifier = Modifier.fillMaxSize(),
@@ -138,7 +142,7 @@ fun NaverMapScreen(
 
         if (mapScreenType == MapScreenType.MAIN) {
             LaunchedEffect(key1 = storeDetailData) {
-
+                Log.d("테스트", "Main 데이터 로드해용 $storeDetailData")
                 when (val state = storeDetailData) {
                     is UiState.Loading -> {
                         if (mapViewModel.ableToShowSplashScreen.value.not()) {
@@ -153,7 +157,7 @@ fun NaverMapScreen(
                         if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value) {
                             onSplashScreenShowAble(false)
                         }
-                        onFilteredMarkerChanged(true)
+                        mapViewModel.updateIsFilteredMarker(true)
                         onLoadingChanged(false)
                         onCurrentMapChanged(false)
                         onShowMoreCountChanged(ShowMoreCount(0, state.data.size))
@@ -173,10 +177,10 @@ fun NaverMapScreen(
                 Dp(35F).roundToPx()
             }
             val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
-            val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
             val searchBounds by mapViewModel.searchBounds.collectAsStateWithLifecycle()
-            val mapZoomLevel by mapViewModel.mapZoomLevel.collectAsStateWithLifecycle()
+
             LaunchedEffect(key1 = searchStore) {
+                Log.d("테스트", "search 데이터 로드해용 $searchStore")
 
                 val bounds = LatLngBounds(
                     searchBounds.first,
@@ -189,7 +193,9 @@ fun NaverMapScreen(
                     }
 
                     is UiState.Success -> {
-                        onFilteredMarkerChanged(true)
+                        Log.d("테스트","성공")
+
+                        mapViewModel.updateIsFilteredMarker(true)
                         onCurrentMapChanged(false)
                         onReloadOrShowMoreChanged(false)
 
@@ -212,26 +218,16 @@ fun NaverMapScreen(
                     }
 
                     is UiState.Failure -> {
-                        val position = CameraPosition(
-                            LatLng(
-                                mapCenterCoordinate.latitude,
-                                mapCenterCoordinate.longitude
-                            ), mapZoomLevel
-                        )
-
-                        cameraPositionState.animate(
-                            CameraUpdate.toCameraPosition(position),
-                            animation = CameraAnimation.None,
-                            durationMs = 500
-                        )
-
+                        movePrevCamera(cameraPositionState, mapCenterCoordinate, mapZoomLevel)
                         showErrorToastMsg(state, onReloadOrShowMoreChanged, onErrorToastChanged)
                     }
                 }
             }
         }
 
+        val isFilteredMarker by mapViewModel.isFilteredMarker.collectAsStateWithLifecycle()
         if (isFilteredMarker) {
+            Log.d("테스트","마커")
             FilteredMarkers(
                 mapViewModel,
                 onBottomSheetChanged,
@@ -281,6 +277,17 @@ fun NaverMapScreen(
         mapViewModel,
         currentSummaryInfoHeight
     )
+
+    CheckSearchTerminationButtonClicked(
+        isSearchTerminationButtonClicked,
+        mapViewModel,
+        cameraPositionState,
+        navController,
+        onSearchTerminationButtonChanged,
+        onReloadButtonChanged,
+        mapCenterCoordinate,
+        mapZoomLevel
+    )
 }
 
 private fun showErrorToastMsg(
@@ -309,6 +316,11 @@ fun FilteredMarkers(
     onMarkerChanged: (Long) -> Unit,
 ) {
     val storeDetailData by mapViewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = storeDetailData) {
+        Log.d("테스트","업데이트 $storeDetailData")
+    }
+    Log.d("테스트","마커 왜 안떠!! $storeDetailData")
     storeDetailData.filter { info ->
         mapViewModel.getFilterSet().intersect(info.certificationName.toSet()).isNotEmpty()
     }.forEach { info ->
@@ -472,4 +484,65 @@ fun GetScreenCoordinate(
             )
         )
     }
+}
+
+@OptIn(ExperimentalNaverMapApi::class)
+@Composable
+private fun CheckSearchTerminationButtonClicked(
+    isSearchTerminationButtonClicked: Boolean,
+    mapViewModel: MapViewModel,
+    cameraPositionState: CameraPositionState,
+    navController: NavController,
+    onSearchTerminationButtonChanged: (Boolean) -> Unit,
+    onReloadButtonChanged: (Boolean) -> Unit,
+    mapCenterCoordinate: Coordinate,
+    mapZoomLevel: Double
+) {
+    if (isSearchTerminationButtonClicked) {
+        mapViewModel.updateMapCenterCoordinate(
+            Coordinate(
+                cameraPositionState.position.target.latitude,
+                cameraPositionState.position.target.longitude,
+            )
+        )
+        mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
+        mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+        navController.navigate(Screen.Main.route) {
+            popUpTo(navController.graph.id) {
+                inclusive = true
+            }
+        }
+        onSearchTerminationButtonChanged(false)
+        mapViewModel.updateIsSearchTerminated(true)
+    }
+
+    val isSearchTerminated by mapViewModel.isSearchTerminated.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = isSearchTerminated) {
+        if (isSearchTerminated) {
+            movePrevCamera(cameraPositionState, mapCenterCoordinate, mapZoomLevel)
+            onReloadButtonChanged(true)
+        }
+    }
+}
+
+@OptIn(ExperimentalNaverMapApi::class)
+private suspend fun movePrevCamera(
+    cameraPositionState: CameraPositionState,
+    mapCenterCoordinate: Coordinate,
+    mapZoomLevel: Double
+) {
+
+    val position = CameraPosition(
+        LatLng(
+            mapCenterCoordinate.latitude,
+            mapCenterCoordinate.longitude
+        ), mapZoomLevel
+    )
+
+    cameraPositionState.animate(
+        CameraUpdate.toCameraPosition(position),
+        animation = CameraAnimation.None,
+        durationMs = 500
+    )
 }

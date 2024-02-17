@@ -1,5 +1,6 @@
 package com.example.presentation.ui.search
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -28,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.presentation.R
-import com.example.presentation.ui.navigation.Screen
+import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
@@ -39,7 +40,9 @@ import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 fun StoreSearchComponent(
     navController: NavController,
     searchText: String?,
-    onSearchComponentChanged: (Boolean) -> Unit
+    onSearchComponentChanged: (Boolean) -> Unit,
+    mapViewModel: MapViewModel,
+    onSearchTerminationButtonChanged: (Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -65,10 +68,10 @@ fun StoreSearchComponent(
     ) {
         if (searchText.isNullOrBlank()) {
             SearchPlaceHolderText(stringResource(R.string.search_placeholder_text), MediumGray)
-            SearchSuffixImage(R.drawable.search, navController)
+            SearchSuffixImage(R.drawable.search, navController, mapViewModel)
         } else {
             SearchPlaceHolderText(searchText, Black)
-            SearchSuffixImage(R.drawable.delete, navController)
+            SearchSuffixImage(R.drawable.delete, navController, mapViewModel, onSearchTerminationButtonChanged)
         }
     }
 }
@@ -86,7 +89,12 @@ fun SearchPlaceHolderText(text: String, textColor: Color) {
 }
 
 @Composable
-fun SearchSuffixImage(@DrawableRes image: Int, navController: NavController) {
+fun SearchSuffixImage(
+    @DrawableRes image: Int,
+    navController: NavController,
+    mapViewModel: MapViewModel,
+    onSearchTerminationButtonChanged: (Boolean) -> Unit = {}
+) {
     Image(
         imageVector = ImageVector.vectorResource(id = image),
         contentDescription = "Delete",
@@ -94,11 +102,8 @@ fun SearchSuffixImage(@DrawableRes image: Int, navController: NavController) {
             .padding(end = DEFAULT_MARGIN.dp)
             .size(16.dp)
             .clickable(enabled = image == R.drawable.delete) {
-                navController.navigate(Screen.Main.route) {
-                    popUpTo(navController.graph.id) {
-                        inclusive = true
-                    }
-                }
+                onSearchTerminationButtonChanged(true)
+                Log.d("테스트","x 버튼 클릭")
             }
     )
 }

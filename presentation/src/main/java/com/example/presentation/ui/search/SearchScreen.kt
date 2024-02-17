@@ -192,6 +192,7 @@ fun SearchTextField(
             if (searchText.isNotBlank()) {
                 insertSearchWord(searchText, searchViewModel)
 
+                mapViewModel.updateIsFilteredMarker(false)
                 mapViewModel.searchStore(
                     mapCenterCoordinate.longitude,
                     mapCenterCoordinate.latitude,

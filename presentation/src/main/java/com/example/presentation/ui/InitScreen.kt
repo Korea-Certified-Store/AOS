@@ -78,6 +78,8 @@ fun PressBack(mapViewModel: MapViewModel, navController: NavHostController) {
             navController.popBackStack()
             mapViewModel.updateMapScreenType(MapScreenType.MAIN)
         } else {
+            mapViewModel.updateIsSearchTerminated(false)
+
             if (System.currentTimeMillis() - backPressedTime <= 2000L) {
                 (context as Activity).finish()
             } else {
