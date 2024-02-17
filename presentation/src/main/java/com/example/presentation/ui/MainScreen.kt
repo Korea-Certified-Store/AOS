@@ -23,7 +23,6 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
-import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.UN_MARKER
@@ -125,17 +124,6 @@ fun MainScreen(
 
     val (isSearchComponentClicked, onSearchComponentChanged) = remember { mutableStateOf(false) }
 
-    val (isSearchCoordinateGotten, onSearchCoordinatedChanged) = remember { mutableStateOf(false) }
-
-    val (mapCenterCoordinate, onMapCenterCoordinateChanged) = remember {
-        mutableStateOf(
-            Coordinate(
-                0.0,
-                0.0
-            )
-        )
-    }
-
     val (mapScreenType, onMapScreenTypeChanged) = remember { mutableStateOf(MapScreenType.MAIN) }
 
     if (searchText == null) {
@@ -169,10 +157,10 @@ fun MainScreen(
         isReloadButtonClicked,
         onGetNewScreenCoordinateChanged,
         isSearchComponentClicked,
-        onMapCenterCoordinateChanged,
-        onSearchCoordinatedChanged,
+        onSearchComponentChanged,
         mapViewModel,
-        mapScreenType
+        mapScreenType,
+        navController
     )
 
     if (isReloadOrShowMoreShowAble) {
@@ -243,16 +231,6 @@ fun MainScreen(
     if (isCallDialogCancelClicked) {
         onCallDialogCanceled(false)
         onCallDialogChanged(false)
-    }
-
-    if (isSearchCoordinateGotten) {
-        onSearchComponentChanged(false)
-        navController.currentBackStackEntry?.savedStateHandle?.set(
-            key = MainConstants.SEARCH_COORDINATE_KEY,
-            value = mapCenterCoordinate
-        )
-        navController.navigate(Screen.Search.route)
-        onSearchCoordinatedChanged(false)
     }
 
     if (isReloadButtonClicked && isScreenCoordinateChanged) {

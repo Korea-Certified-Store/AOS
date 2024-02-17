@@ -52,7 +52,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.domain.model.search.SearchWord
 import com.example.presentation.R
-import com.example.presentation.model.Coordinate
 import com.example.presentation.ui.component.EmptyScreen
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.navigation.Screen
@@ -70,7 +69,6 @@ import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 @Composable
 fun SearchScreen(
     navController: NavHostController,
-    searchCoordinate: Coordinate?,
     mapViewModel: MapViewModel
 ) {
     val (isDeleteAllDialogVisible, onDeleteAllDialogVisibleChanged) = remember {
@@ -82,7 +80,7 @@ fun SearchScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        SearchAppBar(navController, searchCoordinate, mapViewModel)
+        SearchAppBar(navController, mapViewModel)
         SearchDivider(6)
         RecentSearchList(onDeleteAllDialogVisibleChanged)
 
@@ -95,7 +93,6 @@ fun SearchScreen(
 @Composable
 private fun SearchAppBar(
     navController: NavHostController,
-    searchCoordinate: Coordinate?,
     mapViewModel: MapViewModel
 ) {
     Row(
@@ -109,7 +106,7 @@ private fun SearchAppBar(
             )
     ) {
         BackArrow(navController)
-        SearchTextField(navController, searchCoordinate, mapViewModel)
+        SearchTextField(navController, mapViewModel)
     }
 }
 
@@ -126,7 +123,6 @@ fun SearchDivider(thickness: Int) {
 @Composable
 fun SearchTextField(
     navController: NavHostController,
-    searchCoordinate: Coordinate?,
     mapViewModel: MapViewModel,
     searchViewModel: SearchViewModel = hiltViewModel(),
 ) {
@@ -135,9 +131,7 @@ fun SearchTextField(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
-
-    val context = LocalContext.current
+    val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
 
     BasicTextField(
         value = searchText,
@@ -191,20 +185,17 @@ fun SearchTextField(
             if (searchText.isNotBlank()) {
                 insertSearchWord(searchText, searchViewModel)
 
-                if (searchCoordinate != null) {
-                    mapViewModel.searchStore(
-                        searchCoordinate.longitude,
-                        searchCoordinate.latitude,
-                        searchText
-                    )
-                    navController.currentBackStackEntry?.savedStateHandle?.set(
-                        key = SEARCH_KEY,
-                        value = searchText
-                    )
-                    navController.navigate(Screen.Main.route)
-                    keyboardController?.hide()
-                }
-
+                mapViewModel.searchStore(
+                    mapCenterCoordinate.longitude,
+                    mapCenterCoordinate.latitude,
+                    searchText
+                )
+                navController.currentBackStackEntry?.savedStateHandle?.set(
+                    key = SEARCH_KEY,
+                    value = searchText
+                )
+                navController.navigate(Screen.Main.route)
+                keyboardController?.hide()
             }
         })
     )

@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.example.domain.model.map.ShowMoreCount
 import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
 import com.example.presentation.mapper.toUiModel
@@ -30,6 +31,7 @@ import com.example.presentation.model.StoreType
 import com.example.presentation.ui.map.location.CurrentLocationComponent
 import com.example.presentation.ui.map.marker.StoreMarker
 import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
+import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.util.MainConstants.DEFAULT_LATITUDE
 import com.example.presentation.util.MainConstants.DEFAULT_LONGITUDE
 import com.example.presentation.util.MainConstants.GREAT_STORE
@@ -85,10 +87,10 @@ fun NaverMapScreen(
     isReloadButtonClicked: Boolean,
     onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
     isSearchComponentClicked: Boolean,
-    onMapCenterCoordinateChanged: (Coordinate) -> Unit,
-    onSearchCoordinateChanged: (Boolean) -> Unit,
+    onSearchComponentChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel,
-    mapScreenType: MapScreenType
+    mapScreenType: MapScreenType,
+    navController: NavController
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -174,6 +176,7 @@ fun NaverMapScreen(
                 Dp(35F).roundToPx()
             }
             val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
+            val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
             LaunchedEffect(key1 = searchStore) {
 
                 when (val state = searchStore) {
@@ -202,6 +205,17 @@ fun NaverMapScreen(
                     }
 
                     is UiState.Failure -> {
+                        cameraPositionState.animate(
+                            CameraUpdate.scrollTo(
+                                LatLng(
+                                    mapCenterCoordinate.latitude,
+                                    mapCenterCoordinate.longitude
+                                )
+                            ),
+                            animation = CameraAnimation.None,
+                            durationMs = 500
+                        )
+
                         if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
                             onReloadOrShowMoreChanged(false)
                         }
@@ -242,13 +256,14 @@ fun NaverMapScreen(
             onGetNewScreenCoordinateChanged(true)
         }
         if (isSearchComponentClicked) {
-            onMapCenterCoordinateChanged(
+            mapViewModel.updateMapCenterCoordinate(
                 Coordinate(
                     cameraPositionState.position.target.latitude,
                     cameraPositionState.position.target.longitude,
                 )
             )
-            onSearchCoordinateChanged(true)
+            navController.navigate(Screen.Search.route)
+            onSearchComponentChanged(false)
         }
     }
 

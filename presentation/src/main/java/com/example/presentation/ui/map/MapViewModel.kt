@@ -10,6 +10,7 @@ import com.example.domain.model.map.StoreDetail
 import com.example.domain.usecase.GetStoreDetailUseCase
 import com.example.domain.usecase.SearchStoreUseCase
 import com.example.domain.util.Resource
+import com.example.presentation.model.Coordinate
 import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.util.MainConstants.FAIL_TO_LOAD_DATA
 import com.example.presentation.util.MainConstants.GREAT_STORE
@@ -65,6 +66,9 @@ class MapViewModel @Inject constructor(
         MutableStateFlow(Pair(LatLng(0.0, 0.0), LatLng(0.0, 0.0)))
     val searchBounds: StateFlow<Pair<LatLng, LatLng>> =
         _searchBounds.asStateFlow()
+
+    private val _mapCenterCoordinate = MutableStateFlow(Coordinate(0.0, 0.0))
+    val mapCenterCoordinate: StateFlow<Coordinate> = _mapCenterCoordinate
 
     fun showMoreStore(count: Int) {
         val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
@@ -209,5 +213,9 @@ class MapViewModel @Inject constructor(
                 LatLng(northValue, eastValue)
             )
         }
+    }
+
+    fun updateMapCenterCoordinate(coordinate: Coordinate) {
+        _mapCenterCoordinate.value = coordinate
     }
 }
