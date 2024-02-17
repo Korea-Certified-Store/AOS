@@ -22,16 +22,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.presentation.R
-import com.example.presentation.model.Coordinate
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.search.SearchScreen
 import com.example.presentation.ui.theme.Android_KCSTheme
-import com.example.presentation.util.MainConstants.SEARCH_COORDINATE_KEY
 import com.example.presentation.util.MainConstants.SEARCH_KEY
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -93,12 +90,7 @@ class MainActivity : ComponentActivity() {
                     composable(
                         route = Screen.Search.route
                     ) {
-                        val searchCoordinate = remember {
-                            navController.previousBackStackEntry?.savedStateHandle?.get<Coordinate>(
-                                SEARCH_COORDINATE_KEY
-                            )
-                        }
-                        SearchScreen(navController, searchCoordinate, mapViewModel)
+                        SearchScreen(navController, mapViewModel)
                     }
                 }
             }
