@@ -202,6 +202,12 @@ fun NaverMapScreen(
                             animation = CameraAnimation.Fly,
                             durationMs = 500
                         )
+
+                        if (bounds.southWest.latitude == 0.0) {
+                            onMarkerChanged(state.data.first().id)
+                            onStoreInfoChanged(state.data.first().toUiModel())
+                            onBottomSheetChanged(true)
+                        }
                     }
 
                     is UiState.Failure -> {
