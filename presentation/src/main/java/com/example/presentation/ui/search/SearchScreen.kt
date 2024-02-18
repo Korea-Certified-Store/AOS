@@ -158,23 +158,18 @@ fun SearchTextField(
                         shape = RoundedCornerShape(size = 12.dp)
                     ),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row {
+                Row(
+                    modifier = Modifier.width(270.dp),
+                    horizontalArrangement = Arrangement.Start
+                ) {
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
-                    if (searchText.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.search_placeholder_text),
-                            fontSize = 14.sp,
-                            color = SemiLightGray,
-                            fontWeight = Medium
-                        )
-                    } else {
-                        innerTextField()
-                    }
-                    Spacer(modifier = Modifier.width(width = 8.dp))
+                    innerTextField()
                 }
-                Row {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
                     Image(
                         imageVector = ImageVector.vectorResource(R.drawable.search),
                         contentDescription = "Search",
@@ -182,6 +177,16 @@ fun SearchTextField(
                         colorFilter = ColorFilter.tint(DarkGray)
                     )
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
+                }
+            }
+            if (searchText.isEmpty()) {
+                Row(Modifier.padding(start = (DEFAULT_MARGIN * 2).dp, top = DEFAULT_MARGIN.dp)) {
+                    Text(
+                        text = stringResource(R.string.search_placeholder_text),
+                        fontSize = 14.sp,
+                        color = SemiLightGray,
+                        fontWeight = Medium,
+                    )
                 }
             }
         },
