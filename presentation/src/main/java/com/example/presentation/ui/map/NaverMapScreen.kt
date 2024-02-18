@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.example.domain.model.map.ShowMoreCount
 import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
 import com.example.presentation.mapper.toUiModel
@@ -30,6 +31,7 @@ import com.example.presentation.model.StoreType
 import com.example.presentation.ui.map.location.CurrentLocationComponent
 import com.example.presentation.ui.map.marker.StoreMarker
 import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
+import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.util.MainConstants.DEFAULT_LATITUDE
 import com.example.presentation.util.MainConstants.DEFAULT_LONGITUDE
 import com.example.presentation.util.MainConstants.GREAT_STORE
@@ -76,7 +78,7 @@ fun NaverMapScreen(
     onCurrentMapChanged: (Boolean) -> Unit,
     isFilteredMarker: Boolean,
     onFilteredMarkerChanged: (Boolean) -> Unit,
-    onErrorSnackBarChanged: (String) -> Unit,
+    onErrorToastChanged: (String) -> Unit,
     isListItemClicked: Boolean,
     onListItemChanged: (Boolean) -> Unit,
     clickedStoreLocation: Coordinate,
@@ -85,10 +87,10 @@ fun NaverMapScreen(
     isReloadButtonClicked: Boolean,
     onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
     isSearchComponentClicked: Boolean,
-    onMapCenterCoordinateChanged: (Coordinate) -> Unit,
-    onSearchCoordinateChanged: (Boolean) -> Unit,
+    onSearchComponentChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel,
-    mapScreenType: MapScreenType
+    mapScreenType: MapScreenType,
+    navController: NavController
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -161,11 +163,8 @@ fun NaverMapScreen(
                         if (mapViewModel.ableToShowSplashScreen.value) {
                             onSplashScreenShowAble(false)
                         }
-                        if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
-                            onReloadOrShowMoreChanged(false)
-                        }
+                        showErrorToastMsg(state, onReloadOrShowMoreChanged, onErrorToastChanged)
                         onLoadingChanged(false)
-                        onErrorSnackBarChanged(state.msg)
                     }
                 }
             }
@@ -174,7 +173,15 @@ fun NaverMapScreen(
                 Dp(35F).roundToPx()
             }
             val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
+            val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
+            val searchBounds by mapViewModel.searchBounds.collectAsStateWithLifecycle()
+            val mapZoomLevel by mapViewModel.mapZoomLevel.collectAsStateWithLifecycle()
             LaunchedEffect(key1 = searchStore) {
+
+                val bounds = LatLngBounds(
+                    searchBounds.first,
+                    searchBounds.second
+                )
 
                 when (val state = searchStore) {
                     is UiState.Loading -> {
@@ -185,10 +192,7 @@ fun NaverMapScreen(
                         onFilteredMarkerChanged(true)
                         onCurrentMapChanged(false)
                         onReloadOrShowMoreChanged(false)
-                        val bounds = LatLngBounds(
-                            mapViewModel.searchBounds.value.first,
-                            mapViewModel.searchBounds.value.second
-                        )
+
                         cameraPositionState.animate(
                             if (bounds.southWest.latitude == 0.0) {
                                 val position = CameraPosition(bounds.northEast, 16.0)
@@ -199,13 +203,29 @@ fun NaverMapScreen(
                             animation = CameraAnimation.Fly,
                             durationMs = 500
                         )
+
+                        if (bounds.southWest.latitude == 0.0) {
+                            onMarkerChanged(state.data.first().id)
+                            onStoreInfoChanged(state.data.first().toUiModel())
+                            onBottomSheetChanged(true)
+                        }
                     }
 
                     is UiState.Failure -> {
-                        if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
-                            onReloadOrShowMoreChanged(false)
-                        }
-                        onErrorSnackBarChanged(state.msg)
+                        val position = CameraPosition(
+                            LatLng(
+                                mapCenterCoordinate.latitude,
+                                mapCenterCoordinate.longitude
+                            ), mapZoomLevel
+                        )
+
+                        cameraPositionState.animate(
+                            CameraUpdate.toCameraPosition(position),
+                            animation = CameraAnimation.None,
+                            durationMs = 500
+                        )
+
+                        showErrorToastMsg(state, onReloadOrShowMoreChanged, onErrorToastChanged)
                     }
                 }
             }
@@ -242,13 +262,15 @@ fun NaverMapScreen(
             onGetNewScreenCoordinateChanged(true)
         }
         if (isSearchComponentClicked) {
-            onMapCenterCoordinateChanged(
+            mapViewModel.updateMapCenterCoordinate(
                 Coordinate(
                     cameraPositionState.position.target.latitude,
                     cameraPositionState.position.target.longitude,
                 )
             )
-            onSearchCoordinateChanged(true)
+            mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
+            navController.navigate(Screen.Search.route)
+            onSearchComponentChanged(false)
         }
     }
 
@@ -259,6 +281,17 @@ fun NaverMapScreen(
         mapViewModel,
         currentSummaryInfoHeight
     )
+}
+
+private fun showErrorToastMsg(
+    state: UiState.Failure,
+    onReloadOrShowMoreChanged: (Boolean) -> Unit,
+    onErrorToastChanged: (String) -> Unit
+) {
+    if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
+        onReloadOrShowMoreChanged(false)
+    }
+    onErrorToastChanged(state.msg)
 }
 
 @Composable
