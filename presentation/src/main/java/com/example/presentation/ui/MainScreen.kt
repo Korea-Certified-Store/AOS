@@ -2,13 +2,16 @@ package com.example.presentation.ui
 
 import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.model.Contact
 import com.example.presentation.model.Coordinate
@@ -34,7 +37,7 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 fun MainScreen(
     onCallStoreChanged: (String) -> Unit,
     onSplashScreenShowAble: (Boolean) -> Unit,
-    navController: NavController,
+    navController: NavHostController,
     searchText: String?,
     mapViewModel: MapViewModel
 ) {
@@ -106,8 +109,6 @@ fun MainScreen(
 
     val (isLoading, onLoadingChanged) = remember { mutableStateOf(false) }
 
-    val (isFilteredMarker, onFilteredMarkerChanged) = remember { mutableStateOf(false) }
-
     val (errorToastMsg, onErrorToastChanged) = remember { mutableStateOf("") }
 
     val (isListItemClicked, onListItemChanged) = remember { mutableStateOf(false) }
@@ -124,13 +125,12 @@ fun MainScreen(
 
     val (isSearchComponentClicked, onSearchComponentChanged) = remember { mutableStateOf(false) }
 
-    val (mapScreenType, onMapScreenTypeChanged) = remember { mutableStateOf(MapScreenType.MAIN) }
-
-    if (searchText == null) {
-        onMapScreenTypeChanged(MapScreenType.MAIN)
-    } else {
-        onMapScreenTypeChanged(MapScreenType.SEARCH)
+    val (isSearchTerminationButtonClicked, onSearchTerminationButtonChanged) = remember {
+        mutableStateOf(
+            false
+        )
     }
+    val (isBackPressed, onBackPressedChanged) = remember { mutableStateOf(false) }
 
     NaverMapScreen(
         isMarkerClicked,
@@ -146,8 +146,6 @@ fun MainScreen(
         onSplashScreenShowAble,
         onLoadingChanged,
         onCurrentMapChanged,
-        isFilteredMarker,
-        onFilteredMarkerChanged,
         onErrorToastChanged,
         isListItemClicked,
         onListItemChanged,
@@ -158,8 +156,11 @@ fun MainScreen(
         onGetNewScreenCoordinateChanged,
         isSearchComponentClicked,
         onSearchComponentChanged,
+        isSearchTerminationButtonClicked,
+        onSearchTerminationButtonChanged,
+        isBackPressed,
+        onBackPressedChanged,
         mapViewModel,
-        mapScreenType,
         navController
     )
 
@@ -178,7 +179,11 @@ fun MainScreen(
         )
     }
 
-    StoreSearchComponent(navController, searchText, onSearchComponentChanged)
+    StoreSearchComponent(
+        searchText,
+        onSearchComponentChanged,
+        onSearchTerminationButtonChanged
+    )
 
     FilterComponent(
         isKindFilterClicked,
@@ -233,8 +238,8 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
-    if (isReloadButtonClicked && isScreenCoordinateChanged) {
-        onFilteredMarkerChanged(false)
+    if ((isReloadButtonClicked && isScreenCoordinateChanged)) {
+        mapViewModel.updateIsFilteredMarker(false)
         onErrorToastChanged("")
         mapViewModel.getStoreDetail(
             nwLong = screenCoordinate.northWest.longitude,
@@ -264,5 +269,31 @@ fun MainScreen(
         val context = LocalContext.current as Activity
         Toast.makeText(context, errorToastMsg, Toast.LENGTH_SHORT).show()
         onErrorToastChanged("")
+    }
+
+    PressBack(mapViewModel, onBackPressedChanged)
+}
+
+@Composable
+fun PressBack(
+    mapViewModel: MapViewModel,
+    onBackPressedChanged: (Boolean) -> Unit
+) {
+    val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var backPressedTime = 0L
+
+    BackHandler {
+        if (mapScreenType == MapScreenType.SEARCH) {
+            onBackPressedChanged(true)
+            mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+        } else {
+            if (System.currentTimeMillis() - backPressedTime <= 2000L) {
+                (context as Activity).finish()
+            } else {
+                Toast.makeText(context, "한 번 더 누르면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show()
+            }
+            backPressedTime = System.currentTimeMillis()
+        }
     }
 }

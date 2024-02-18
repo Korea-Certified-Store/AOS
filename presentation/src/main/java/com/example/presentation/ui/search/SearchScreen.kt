@@ -1,5 +1,6 @@
 package com.example.presentation.ui.search
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,7 +38,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -65,6 +65,7 @@ import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
+import com.example.presentation.util.MapScreenType
 
 @Composable
 fun SearchScreen(
@@ -88,6 +89,12 @@ fun SearchScreen(
             DeleteAllDialog(onDeleteAllDialogVisibleChanged)
         }
     }
+
+    BackHandler {
+        mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+        mapViewModel.updateIsSearchTerminated(true)
+        navController.popBackStack()
+    }
 }
 
 @Composable
@@ -105,7 +112,7 @@ private fun SearchAppBar(
                 vertical = SEARCH_TEXT_FIELD_TOP_PADDING.dp
             )
     ) {
-        BackArrow(navController)
+        BackArrow(navController, mapViewModel)
         SearchTextField(navController, mapViewModel)
     }
 }
@@ -132,6 +139,7 @@ fun SearchTextField(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
+    val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
 
     BasicTextField(
         value = searchText,
@@ -150,23 +158,18 @@ fun SearchTextField(
                         shape = RoundedCornerShape(size = 12.dp)
                     ),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row {
+                Row(
+                    modifier = Modifier.width(270.dp),
+                    horizontalArrangement = Arrangement.Start
+                ) {
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
-                    if (searchText.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.search_placeholder_text),
-                            fontSize = 14.sp,
-                            color = SemiLightGray,
-                            fontWeight = Medium
-                        )
-                    } else {
-                        innerTextField()
-                    }
-                    Spacer(modifier = Modifier.width(width = 8.dp))
+                    innerTextField()
                 }
-                Row {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
                     Image(
                         imageVector = ImageVector.vectorResource(R.drawable.search),
                         contentDescription = "Search",
@@ -174,6 +177,16 @@ fun SearchTextField(
                         colorFilter = ColorFilter.tint(DarkGray)
                     )
                     Spacer(modifier = Modifier.width(width = DEFAULT_MARGIN.dp))
+                }
+            }
+            if (searchText.isEmpty()) {
+                Row(Modifier.padding(start = (DEFAULT_MARGIN * 2).dp, top = DEFAULT_MARGIN.dp)) {
+                    Text(
+                        text = stringResource(R.string.search_placeholder_text),
+                        fontSize = 14.sp,
+                        color = SemiLightGray,
+                        fontWeight = Medium,
+                    )
                 }
             }
         },
@@ -185,6 +198,7 @@ fun SearchTextField(
             if (searchText.isNotBlank()) {
                 insertSearchWord(searchText, searchViewModel)
 
+                mapViewModel.updateIsFilteredMarker(false)
                 mapViewModel.searchStore(
                     mapCenterCoordinate.longitude,
                     mapCenterCoordinate.latitude,
@@ -194,7 +208,16 @@ fun SearchTextField(
                     key = SEARCH_KEY,
                     value = searchText
                 )
-                navController.navigate(Screen.Main.route)
+
+                mapViewModel.updateMapScreenType(MapScreenType.SEARCH)
+                if (mapScreenType == MapScreenType.MAIN) {
+                    navController.navigate(Screen.Main.route)
+                } else {
+                    navController.navigate(Screen.Main.route) {
+                        popUpTo(Screen.Main.route) { inclusive = true }
+                    }
+                }
+
                 keyboardController?.hide()
             }
         })
@@ -211,13 +234,14 @@ fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
 }
 
 @Composable
-private fun BackArrow(navController: NavHostController) {
+private fun BackArrow(navController: NavHostController, mapViewModel: MapViewModel) {
     Image(
         imageVector = ImageVector.vectorResource(id = R.drawable.arrow),
         contentDescription = "Arrow",
         modifier = Modifier
             .size(18.dp)
             .clickable {
+                mapViewModel.updateIsSearchTerminated(true)
                 navController.popBackStack()
             }
     )
