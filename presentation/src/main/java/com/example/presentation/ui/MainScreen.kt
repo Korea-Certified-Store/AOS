@@ -206,7 +206,8 @@ fun MainScreen(
     StoreSearchComponent(
         searchText,
         onSearchComponentChanged,
-        onSearchTerminationButtonChanged
+        onSearchTerminationButtonChanged,
+        mapViewModel
     )
 
     FilterComponent(
