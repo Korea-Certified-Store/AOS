@@ -28,7 +28,7 @@ import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
-import com.example.presentation.ui.search.ReSearchComponent
+import com.example.presentation.ui.search.ReSearchButtonComponent
 import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.util.MainConstants
 import com.example.presentation.util.MainConstants.SEARCH_KEY
@@ -42,7 +42,6 @@ fun MainScreen(
     onCallStoreChanged: (String) -> Unit,
     onSplashScreenShowAble: (Boolean) -> Unit,
     navController: NavHostController,
-    searchText: String?,
     mapViewModel: MapViewModel,
     filterViewModel : FilterViewModel = hiltViewModel()
 ) {
@@ -178,7 +177,7 @@ fun MainScreen(
 
     if (isReloadOrShowMoreShowAble) {
         if (isSearchTextExist) {
-            ReSearchComponent(
+            ReSearchButtonComponent(
                 isMarkerClicked,
                 currentSummaryInfoHeight,
                 isMapGestured,

@@ -16,7 +16,6 @@ fun InitScreen(
     onCallStoreChanged: (String) -> Unit,
     onSplashScreenShowAble: (Boolean) -> Unit,
     navController: NavHostController,
-    searchText: String?,
     isFirstRun: Boolean,
     isOnboardingScreenShowAble: Boolean,
     onOnboardingScreenShowAble: (Boolean) -> Unit,
@@ -29,7 +28,6 @@ fun InitScreen(
         onCallStoreChanged,
         onSplashScreenShowAble,
         navController,
-        searchText,
         mapViewModel
     )
 

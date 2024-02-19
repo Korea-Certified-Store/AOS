@@ -25,9 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.presentation.R
-import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.reload.LoadingAnimation
 import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
 import com.example.presentation.ui.theme.Black
@@ -36,7 +34,7 @@ import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.UN_MARKER
 
 @Composable
-fun ReSearchComponent(
+fun ReSearchButtonComponent(
     isMarkerClicked: Boolean,
     currentSummaryInfoHeight: Dp,
     isMapGestured: Boolean,
@@ -76,7 +74,6 @@ fun ReSearchButton(
     onMarkerChanged: (Long) -> Unit,
     onBottomSheetChanged: (Boolean) -> Unit,
     isLoading: Boolean,
-    viewModel: MapViewModel = hiltViewModel()
 ) {
     Button(
         onClick = {
