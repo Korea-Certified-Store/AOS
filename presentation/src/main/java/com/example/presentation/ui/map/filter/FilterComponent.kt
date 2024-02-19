@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.model.StoreType
-import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.Blue
 import com.example.presentation.ui.theme.White
@@ -42,7 +41,6 @@ import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun FilterComponent(
-    mapViewModel: MapViewModel,
     onFilterStateChanged: (Boolean) -> Unit,
     filterViewModel: FilterViewModel = hiltViewModel()
 ) {
@@ -63,19 +61,16 @@ fun FilterComponent(
         FilterButton(
             storeType = StoreType.KIND,
             isKindClicked.value,
-            mapViewModel,
             onFilterStateChanged
         )
         FilterButton(
             storeType = StoreType.GREAT,
             isGreatClicked.value,
-            mapViewModel,
             onFilterStateChanged
         )
         FilterButton(
             storeType = StoreType.SAFE,
             isSafeClicked.value,
-            mapViewModel,
             onFilterStateChanged
         )
     }
@@ -86,7 +81,6 @@ fun FilterComponent(
 fun FilterButton(
     storeType: StoreType,
     isFilterClicked: Boolean,
-    mapViewModel: MapViewModel,
     onFilterStateChanged: (Boolean) -> Unit,
     filterViewModel: FilterViewModel = hiltViewModel(),
 ) {
@@ -94,7 +88,7 @@ fun FilterButton(
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Button(
             onClick = {
-                mapViewModel.updateFilterSet(certificationName, isFilterClicked.not())
+                filterViewModel.updateFilterSet(certificationName, isFilterClicked.not())
                 when (storeType) {
                     StoreType.KIND -> filterViewModel.updateKindFilterClicked()
                     StoreType.SAFE -> filterViewModel.updateSafeFilterClicked()

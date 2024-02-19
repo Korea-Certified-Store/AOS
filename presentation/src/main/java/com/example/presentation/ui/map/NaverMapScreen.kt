@@ -95,7 +95,7 @@ fun NaverMapScreen(
     mapViewModel: MapViewModel,
     navController: NavHostController,
     isReSearchButtonClicked: Boolean,
-    filterViewModel:FilterViewModel = hiltViewModel()
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -161,7 +161,7 @@ fun NaverMapScreen(
                         if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value) {
                             onSplashScreenShowAble(false)
                         }
-                        mapViewModel.updateIsFilteredMarker(true)
+                        filterViewModel.updateIsFilteredMarker(true)
                         onLoadingChanged(false)
                         onCurrentMapChanged(false)
                         onShowMoreCountChanged(ShowMoreCount(0, state.data.size))
@@ -195,7 +195,7 @@ fun NaverMapScreen(
                     }
 
                     is UiState.Success -> {
-                        mapViewModel.updateIsFilteredMarker(true)
+                        filterViewModel.updateIsFilteredMarker(true)
                         onCurrentMapChanged(false)
                         onReloadOrShowMoreChanged(false)
 
@@ -225,7 +225,7 @@ fun NaverMapScreen(
             }
         }
 
-        val isFilteredMarker by mapViewModel.isFilteredMarker.collectAsStateWithLifecycle()
+        val isFilteredMarker by filterViewModel.isFilteredMarker.collectAsStateWithLifecycle()
 
         if (isFilteredMarker) {
             FilteredMarkers(
@@ -276,7 +276,6 @@ fun NaverMapScreen(
             mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
             navController.navigate(Screen.Search.route)
             filterViewModel.updateAllFilterUnClicked()
-            mapViewModel.initializeFilterSet()
             onSearchComponentChanged(false)
         }
         if (isBackPressed) {
@@ -336,13 +335,14 @@ fun FilteredMarkers(
     onStoreInfoChanged: (StoreDetail) -> Unit,
     clickedMarkerId: Long,
     onMarkerChanged: (Long) -> Unit,
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
     val storeDetailData by mapViewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
     storeDetailData.filter { info ->
-        mapViewModel.getFilterSet().intersect(info.certificationName.toSet()).isNotEmpty()
+        filterViewModel.getFilterSet().intersect(info.certificationName.toSet()).isNotEmpty()
     }.forEach { info ->
         val storeType =
-            when (mapViewModel.getFilterSet().intersect(info.certificationName.toSet())
+            when (filterViewModel.getFilterSet().intersect(info.certificationName.toSet())
                 .last()) {
                 KIND_STORE -> StoreType.KIND
                 GREAT_STORE -> StoreType.GREAT
@@ -538,7 +538,6 @@ private fun CheckSearchTerminationButtonClicked(
     LaunchedEffect(key1 = isSearchTerminated) {
         if (isSearchTerminated) {
             filterViewModel.updateAllFilterUnClicked()
-            mapViewModel.initializeFilterSet()
             movePrevCamera(cameraPositionState, mapCenterCoordinate, mapZoomLevel)
             onReloadButtonChanged(true)
             mapViewModel.updateIsSearchTerminated(false)

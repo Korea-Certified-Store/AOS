@@ -198,12 +198,11 @@ fun SearchTextField(
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
             filterViewModel.updateAllFilterUnClicked()
-            mapViewModel.initializeFilterSet()
 
             if (searchText.isNotBlank()) {
                 insertSearchWord(searchText, searchViewModel)
 
-                mapViewModel.updateIsFilteredMarker(false)
+                filterViewModel.updateIsFilteredMarker(false)
                 mapViewModel.searchStore(
                     mapCenterCoordinate.longitude,
                     mapCenterCoordinate.latitude,

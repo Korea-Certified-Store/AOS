@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.domain.model.map.ShowMoreCount
@@ -22,6 +23,7 @@ import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
 import com.example.presentation.ui.map.filter.FilterComponent
+import com.example.presentation.ui.map.filter.FilterViewModel
 import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
@@ -41,7 +43,8 @@ fun MainScreen(
     onSplashScreenShowAble: (Boolean) -> Unit,
     navController: NavHostController,
     searchText: String?,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    filterViewModel : FilterViewModel = hiltViewModel()
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
@@ -207,7 +210,6 @@ fun MainScreen(
     )
 
     FilterComponent(
-        mapViewModel,
         onFilterStateChanged
     )
 
@@ -255,7 +257,7 @@ fun MainScreen(
 
     val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
     if (isReSearchButtonClicked && isScreenCoordinateChanged) {
-        mapViewModel.updateIsFilteredMarker(false)
+        filterViewModel.updateIsFilteredMarker(false)
         mapViewModel.searchStore(
             mapCenterCoordinate.longitude,
             mapCenterCoordinate.latitude,
@@ -266,7 +268,7 @@ fun MainScreen(
     }
 
     if ((isReloadButtonClicked && isScreenCoordinateChanged)) {
-        mapViewModel.updateIsFilteredMarker(false)
+        filterViewModel.updateIsFilteredMarker(false)
         onErrorToastChanged("")
         mapViewModel.getStoreDetail(
             nwLong = screenCoordinate.northWest.longitude,
