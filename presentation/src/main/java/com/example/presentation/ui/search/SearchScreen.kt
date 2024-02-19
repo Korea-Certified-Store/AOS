@@ -54,6 +54,7 @@ import com.example.domain.model.search.SearchWord
 import com.example.presentation.R
 import com.example.presentation.ui.component.EmptyScreen
 import com.example.presentation.ui.map.MapViewModel
+import com.example.presentation.ui.map.filter.FilterViewModel
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.DarkGray
@@ -132,6 +133,7 @@ fun SearchTextField(
     navController: NavHostController,
     mapViewModel: MapViewModel,
     searchViewModel: SearchViewModel = hiltViewModel(),
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
     var searchText by remember { mutableStateOf("") }
 
@@ -195,6 +197,9 @@ fun SearchTextField(
         textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = Medium),
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
+            filterViewModel.updateAllFilterUnClicked()
+            mapViewModel.initializeFilterSet()
+
             if (searchText.isNotBlank()) {
                 insertSearchWord(searchText, searchViewModel)
 

@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.domain.model.map.ShowMoreCount
@@ -28,6 +29,7 @@ import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
+import com.example.presentation.ui.map.filter.FilterViewModel
 import com.example.presentation.ui.map.location.CurrentLocationComponent
 import com.example.presentation.ui.map.marker.StoreMarker
 import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
@@ -92,9 +94,8 @@ fun NaverMapScreen(
     onBackPressedChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel,
     navController: NavHostController,
-    isFilteredMarker: Boolean,
-    onFilteredMarkerChanged: (Boolean) -> Unit,
-    isReSearchButtonClicked: Boolean
+    isReSearchButtonClicked: Boolean,
+    filterViewModel:FilterViewModel = hiltViewModel()
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
@@ -225,6 +226,7 @@ fun NaverMapScreen(
         }
 
         val isFilteredMarker by mapViewModel.isFilteredMarker.collectAsStateWithLifecycle()
+
         if (isFilteredMarker) {
             FilteredMarkers(
                 mapViewModel,
@@ -273,6 +275,8 @@ fun NaverMapScreen(
             )
             mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
             navController.navigate(Screen.Search.route)
+            filterViewModel.updateAllFilterUnClicked()
+            mapViewModel.initializeFilterSet()
             onSearchComponentChanged(false)
         }
         if (isBackPressed) {
@@ -508,7 +512,8 @@ private fun CheckSearchTerminationButtonClicked(
     onSearchTerminationButtonChanged: (Boolean) -> Unit,
     onReloadButtonChanged: (Boolean) -> Unit,
     mapCenterCoordinate: Coordinate,
-    mapZoomLevel: Double
+    mapZoomLevel: Double,
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
     if (isSearchTerminationButtonClicked) {
         mapViewModel.updateMapCenterCoordinate(
@@ -532,6 +537,8 @@ private fun CheckSearchTerminationButtonClicked(
 
     LaunchedEffect(key1 = isSearchTerminated) {
         if (isSearchTerminated) {
+            filterViewModel.updateAllFilterUnClicked()
+            mapViewModel.initializeFilterSet()
             movePrevCamera(cameraPositionState, mapCenterCoordinate, mapZoomLevel)
             onReloadButtonChanged(true)
             mapViewModel.updateIsSearchTerminated(false)

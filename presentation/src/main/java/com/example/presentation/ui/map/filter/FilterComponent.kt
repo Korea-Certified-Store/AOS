@@ -1,5 +1,6 @@
 package com.example.presentation.ui.map.filter
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.model.StoreType
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
@@ -36,43 +39,42 @@ import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun FilterComponent(
-    isKindFilterClicked: Boolean,
-    onKindFilterChanged: (Boolean) -> Unit,
-    isGreatFilterClicked: Boolean,
-    onGreatFilterChanged: (Boolean) -> Unit,
-    isSafeFilterClicked: Boolean,
-    onSafeFilterChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel,
     onFilterStateChanged: (Boolean) -> Unit,
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
 
     Row(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .padding(top = (SEARCH_TEXT_FIELD_HEIGHT + SEARCH_TEXT_FIELD_TOP_PADDING + 8).dp, start = DEFAULT_MARGIN.dp),
+            .padding(
+                top = (SEARCH_TEXT_FIELD_HEIGHT + SEARCH_TEXT_FIELD_TOP_PADDING + 8).dp,
+                start = DEFAULT_MARGIN.dp
+            ),
         verticalAlignment = Alignment.Top
     ) {
+        val isKindClicked = filterViewModel.isKindFilterClicked.collectAsStateWithLifecycle()
+        val isGreatClicked = filterViewModel.isGreatFilterClicked.collectAsStateWithLifecycle()
+        val isSafeClicked = filterViewModel.isSafeFilterClicked.collectAsStateWithLifecycle()
         FilterButton(
             storeType = StoreType.KIND,
-            isKindFilterClicked,
-            onKindFilterChanged,
+            isKindClicked.value,
             mapViewModel,
             onFilterStateChanged
         )
         FilterButton(
             storeType = StoreType.GREAT,
-            isGreatFilterClicked,
-            onGreatFilterChanged,
+            isGreatClicked.value,
             mapViewModel,
             onFilterStateChanged
         )
         FilterButton(
             storeType = StoreType.SAFE,
-            isSafeFilterClicked,
-            onSafeFilterChanged,
+            isSafeClicked.value,
             mapViewModel,
             onFilterStateChanged
         )
@@ -84,16 +86,20 @@ fun FilterComponent(
 fun FilterButton(
     storeType: StoreType,
     isFilterClicked: Boolean,
-    onFilterChanged: (Boolean) -> Unit,
     mapViewModel: MapViewModel,
-    onFilterStateChanged: (Boolean) -> Unit
+    onFilterStateChanged: (Boolean) -> Unit,
+    filterViewModel: FilterViewModel = hiltViewModel(),
 ) {
     val certificationName = stringResource(id = storeType.storeTypeName).replace(" ", "")
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Button(
             onClick = {
                 mapViewModel.updateFilterSet(certificationName, isFilterClicked.not())
-                onFilterChanged(isFilterClicked.not())
+                when (storeType) {
+                    StoreType.KIND -> filterViewModel.updateKindFilterClicked()
+                    StoreType.SAFE -> filterViewModel.updateSafeFilterClicked()
+                    StoreType.GREAT -> filterViewModel.updateGreatFilterClicked()
+                }
                 onFilterStateChanged(true)
             },
             modifier = Modifier

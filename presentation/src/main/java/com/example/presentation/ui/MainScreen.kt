@@ -1,7 +1,6 @@
 package com.example.presentation.ui
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -72,10 +71,6 @@ fun MainScreen(
         mutableStateOf(false)
     }
 
-    val (isKindFilterClicked, onKindFilterChanged) = remember { mutableStateOf(false) }
-    val (isGreatFilterClicked, onGreatFilterChanged) = remember { mutableStateOf(false) }
-    val (isSafeFilterClicked, onSafeFilterChanged) = remember { mutableStateOf(false) }
-
     val (screenCoordinate, onScreenChanged) = remember {
         mutableStateOf(
             ScreenCoordinate(
@@ -111,8 +106,6 @@ fun MainScreen(
     }
 
     val (isLoading, onLoadingChanged) = remember { mutableStateOf(false) }
-
-    val (isFilteredMarker, onFilteredMarkerChanged) = remember { mutableStateOf(false) }
 
     val (errorToastMsg, onErrorToastChanged) = remember { mutableStateOf("") }
 
@@ -177,8 +170,6 @@ fun MainScreen(
         onBackPressedChanged,
         mapViewModel,
         navController,
-        isFilteredMarker,
-        onFilteredMarkerChanged,
         isReSearchButtonClicked
     )
 
@@ -216,12 +207,6 @@ fun MainScreen(
     )
 
     FilterComponent(
-        isKindFilterClicked,
-        onKindFilterChanged,
-        isGreatFilterClicked,
-        onGreatFilterChanged,
-        isSafeFilterClicked,
-        onSafeFilterChanged,
         mapViewModel,
         onFilterStateChanged
     )
@@ -270,7 +255,6 @@ fun MainScreen(
 
     val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
     if (isReSearchButtonClicked && isScreenCoordinateChanged) {
-        Log.d("테스트", "키워드 재검색 눌리고있음?")
         mapViewModel.updateIsFilteredMarker(false)
         mapViewModel.searchStore(
             mapCenterCoordinate.longitude,
@@ -284,7 +268,6 @@ fun MainScreen(
     if ((isReloadButtonClicked && isScreenCoordinateChanged)) {
         mapViewModel.updateIsFilteredMarker(false)
         onErrorToastChanged("")
-        onFilteredMarkerChanged(false)
         mapViewModel.getStoreDetail(
             nwLong = screenCoordinate.northWest.longitude,
             nwLat = screenCoordinate.northWest.latitude,
@@ -321,7 +304,7 @@ fun MainScreen(
 @Composable
 fun PressBack(
     mapViewModel: MapViewModel,
-    onBackPressedChanged: (Boolean) -> Unit
+    onBackPressedChanged: (Boolean) -> Unit,
 ) {
     val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -329,6 +312,7 @@ fun PressBack(
 
     BackHandler {
         if (mapScreenType == MapScreenType.SEARCH) {
+            mapViewModel.updateIsSearchTerminated(true)
             onBackPressedChanged(true)
             mapViewModel.updateMapScreenType(MapScreenType.MAIN)
         } else {

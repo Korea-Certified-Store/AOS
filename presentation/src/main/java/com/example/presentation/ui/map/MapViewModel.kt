@@ -110,6 +110,10 @@ class MapViewModel @Inject constructor(
         }
     }
 
+    fun initializeFilterSet() {
+        filterSet.clear()
+    }
+
     fun setLocationTrackingMode(): LocationTrackingButton {
         return if (isLocationPermissionGranted.value) {
             LocationTrackingButton.FOLLOW
