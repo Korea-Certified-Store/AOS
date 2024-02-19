@@ -239,13 +239,16 @@ fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
 
 @Composable
 private fun BackArrow(navController: NavHostController, mapViewModel: MapViewModel) {
+    val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
     Image(
         imageVector = ImageVector.vectorResource(id = R.drawable.arrow),
         contentDescription = "Arrow",
         modifier = Modifier
             .size(18.dp)
             .clickable {
-                mapViewModel.updateIsSearchTerminated(true)
+                if (mapScreenType == MapScreenType.MAIN) {
+                    mapViewModel.updateIsSearchTerminated(true)
+                }
                 navController.popBackStack()
             }
     )
