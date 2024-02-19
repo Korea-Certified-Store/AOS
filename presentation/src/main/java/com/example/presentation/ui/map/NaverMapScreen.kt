@@ -191,10 +191,11 @@ fun NaverMapScreen(
 
                 when (val state = searchStore) {
                     is UiState.Loading -> {
-                        // Todo : 검색 시 로딩 뷰 구현
+                        onLoadingChanged(true)
                     }
 
                     is UiState.Success -> {
+                        onLoadingChanged(false)
                         filterViewModel.updateIsFilteredMarker(true)
                         onCurrentMapChanged(false)
                         onReloadOrShowMoreChanged(false)
