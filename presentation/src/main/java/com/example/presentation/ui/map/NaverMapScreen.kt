@@ -275,6 +275,7 @@ fun NaverMapScreen(
                 )
             )
             mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
+            mapViewModel.updateMapScreenType(MapScreenType.MAIN)
             navController.navigate(Screen.Search.route)
             filterViewModel.updateAllFilterUnClicked()
             onSearchComponentChanged(false)
