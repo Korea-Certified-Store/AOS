@@ -18,8 +18,8 @@ android {
         applicationId = "nainga_store.android_kcs"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
-        versionName = "3.1"
+        versionCode = 6
+        versionName = "4.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
