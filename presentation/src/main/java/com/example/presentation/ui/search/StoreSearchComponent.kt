@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -26,19 +27,25 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
+import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.MediumGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.DEFAULT_MARGIN
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_HEIGHT
 import com.example.presentation.util.MainConstants.SEARCH_TEXT_FIELD_TOP_PADDING
+import com.example.presentation.util.MapScreenType
 
 @Composable
 fun StoreSearchComponent(
     searchText: String?,
     onSearchComponentChanged: (Boolean) -> Unit,
-    onSearchTerminationButtonChanged: (Boolean) -> Unit
+    onSearchTerminationButtonChanged: (Boolean) -> Unit,
+    mapViewModel: MapViewModel
 ) {
+    val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
+
     Row(
         modifier = Modifier
             .padding(
@@ -61,11 +68,11 @@ fun StoreSearchComponent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        if (searchText.isNullOrBlank()) {
+        if (mapScreenType == MapScreenType.MAIN) {
             SearchPlaceHolderText(stringResource(R.string.search_placeholder_text), MediumGray)
             SearchSuffixImage(R.drawable.search)
         } else {
-            SearchPlaceHolderText(searchText, Black)
+            SearchPlaceHolderText(searchText ?: "", Black)
             SearchSuffixImage(
                 R.drawable.delete,
                 onSearchTerminationButtonChanged

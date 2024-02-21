@@ -54,6 +54,7 @@ import com.example.domain.model.search.SearchWord
 import com.example.presentation.R
 import com.example.presentation.ui.component.EmptyScreen
 import com.example.presentation.ui.map.MapViewModel
+import com.example.presentation.ui.map.filter.FilterViewModel
 import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.DarkGray
@@ -83,7 +84,7 @@ fun SearchScreen(
     ) {
         SearchAppBar(navController, mapViewModel)
         SearchDivider(6)
-        RecentSearchList(onDeleteAllDialogVisibleChanged)
+        RecentSearchList(onDeleteAllDialogVisibleChanged, navController)
 
         if (isDeleteAllDialogVisible) {
             DeleteAllDialog(onDeleteAllDialogVisibleChanged)
@@ -132,6 +133,7 @@ fun SearchTextField(
     navController: NavHostController,
     mapViewModel: MapViewModel,
     searchViewModel: SearchViewModel = hiltViewModel(),
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
     var searchText by remember { mutableStateOf("") }
 
@@ -195,10 +197,12 @@ fun SearchTextField(
         textStyle = TextStyle(color = Black, fontSize = 14.sp, fontWeight = Medium),
         modifier = Modifier.focusRequester(focusRequester),
         keyboardActions = KeyboardActions(onDone = {
+            filterViewModel.updateAllFilterUnClicked()
+
             if (searchText.isNotBlank()) {
                 insertSearchWord(searchText, searchViewModel)
 
-                mapViewModel.updateIsFilteredMarker(false)
+                filterViewModel.updateIsFilteredMarker(false)
                 mapViewModel.searchStore(
                     mapCenterCoordinate.longitude,
                     mapCenterCoordinate.latitude,
@@ -235,13 +239,16 @@ fun insertSearchWord(keyword: String, viewModel: SearchViewModel) {
 
 @Composable
 private fun BackArrow(navController: NavHostController, mapViewModel: MapViewModel) {
+    val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
     Image(
         imageVector = ImageVector.vectorResource(id = R.drawable.arrow),
         contentDescription = "Arrow",
         modifier = Modifier
             .size(18.dp)
             .clickable {
-                mapViewModel.updateIsSearchTerminated(true)
+                if (mapScreenType == MapScreenType.MAIN) {
+                    mapViewModel.updateIsSearchTerminated(true)
+                }
                 navController.popBackStack()
             }
     )
@@ -250,10 +257,11 @@ private fun BackArrow(navController: NavHostController, mapViewModel: MapViewMod
 @Composable
 fun RecentSearchList(
     onDeleteAllDialogVisibleChanged: (Boolean) -> Unit,
-    viewModel: SearchViewModel = hiltViewModel()
+    navController: NavHostController,
+    searchViewModel: SearchViewModel = hiltViewModel()
 ) {
-    viewModel.getRecentSearchWord()
-    val recentSearchWords by viewModel.recentSearchWords.collectAsStateWithLifecycle()
+    searchViewModel.getRecentSearchWord()
+    val recentSearchWords by searchViewModel.recentSearchWords.collectAsStateWithLifecycle()
 
 
     TitleText(recentSearchWords, onDeleteAllDialogVisibleChanged)
@@ -263,7 +271,7 @@ fun RecentSearchList(
     } else {
         LazyColumn {
             itemsIndexed(recentSearchWords) { idx, item ->
-                RecentSearchItem(item)
+                RecentSearchItem(item, navController)
                 SearchDivider(1)
             }
         }
@@ -300,12 +308,37 @@ fun TitleText(exampleItems: List<SearchWord>, onDeleteAllDialogVisibleChanged: (
 }
 
 @Composable
-fun RecentSearchItem(searchWord: SearchWord, viewModel: SearchViewModel = hiltViewModel()) {
+fun RecentSearchItem(
+    searchWord: SearchWord,
+    navController: NavHostController,
+    mapViewModel: MapViewModel = hiltViewModel(),
+    searchViewModel: SearchViewModel = hiltViewModel(),
+    filterViewModel: FilterViewModel = hiltViewModel()
+) {
+    val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
+    val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(53.dp)
-            .padding(horizontal = DEFAULT_MARGIN.dp),
+            .padding(horizontal = DEFAULT_MARGIN.dp)
+            .clickable {
+                // TODO : 최근 검색어 클릭 시 검색 구현
+                filterViewModel.updateAllFilterUnClicked()
+                insertSearchWord(searchWord.keyword, searchViewModel)
+
+                filterViewModel.updateIsFilteredMarker(false)
+                mapViewModel.searchStore(
+                    mapCenterCoordinate.longitude,
+                    mapCenterCoordinate.latitude,
+                    searchWord.keyword
+                )
+                navController.currentBackStackEntry?.savedStateHandle?.set(
+                    key = SEARCH_KEY,
+                    value = searchWord.keyword
+                )
+                mapViewModel.updateMapScreenType(MapScreenType.SEARCH)
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -336,7 +369,7 @@ fun RecentSearchItem(searchWord: SearchWord, viewModel: SearchViewModel = hiltVi
             modifier = Modifier
                 .size(16.dp)
                 .clickable {
-                    viewModel.deleteSearchWordById(searchWord.id)
+                    searchViewModel.deleteSearchWordById(searchWord.id)
                 }
         )
     }

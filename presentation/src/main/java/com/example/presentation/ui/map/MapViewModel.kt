@@ -13,10 +13,7 @@ import com.example.domain.util.Resource
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.util.MainConstants.FAIL_TO_LOAD_DATA
-import com.example.presentation.util.MainConstants.GREAT_STORE
 import com.example.presentation.util.MainConstants.INITIALIZE_ABLE
-import com.example.presentation.util.MainConstants.KIND_STORE
-import com.example.presentation.util.MainConstants.SAFE_STORE
 import com.example.presentation.util.MapScreenType
 import com.example.presentation.util.UiState
 import com.naver.maps.geometry.LatLng
@@ -37,8 +34,6 @@ class MapViewModel @Inject constructor(
 
     private val _ableToShowSplashScreen = MutableStateFlow(true)
     val ableToShowSplashScreen: StateFlow<Boolean> = _ableToShowSplashScreen
-
-    private val filterSet = mutableSetOf<String>()
 
     private val _storeDetailModelData =
         MutableStateFlow<UiState<List<List<StoreDetail>>>>(UiState.Loading)
@@ -80,9 +75,6 @@ class MapViewModel @Inject constructor(
     private val _isSearchTerminated = MutableStateFlow(false)
     val isSearchTerminated: StateFlow<Boolean> = _isSearchTerminated
 
-    private val _isFilteredMarker = MutableStateFlow(false)
-    val isFilteredMarker: StateFlow<Boolean> = _isFilteredMarker
-
     fun showMoreStore(count: Int) {
         val newItem: List<StoreDetail> = when (val uiState = _storeDetailModelData.value) {
             is UiState.Success -> uiState.data.getOrNull(count) ?: emptyList()
@@ -95,19 +87,6 @@ class MapViewModel @Inject constructor(
 
     fun updateSplashState() {
         _ableToShowSplashScreen.value = false
-    }
-
-    fun getFilterSet(): Set<String> {
-        return if (filterSet.isEmpty()) setOf(SAFE_STORE, GREAT_STORE, KIND_STORE)
-        else filterSet.toSet()
-    }
-
-    fun updateFilterSet(certificationName: String, isClicked: Boolean) {
-        if (isClicked) {
-            filterSet.add(certificationName)
-        } else {
-            filterSet.remove(certificationName)
-        }
     }
 
     fun setLocationTrackingMode(): LocationTrackingButton {
@@ -242,9 +221,5 @@ class MapViewModel @Inject constructor(
 
     fun updateIsSearchTerminated(isTerminated: Boolean) {
         _isSearchTerminated.value = isTerminated
-    }
-
-    fun updateIsFilteredMarker(isFilteredMarker: Boolean) {
-        _isFilteredMarker.value = isFilteredMarker
     }
 }

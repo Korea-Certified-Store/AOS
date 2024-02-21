@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.domain.model.map.ShowMoreCount
@@ -22,12 +23,15 @@ import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.map.NaverMapScreen
 import com.example.presentation.ui.map.call.StoreCallDialog
 import com.example.presentation.ui.map.filter.FilterComponent
+import com.example.presentation.ui.map.filter.FilterViewModel
 import com.example.presentation.ui.map.list.StoreListBottomSheet
 import com.example.presentation.ui.map.reload.ReloadOrShowMoreButton
 import com.example.presentation.ui.map.summary.DimScreen
 import com.example.presentation.ui.map.summary.StoreSummaryBottomSheet
+import com.example.presentation.ui.search.ReSearchButtonComponent
 import com.example.presentation.ui.search.StoreSearchComponent
 import com.example.presentation.util.MainConstants
+import com.example.presentation.util.MainConstants.SEARCH_KEY
 import com.example.presentation.util.MainConstants.UN_MARKER
 import com.example.presentation.util.MapScreenType
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -38,8 +42,8 @@ fun MainScreen(
     onCallStoreChanged: (String) -> Unit,
     onSplashScreenShowAble: (Boolean) -> Unit,
     navController: NavHostController,
-    searchText: String?,
-    mapViewModel: MapViewModel
+    mapViewModel: MapViewModel,
+    filterViewModel : FilterViewModel = hiltViewModel()
 ) {
     val (clickedStoreInfo, onStoreInfoChanged) = remember {
         mutableStateOf(
@@ -68,10 +72,6 @@ fun MainScreen(
     val (isReloadButtonClicked, onReloadButtonChanged) = remember {
         mutableStateOf(false)
     }
-
-    val (isKindFilterClicked, onKindFilterChanged) = remember { mutableStateOf(false) }
-    val (isGreatFilterClicked, onGreatFilterChanged) = remember { mutableStateOf(false) }
-    val (isSafeFilterClicked, onSafeFilterChanged) = remember { mutableStateOf(false) }
 
     val (screenCoordinate, onScreenChanged) = remember {
         mutableStateOf(
@@ -117,6 +117,8 @@ fun MainScreen(
 
     val (isReloadOrShowMoreShowAble, onReloadOrShowMoreChanged) = remember { mutableStateOf(false) }
 
+    val (isReSearchButtonClicked, onReSearchButtonChanged) = remember { mutableStateOf(false) }
+
     val (isScreenCoordinateChanged, onGetNewScreenCoordinateChanged) = remember {
         mutableStateOf(
             false
@@ -131,6 +133,14 @@ fun MainScreen(
         )
     }
     val (isBackPressed, onBackPressedChanged) = remember { mutableStateOf(false) }
+
+    val isSearchTextExist = navController.previousBackStackEntry?.savedStateHandle?.contains(
+        SEARCH_KEY
+    ) ?: false
+
+    val searchText = navController.previousBackStackEntry?.savedStateHandle?.get<String>(
+        SEARCH_KEY
+    )
 
     NaverMapScreen(
         isMarkerClicked,
@@ -161,38 +171,45 @@ fun MainScreen(
         isBackPressed,
         onBackPressedChanged,
         mapViewModel,
-        navController
+        navController,
+        isReSearchButtonClicked
     )
 
     if (isReloadOrShowMoreShowAble) {
-        ReloadOrShowMoreButton(
-            isMarkerClicked,
-            currentSummaryInfoHeight,
-            isMapGestured,
-            onShowMoreCountChanged,
-            onReloadButtonChanged,
-            onMarkerChanged,
-            onBottomSheetChanged,
-            isLoading,
-            showMoreCount,
-            mapViewModel
-        )
+        if (isSearchTextExist) {
+            ReSearchButtonComponent(
+                isMarkerClicked,
+                currentSummaryInfoHeight,
+                isMapGestured,
+                onReSearchButtonChanged,
+                onMarkerChanged,
+                onBottomSheetChanged,
+                isLoading,
+            )
+        } else {
+            ReloadOrShowMoreButton(
+                isMarkerClicked,
+                currentSummaryInfoHeight,
+                isMapGestured,
+                onShowMoreCountChanged,
+                onReloadButtonChanged,
+                onMarkerChanged,
+                onBottomSheetChanged,
+                isLoading,
+                showMoreCount,
+                mapViewModel
+            )
+        }
     }
 
     StoreSearchComponent(
         searchText,
         onSearchComponentChanged,
-        onSearchTerminationButtonChanged
+        onSearchTerminationButtonChanged,
+        mapViewModel
     )
 
     FilterComponent(
-        isKindFilterClicked,
-        onKindFilterChanged,
-        isGreatFilterClicked,
-        onGreatFilterChanged,
-        isSafeFilterClicked,
-        onSafeFilterChanged,
-        mapViewModel,
         onFilterStateChanged
     )
 
@@ -238,8 +255,20 @@ fun MainScreen(
         onCallDialogChanged(false)
     }
 
+    val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
+    if (isReSearchButtonClicked && isScreenCoordinateChanged) {
+        filterViewModel.updateIsFilteredMarker(false)
+        mapViewModel.searchStore(
+            mapCenterCoordinate.longitude,
+            mapCenterCoordinate.latitude,
+            searchText ?: ""
+        )
+        onReSearchButtonChanged(false)
+        onGetNewScreenCoordinateChanged(false)
+    }
+
     if ((isReloadButtonClicked && isScreenCoordinateChanged)) {
-        mapViewModel.updateIsFilteredMarker(false)
+        filterViewModel.updateIsFilteredMarker(false)
         onErrorToastChanged("")
         mapViewModel.getStoreDetail(
             nwLong = screenCoordinate.northWest.longitude,
@@ -277,7 +306,7 @@ fun MainScreen(
 @Composable
 fun PressBack(
     mapViewModel: MapViewModel,
-    onBackPressedChanged: (Boolean) -> Unit
+    onBackPressedChanged: (Boolean) -> Unit,
 ) {
     val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -285,6 +314,7 @@ fun PressBack(
 
     BackHandler {
         if (mapScreenType == MapScreenType.SEARCH) {
+            mapViewModel.updateIsSearchTerminated(true)
             onBackPressedChanged(true)
             mapViewModel.updateMapScreenType(MapScreenType.MAIN)
         } else {

@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.presentation.R
 import com.example.presentation.mapper.toUiModel
@@ -33,6 +34,7 @@ import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.component.BottomSheetDragHandle
 import com.example.presentation.ui.component.EmptyScreen
 import com.example.presentation.ui.map.MapViewModel
+import com.example.presentation.ui.map.filter.FilterViewModel
 import com.example.presentation.ui.theme.Black
 import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.SemiLightGray
@@ -145,7 +147,8 @@ fun StoreListContent(
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onMarkerChanged: (Long) -> Unit,
     onListItemChanged: (Boolean) -> Unit,
-    viewModel: MapViewModel
+    viewModel: MapViewModel,
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
     val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
 
@@ -160,7 +163,7 @@ fun StoreListContent(
             LazyColumn {
                 itemsIndexed(
                     storeDetailData.filter {
-                        viewModel.getFilterSet().intersect(it.certificationName.toSet())
+                        filterViewModel.getFilterSet().intersect(it.certificationName.toSet())
                             .isNotEmpty()
                     }
                 ) { _, item ->
