@@ -70,11 +70,11 @@ fun angleAnimation(): Float {
     val angleIdx = remember {
         Animatable(initialValue = 0f)
     }
-    val currentAngle = angles[angleIdx.value.toInt()]
+    val currentAngle = angles[angleIdx.value.toInt() % angles.size]
 
     LaunchedEffect(Unit) {
         angleIdx.animateTo(
-            targetValue = (angles.lastIndex + 1).toFloat(),
+            targetValue = angles.size.toFloat(),
             animationSpec = infiniteRepeatable(
                 animation = tween(durationMillis = 2000, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
