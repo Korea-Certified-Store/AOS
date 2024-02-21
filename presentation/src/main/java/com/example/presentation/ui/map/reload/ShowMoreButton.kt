@@ -11,18 +11,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.domain.model.map.ShowMoreCount
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
-import com.example.presentation.ui.theme.MediumGray
+import com.example.presentation.ui.theme.DarkGray
 import com.example.presentation.ui.theme.White
 
 @Composable
 fun ShowMoreButton(
     showMoreCount: ShowMoreCount,
     onShowMoreCountChanged: (ShowMoreCount) -> Unit,
-    viewModel: MapViewModel = hiltViewModel()
+    viewModel: MapViewModel
 ) {
     Button(
         onClick = {
@@ -50,7 +49,7 @@ fun ShowMoreButton(
             text = "결과 더보기 ${showMoreCount.clickCount + 1}/${showMoreCount.maxCount}",
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color = if (showMoreCount.clickCount == showMoreCount.maxCount - 1) MediumGray else Black
+            color = if (showMoreCount.clickCount == showMoreCount.maxCount - 1) DarkGray else Black
         )
     }
 }

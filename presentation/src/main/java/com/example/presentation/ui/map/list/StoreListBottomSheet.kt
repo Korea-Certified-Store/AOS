@@ -2,13 +2,15 @@ package com.example.presentation.ui.map.list
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -19,10 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,13 +32,18 @@ import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.ExpandedType
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.ui.component.BottomSheetDragHandle
+import com.example.presentation.ui.component.EmptyScreen
 import com.example.presentation.ui.map.MapViewModel
+import com.example.presentation.ui.map.filter.FilterViewModel
 import com.example.presentation.ui.theme.Black
+import com.example.presentation.ui.theme.DarkGray
+import com.example.presentation.ui.theme.SemiLightGray
 import com.example.presentation.ui.theme.White
 import com.example.presentation.util.MainConstants.HANDLE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_EXPAND_HEIGHT
 import com.example.presentation.util.MainConstants.LIST_BOTTOM_SHEET_FULL_PADDING
+import com.example.presentation.util.UiState
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -50,7 +55,8 @@ fun StoreListBottomSheet(
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onMarkerChanged: (Long) -> Unit,
-    onListItemChanged: (Boolean) -> Unit
+    onListItemChanged: (Boolean) -> Unit,
+    mapViewModel: MapViewModel
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -62,12 +68,13 @@ fun StoreListBottomSheet(
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContent = {
-            StoreListHeader()
+            StoreListHeader(mapViewModel)
             StoreListContent(
                 onBottomSheetChanged,
                 onStoreInfoChanged,
                 onMarkerChanged,
-                onListItemChanged
+                onListItemChanged,
+                mapViewModel
             )
         },
         sheetPeekHeight = (LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT + HANDLE_HEIGHT).dp,
@@ -103,20 +110,33 @@ fun StoreListBottomSheet(
     }
 }
 
-@Preview
 @Composable
-fun StoreListHeader() {
+fun StoreListHeader(viewModel: MapViewModel) {
+    val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
+    val uiState by viewModel.storeDetailModelData.collectAsStateWithLifecycle()
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(top = 9.dp, bottom = 14.dp)
+            .padding(top = 9.dp, bottom = 17.dp)
             .fillMaxWidth()
     ) {
         Text(
             text = stringResource(R.string.gather_the_stores),
             color = Black,
-            fontSize = 12.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.Medium
+        )
+        Spacer(modifier = Modifier.height(3.dp))
+        Text(
+            text = if (uiState is UiState.Loading) ""
+            else {
+                if (storeDetailData.isEmpty()) stringResource(R.string.no_search_result)
+                else stringResource(R.string.have_n_stores, storeDetailData.size)
+            },
+            color = DarkGray,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Normal
         )
     }
 }
@@ -127,28 +147,36 @@ fun StoreListContent(
     onStoreInfoChanged: (StoreDetail) -> Unit,
     onMarkerChanged: (Long) -> Unit,
     onListItemChanged: (Boolean) -> Unit,
-    viewModel: MapViewModel = hiltViewModel()
+    viewModel: MapViewModel,
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle(
-        lifecycleOwner
-    )
+    val storeDetailData by viewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
 
-    LazyColumn(modifier = Modifier.heightIn(max = LIST_BOTTOM_SHEET_EXPAND_HEIGHT.dp)) {
-        itemsIndexed(
-            storeDetailData.filter {
-                viewModel.getFilterSet().intersect(it.certificationName.toSet())
-                    .isNotEmpty()
+    Column(modifier = Modifier.height(LIST_BOTTOM_SHEET_EXPAND_HEIGHT.dp)) {
+        Divider(
+            modifier = Modifier.fillMaxWidth(),
+            thickness = 0.5.dp, color = SemiLightGray
+        )
+        if (storeDetailData.isEmpty()) {
+            EmptyScreen(R.string.can_not_find_stores)
+        } else {
+            LazyColumn {
+                itemsIndexed(
+                    storeDetailData.filter {
+                        filterViewModel.getFilterSet().intersect(it.certificationName.toSet())
+                            .isNotEmpty()
+                    }
+                ) { _, item ->
+                    StoreListItem(
+                        item.toUiModel(),
+                        onBottomSheetChanged,
+                        onStoreInfoChanged,
+                        onMarkerChanged,
+                        onListItemChanged
+                    )
+                    StoreListDivider()
+                }
             }
-        ) { _, item ->
-            StoreListItem(
-                item.toUiModel(),
-                onBottomSheetChanged,
-                onStoreInfoChanged,
-                onMarkerChanged,
-                onListItemChanged
-            )
-            StoreListDivider()
         }
     }
 }

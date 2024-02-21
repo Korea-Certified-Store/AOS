@@ -9,7 +9,7 @@ object MainConstants {
     const val DEFAULT_MARGIN = 16
     const val UN_MARKER = -1L
     const val DETAIL_BOTTOM_SHEET_HEIGHT = 530
-    const val LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT = 38
+    const val LIST_BOTTOM_SHEET_COLLAPSE_HEIGHT = 67
     const val LIST_BOTTOM_SHEET_EXPAND_HEIGHT = 586
     const val LIST_BOTTOM_SHEET_FULL_PADDING = 50
     const val HANDLE_HEIGHT = 14
@@ -21,9 +21,13 @@ object MainConstants {
     const val INITIALIZE_DONE = 2
     const val DEFAULT_LATITUDE = 37.5666102
     const val DEFAULT_LONGITUDE = 126.9783881
+    const val SEARCH_TEXT_FIELD_HEIGHT = 50
+    const val SEARCH_TEXT_FIELD_TOP_PADDING = 12
 
     const val KIND_STORE = "착한가격업소"
     const val GREAT_STORE = "모범음식점"
     const val SAFE_STORE = "안심식당"
     const val FAIL_TO_LOAD_DATA = "데이터를 불러올 수 없습니다"
+    const val SEARCH_KEY = "search_key"
+    const val SEARCH_COORDINATE_KEY = "search_coordinate_key"
 }

@@ -15,21 +15,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.example.domain.model.map.ShowMoreCount
+import com.example.domain.util.ErrorMessage.ERROR_MESSAGE_STORE_IS_EMPTY
 import com.example.presentation.mapper.toUiModel
 import com.example.presentation.model.Coordinate
 import com.example.presentation.model.LocationTrackingButton
 import com.example.presentation.model.ScreenCoordinate
 import com.example.presentation.model.StoreDetail
 import com.example.presentation.model.StoreType
+import com.example.presentation.ui.map.filter.FilterViewModel
 import com.example.presentation.ui.map.location.CurrentLocationComponent
 import com.example.presentation.ui.map.marker.StoreMarker
 import com.example.presentation.ui.map.reload.setReloadButtonBottomPadding
+import com.example.presentation.ui.navigation.Screen
 import com.example.presentation.util.MainConstants.DEFAULT_LATITUDE
 import com.example.presentation.util.MainConstants.DEFAULT_LONGITUDE
 import com.example.presentation.util.MainConstants.GREAT_STORE
@@ -39,9 +43,12 @@ import com.example.presentation.util.MainConstants.INITIALIZE_DONE
 import com.example.presentation.util.MainConstants.INITIALIZE_MOVE_ONCE
 import com.example.presentation.util.MainConstants.KIND_STORE
 import com.example.presentation.util.MainConstants.UN_MARKER
+import com.example.presentation.util.MapScreenType
 import com.example.presentation.util.UiState
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.CameraUpdateReason
@@ -58,7 +65,6 @@ import kotlinx.coroutines.launch
 @ExperimentalNaverMapApi
 @Composable
 fun NaverMapScreen(
-    mapViewModel: MapViewModel,
     isMarkerClicked: Boolean,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
@@ -72,9 +78,7 @@ fun NaverMapScreen(
     onSplashScreenShowAble: (Boolean) -> Unit,
     onLoadingChanged: (Boolean) -> Unit,
     onCurrentMapChanged: (Boolean) -> Unit,
-    isFilteredMarker: Boolean,
-    onFilteredMarkerChanged: (Boolean) -> Unit,
-    onErrorSnackBarChanged: (String) -> Unit,
+    onErrorToastChanged: (String) -> Unit,
     isListItemClicked: Boolean,
     onListItemChanged: (Boolean) -> Unit,
     clickedStoreLocation: Coordinate,
@@ -82,10 +86,23 @@ fun NaverMapScreen(
     onReloadOrShowMoreChanged: (Boolean) -> Unit,
     isReloadButtonClicked: Boolean,
     onGetNewScreenCoordinateChanged: (Boolean) -> Unit,
+    isSearchComponentClicked: Boolean,
+    onSearchComponentChanged: (Boolean) -> Unit,
+    isSearchTerminationButtonClicked: Boolean,
+    onSearchTerminationButtonChanged: (Boolean) -> Unit,
+    isBackPressed: Boolean,
+    onBackPressedChanged: (Boolean) -> Unit,
+    mapViewModel: MapViewModel,
+    navController: NavHostController,
+    isReSearchButtonClicked: Boolean,
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
     val cameraPositionState = rememberCameraPositionState {}
 
     val scope = rememberCoroutineScope()
+
+    val mapCenterCoordinate by mapViewModel.mapCenterCoordinate.collectAsStateWithLifecycle()
+    val mapZoomLevel by mapViewModel.mapZoomLevel.collectAsStateWithLifecycle()
 
     NaverMap(
         modifier = Modifier.fillMaxSize(),
@@ -106,7 +123,8 @@ fun NaverMapScreen(
                 onReloadOrShowMoreChanged,
                 onLocationButtonChanged,
                 selectedLocationButton.mode,
-                onCurrentMapChanged
+                onCurrentMapChanged,
+                mapViewModel
             )
         },
         locationSource = rememberFusedLocationSource(),
@@ -124,45 +142,94 @@ fun NaverMapScreen(
         },
     ) {
 
-        val lifecycleOwner = LocalLifecycleOwner.current
-        val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle(
-            lifecycleOwner
-        )
+        val storeDetailData by mapViewModel.storeDetailModelData.collectAsStateWithLifecycle()
+        val mapScreenType by mapViewModel.mapScreenType.collectAsStateWithLifecycle()
 
-        LaunchedEffect(key1 = storeDetailData) {
-            when (val state = storeDetailData) {
-                is UiState.Loading -> {
-                    if (mapViewModel.ableToShowSplashScreen.value.not()) {
+        if (mapScreenType == MapScreenType.MAIN) {
+            LaunchedEffect(key1 = storeDetailData) {
+                when (val state = storeDetailData) {
+                    is UiState.Loading -> {
+                        if (mapViewModel.ableToShowSplashScreen.value.not()) {
+                            onLoadingChanged(true)
+                        }
+                    }
+
+                    is UiState.Success -> {
+                        val isInitializationLocation =
+                            mapViewModel.isLocationPermissionGranted.value.not()
+                                    || (mapViewModel.storeInitializeState.value == INITIALIZE_DONE)
+                        if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value) {
+                            onSplashScreenShowAble(false)
+                        }
+                        filterViewModel.updateIsFilteredMarker(true)
+                        onLoadingChanged(false)
+                        onCurrentMapChanged(false)
+                        onShowMoreCountChanged(ShowMoreCount(0, state.data.size))
+                    }
+
+                    is UiState.Failure -> {
+                        if (mapViewModel.ableToShowSplashScreen.value) {
+                            onSplashScreenShowAble(false)
+                        }
+                        showErrorToastMsg(state, onReloadOrShowMoreChanged, onErrorToastChanged)
+                        onLoadingChanged(false)
+                    }
+                }
+            }
+        } else {
+            val padding = with(LocalDensity.current) {
+                Dp(35F).roundToPx()
+            }
+            val searchStore by mapViewModel.searchStoreModelData.collectAsStateWithLifecycle()
+            val searchBounds by mapViewModel.searchBounds.collectAsStateWithLifecycle()
+
+            LaunchedEffect(key1 = searchStore) {
+                val bounds = LatLngBounds(
+                    searchBounds.first,
+                    searchBounds.second
+                )
+
+                when (val state = searchStore) {
+                    is UiState.Loading -> {
                         onLoadingChanged(true)
                     }
-                }
 
-                is UiState.Success -> {
-                    val isInitializationLocation =
-                        mapViewModel.isLocationPermissionGranted.value.not()
-                                || (mapViewModel.storeInitializeState.value == INITIALIZE_DONE)
-                    if (isInitializationLocation && mapViewModel.ableToShowSplashScreen.value) {
-                        onSplashScreenShowAble(false)
-                    }
-                    onFilteredMarkerChanged(true)
-                    onLoadingChanged(false)
-                    onCurrentMapChanged(false)
-                    onShowMoreCountChanged(ShowMoreCount(0, state.data.size))
-                }
+                    is UiState.Success -> {
+                        onLoadingChanged(false)
+                        filterViewModel.updateIsFilteredMarker(true)
+                        onCurrentMapChanged(false)
+                        onReloadOrShowMoreChanged(false)
 
-                is UiState.Failure -> {
-                    if (mapViewModel.ableToShowSplashScreen.value) {
-                        onSplashScreenShowAble(false)
+                        cameraPositionState.animate(
+                            if (bounds.southWest.latitude == 0.0) {
+                                val position = CameraPosition(bounds.northEast, 16.0)
+                                CameraUpdate.toCameraPosition(position)
+                            } else {
+                                CameraUpdate.fitBounds(bounds, padding)
+                            },
+                            animation = CameraAnimation.Fly,
+                            durationMs = 500
+                        )
+
+                        if (bounds.southWest.latitude == 0.0) {
+                            onMarkerChanged(state.data.first().id)
+                            onStoreInfoChanged(state.data.first().toUiModel())
+                            onBottomSheetChanged(true)
+                        }
                     }
-                    onLoadingChanged(false)
-                    onErrorSnackBarChanged(state.msg)
+
+                    is UiState.Failure -> {
+                        movePrevCamera(cameraPositionState, mapCenterCoordinate, mapZoomLevel)
+                        showErrorToastMsg(state, onReloadOrShowMoreChanged, onErrorToastChanged)
+                    }
                 }
             }
         }
 
+        val isFilteredMarker by filterViewModel.isFilteredMarker.collectAsStateWithLifecycle()
+
         if (isFilteredMarker) {
             FilteredMarkers(
-                mapViewModel.flattenedStoreDetailList.value,
                 mapViewModel,
                 onBottomSheetChanged,
                 onStoreInfoChanged,
@@ -187,10 +254,42 @@ fun NaverMapScreen(
                 onLocationButtonChanged(LocationTrackingButton.NO_FOLLOW)
             }
         }
-
+        if (isReSearchButtonClicked) {
+            mapViewModel.updateMapCenterCoordinate(
+                Coordinate(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude
+                )
+            )
+            onGetNewScreenCoordinateChanged(true)
+        }
         if (isReloadButtonClicked) {
             GetScreenCoordinate(cameraPositionState, onScreenChanged)
             onGetNewScreenCoordinateChanged(true)
+        }
+        if (isSearchComponentClicked) {
+            mapViewModel.updateMapCenterCoordinate(
+                Coordinate(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude,
+                )
+            )
+            mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
+            mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+            navController.navigate(Screen.Search.route)
+            filterViewModel.updateAllFilterUnClicked()
+            onSearchComponentChanged(false)
+        }
+        if (isBackPressed) {
+            mapViewModel.updateMapCenterCoordinate(
+                Coordinate(
+                    cameraPositionState.position.target.latitude,
+                    cameraPositionState.position.target.longitude,
+                )
+            )
+            mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
+            onBackPressedChanged(false)
+            navController.popBackStack()
         }
     }
 
@@ -201,6 +300,28 @@ fun NaverMapScreen(
         mapViewModel,
         currentSummaryInfoHeight
     )
+
+    CheckSearchTerminationButtonClicked(
+        isSearchTerminationButtonClicked,
+        mapViewModel,
+        cameraPositionState,
+        navController,
+        onSearchTerminationButtonChanged,
+        onReloadButtonChanged,
+        mapCenterCoordinate,
+        mapZoomLevel
+    )
+}
+
+private fun showErrorToastMsg(
+    state: UiState.Failure,
+    onReloadOrShowMoreChanged: (Boolean) -> Unit,
+    onErrorToastChanged: (String) -> Unit
+) {
+    if (state.msg == ERROR_MESSAGE_STORE_IS_EMPTY) {
+        onReloadOrShowMoreChanged(false)
+    }
+    onErrorToastChanged(state.msg)
 }
 
 @Composable
@@ -211,18 +332,19 @@ private fun TurnOffLocationButton(onLocationButtonChanged: (LocationTrackingButt
 @ExperimentalNaverMapApi
 @Composable
 fun FilteredMarkers(
-    storeInfo: List<com.example.domain.model.map.StoreDetail>,
     mapViewModel: MapViewModel,
     onBottomSheetChanged: (Boolean) -> Unit,
     onStoreInfoChanged: (StoreDetail) -> Unit,
     clickedMarkerId: Long,
     onMarkerChanged: (Long) -> Unit,
+    filterViewModel: FilterViewModel = hiltViewModel()
 ) {
-    storeInfo.filter { info ->
-        mapViewModel.getFilterSet().intersect(info.certificationName.toSet()).isNotEmpty()
+    val storeDetailData by mapViewModel.flattenedStoreDetailList.collectAsStateWithLifecycle()
+    storeDetailData.filter { info ->
+        filterViewModel.getFilterSet().intersect(info.certificationName.toSet()).isNotEmpty()
     }.forEach { info ->
         val storeType =
-            when (mapViewModel.getFilterSet().intersect(info.certificationName.toSet())
+            when (filterViewModel.getFilterSet().intersect(info.certificationName.toSet())
                 .last()) {
                 KIND_STORE -> StoreType.KIND
                 GREAT_STORE -> StoreType.GREAT
@@ -248,7 +370,7 @@ fun InitializeMarker(
     onLocationButtonChanged: (LocationTrackingButton) -> Unit,
     selectedLocationButtonMode: LocationTrackingMode,
     onCurrentMapChanged: (Boolean) -> Unit,
-    mainViewModel: MapViewModel = hiltViewModel()
+    mainViewModel: MapViewModel
 ) {
     val (isInitialLocationSet, onInitialLocationSetChanged) = remember { mutableStateOf(false) }
     val (isMapGestured, onMapGestureChanged) = remember { mutableStateOf(false) }
@@ -381,4 +503,67 @@ fun GetScreenCoordinate(
             )
         )
     }
+}
+
+@Composable
+private fun CheckSearchTerminationButtonClicked(
+    isSearchTerminationButtonClicked: Boolean,
+    mapViewModel: MapViewModel,
+    cameraPositionState: CameraPositionState,
+    navController: NavHostController,
+    onSearchTerminationButtonChanged: (Boolean) -> Unit,
+    onReloadButtonChanged: (Boolean) -> Unit,
+    mapCenterCoordinate: Coordinate,
+    mapZoomLevel: Double,
+    filterViewModel: FilterViewModel = hiltViewModel()
+) {
+    if (isSearchTerminationButtonClicked) {
+        mapViewModel.updateMapCenterCoordinate(
+            Coordinate(
+                cameraPositionState.position.target.latitude,
+                cameraPositionState.position.target.longitude,
+            )
+        )
+        mapViewModel.updateMapZoomLevel(cameraPositionState.position.zoom)
+        mapViewModel.updateMapScreenType(MapScreenType.MAIN)
+        navController.navigate(Screen.Main.route) {
+            popUpTo(navController.graph.id) {
+                inclusive = true
+            }
+        }
+        onSearchTerminationButtonChanged(false)
+        mapViewModel.updateIsSearchTerminated(true)
+    }
+
+    val isSearchTerminated by mapViewModel.isSearchTerminated.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = isSearchTerminated) {
+        if (isSearchTerminated) {
+            filterViewModel.updateAllFilterUnClicked()
+            movePrevCamera(cameraPositionState, mapCenterCoordinate, mapZoomLevel)
+            onReloadButtonChanged(true)
+            mapViewModel.updateIsSearchTerminated(false)
+        }
+    }
+}
+
+@OptIn(ExperimentalNaverMapApi::class)
+private suspend fun movePrevCamera(
+    cameraPositionState: CameraPositionState,
+    mapCenterCoordinate: Coordinate,
+    mapZoomLevel: Double
+) {
+
+    val position = CameraPosition(
+        LatLng(
+            mapCenterCoordinate.latitude,
+            mapCenterCoordinate.longitude
+        ), mapZoomLevel
+    )
+
+    cameraPositionState.animate(
+        CameraUpdate.toCameraPosition(position),
+        animation = CameraAnimation.None,
+        durationMs = 500
+    )
 }

@@ -18,8 +18,8 @@ android {
         applicationId = "nainga_store.android_kcs"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
-        versionName = "3.1"
+        versionCode = 5
+        versionName = "4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -113,5 +113,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))
     implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
     implementation("com.google.firebase:firebase-crashlytics-ktx:18.6.1")
+
+    // room
+    implementation(libs.bundles.room)
+    kapt(libs.room.compiler)
 
 }

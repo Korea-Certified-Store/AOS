@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.presentation.R
 import com.example.presentation.ui.map.MapViewModel
 import com.example.presentation.ui.theme.Black
@@ -37,7 +36,7 @@ fun ReloadButton(
     onMarkerChanged: (Long) -> Unit,
     onBottomSheetChanged: (Boolean) -> Unit,
     isLoading: Boolean,
-    viewModel: MapViewModel = hiltViewModel()
+    viewModel: MapViewModel
 ) {
     Button(
         onClick = {
@@ -73,9 +72,9 @@ fun ReloadButton(
 @Composable
 private fun ReloadInCurrentLocation() {
     Icon(
-        imageVector = ImageVector.vectorResource(id = R.drawable.search),
+        imageVector = ImageVector.vectorResource(id = R.drawable.reload),
         tint = Blue,
-        contentDescription = "Search",
+        contentDescription = "Reload",
         modifier = Modifier.size(13.dp)
     )
     Spacer(modifier = Modifier.width(6.dp))

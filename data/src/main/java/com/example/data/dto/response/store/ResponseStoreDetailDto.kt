@@ -1,9 +1,7 @@
-package com.example.data.dto.response
+package com.example.data.dto.response.store
 
 import com.example.domain.model.map.StoreDetailModel
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class ResponseStoreDetailDto(
     val id: Long,
     val displayName: String,

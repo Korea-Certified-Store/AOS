@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     id(libs.plugins.hilt.plugin.get().pluginId)
+    id("kotlin-parcelize")
 }
 
 val properties = Properties()
@@ -99,9 +100,12 @@ dependencies {
     implementation(libs.androidx.runtime.ktx)
     implementation(libs.material)
 
+    // constraintlayout
     implementation(libs.constraintlayout.compose)
 
+    // coil
     implementation(libs.landscapist.coil)
 
-
+    // navigation
+    implementation(libs.navigation.compose)
 }

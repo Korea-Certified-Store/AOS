@@ -1,5 +1,6 @@
 package com.example.android_kcs.di
 
+import com.example.data.source.remote.api.SearchStoreApiService
 import com.example.data.source.remote.api.StoreDetailApiService
 import dagger.Module
 import dagger.Provides
@@ -16,4 +17,9 @@ object ApiModule {
     @Singleton
     fun provideStoreDetailService(retrofit: Retrofit): StoreDetailApiService =
         retrofit.create(StoreDetailApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSearchStoreService(retrofit: Retrofit): SearchStoreApiService =
+        retrofit.create(SearchStoreApiService::class.java)
 }

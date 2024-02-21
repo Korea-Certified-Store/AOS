@@ -1,13 +1,12 @@
 package com.example.data.source.remote.api
 
 import com.example.data.dto.response.BaseResponse
-import com.example.data.dto.response.ResponseStoreDetailDto
+import com.example.data.dto.response.store.ResponseStoreDetailDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface  StoreDetailApiService {
-
-    @GET("/api/v2/storecertification/byLocation")
+    @GET("/api/storecertification/byLocation/v2")
     suspend fun getStoreDetailsByLocation(
         @Query(NORTH_WEST_LONG) nwLong: Double,
         @Query(NORTH_WEST_LAT) nwLat: Double,
