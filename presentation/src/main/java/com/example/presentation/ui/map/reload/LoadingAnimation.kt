@@ -28,11 +28,11 @@ fun LoadingAnimation() {
     val imgIdx = remember {
         Animatable(initialValue = 0f)
     }
-    val currentImg = loadingImgList[imgIdx.value.toInt()]
+    val currentImg = loadingImgList[imgIdx.value.toInt() % loadingImgList.size]
 
     LaunchedEffect(Unit) {
         imgIdx.animateTo(
-            targetValue = (loadingImgList.lastIndex + 1).toFloat(),
+            targetValue = loadingImgList.size.toFloat(),
             animationSpec = infiniteRepeatable(
                 animation = tween(durationMillis = 500, easing = LinearEasing),
                 repeatMode = RepeatMode.Restart
